@@ -1,0 +1,12 @@
+*.DS_Store 
+
+# IntelliJ files
+.idea
+
+# Generated files
+__pycache__
+*.pyc
+.pytest_cache
+
+.venv
+
