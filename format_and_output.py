@@ -26,10 +26,10 @@ code. """
 
 # the name of the output file without the .tsv extension, e.g. 'NA134'
 OUTPUT_FILE_NAME = 'test'
-# the path where you want the output file to be saved, e.g. '/Volumes/maxarray2/varsadditional/AnnotationExtracts'
+# path where you want the output file to be saved, e.g. '/Volumes/maxarray2/varsadditional/AnnotationExtracts'
 OUTPUT_FILE_PATH = '/Users/darc/Desktop'
-# the path e.g. '/Users/darc/Documents/GitHub/Format-Output/reference/test_sequences.csv'
-SEQUENCE_NAMES_PATH = '/Users/darc/Documents/Github/Data-Processing-Scripts/03_Format_and_WoRMS/reference/test_sequences.csv'
+# path to a csv of the sequence names, e.g. '/Users/darc/Documents/GitHub/Format-Output/reference/test_sequences.csv'
+SEQUENCE_NAMES_PATH = '/Users/darc/Documents/Github/Format-Output/reference/test_sequences.csv'
 
 """##################################################################################################################"""
 
@@ -452,12 +452,12 @@ for dive_name in sequence_names:
         sampled_by = get_association(annotation, 'sampled-by')
         if sampled_by:
             if remark_string != NULL_VAL_STRING:
-                remark_string += f' | sampled by {sampled_by}'
+                remark_string += f' | sampled by {sampled_by["to_concept"]}'
             else:
-                remark_string = f'sampled by {sampled_by}'
+                remark_string = f'sampled by {sampled_by["to_concept"]}'
         sample_ref = get_association(annotation, 'sample-reference')
         if sample_ref:
-            record_dict['TrackingID'] += f' | {sample_ref}'
+            record_dict['TrackingID'] += f' | {sample_ref["link_value"]}'
 
         record_dict['OccurrenceComments'] = remark_string
         record_dict['VerbatimLatitude'] = annotation['ancillary_data']['latitude']
