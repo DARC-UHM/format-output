@@ -34,9 +34,6 @@ class Concept:
             for i in range(1, 6):  # from Genus -> Phylum
                 if tree['rank'] == ranks[i]:
                     flat[ranks[i - 1]] = f'cf. {" ".join(self.cf_flag)}'  # add 'cf. [concept]' to the rank below
-                    # remove first word from scientific name (needs to be done for all other than species)
-                    if i > 1:
-                        self.scientific_name = self.scientific_name.split(' ', 1)[1]
 
     def load_from_record(self, record):
         """ Assigns concept values given json object """
@@ -104,8 +101,8 @@ class Concept:
             else:  # this is the '[genus] [species] cf' case
                 # add the word before cf to concept_add_words
                 self.concept_add_words.append(self.concept_words[cf_index - 1])
-                del self.concept_words[cf_index - 1]                         # delete that word from the list
-                del self.concept_words[cf_index - 1]                         # delete cf from the list
+                del self.concept_words[cf_index - 1]  # delete that word from the list
+                del self.concept_words[cf_index - 1]  # delete cf from the list
                 self.cf_flag = self.concept_add_words
 
         # [genus] sp: entity is identified as a species within the genus [genus], but the species is unknown

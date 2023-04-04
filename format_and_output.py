@@ -29,7 +29,7 @@ OUTPUT_FILE_NAME = 'test'
 # the path where you want the output file to be saved, e.g. '/Volumes/maxarray2/varsadditional/AnnotationExtracts'
 OUTPUT_FILE_PATH = '/Users/darc/Desktop'
 # the path e.g. '/Users/darc/Documents/GitHub/Format-Output/reference/test_sequences.csv'
-SEQUENCE_NAMES_PATH = '/Users/darc/Documents/Github/Format-Output/reference/test_sequences.csv'
+SEQUENCE_NAMES_PATH = '/Users/darc/Documents/Github/Data-Processing-Scripts/03_Format_and_WoRMS/reference/test_sequences.csv'
 
 """##################################################################################################################"""
 
@@ -449,7 +449,17 @@ for dive_name in sequence_names:
                 remark_string += ' | size is estimated greatest length of individual in cm. Size estimations placed into size category bins'
             else:
                 remark_string = 'size is estimated greatest length of individual in cm. Size estimations placed into size category bins'
-            record_dict['OccurrenceComments'] = remark_string
+        sampled_by = get_association(annotation, 'sampled-by')
+        if sampled_by:
+            if remark_string != NULL_VAL_STRING:
+                remark_string += f' | sampled by {sampled_by}'
+            else:
+                remark_string = f'sampled by {sampled_by}'
+        sample_ref = get_association(annotation, 'sample-reference')
+        if sample_ref:
+            record_dict['TrackingID'] += f' | {sample_ref}'
+
+        record_dict['OccurrenceComments'] = remark_string
         record_dict['VerbatimLatitude'] = annotation['ancillary_data']['latitude']
         record_dict['VerbatimLongitude'] = annotation['ancillary_data']['longitude']
         record_dict['LocationAccuracy'] = \
@@ -656,8 +666,8 @@ for dive_name in sequence_names:
                 # the timestamp at which the associate was recorded
                 observation_time = get_date_and_time(associate_record)
                 found = False
-                for j in range(i + 6, -1, -1):
-                    ''' checks backward, looking for the most recent host w/ matching name. we start at i + 6 because 
+                for j in range(i + 10, -1, -1):
+                    ''' checks backward, looking for the most recent host w/ matching name. we start at i + 10 because 
                         there can be multiple records with the exact same timestamp, and one of those records could be 
                         the 'upon' '''
                     # to catch index out of range exception
@@ -681,8 +691,12 @@ for dive_name in sequence_names:
                                 host_record[ASSOCIATED_TAXA] = associate_record[COMBINED_NAME_ID]
                             # otherwise, append the concept name if it's not already there
                             elif associate_record[COMBINED_NAME_ID] not in host_record[ASSOCIATED_TAXA]:
-                                host_record[ASSOCIATED_TAXA] += '; ' + associate_record[COMBINED_NAME_ID]
-
+                                host_record[ASSOCIATED_TAXA] += f' | {associate_record[COMBINED_NAME_ID]}'
+                            # add touch to occurrence comments
+                            if host_record[OCCURRENCE_COMMENTS] == NULL_VAL_STRING:
+                                host_record[OCCURRENCE_COMMENTS] = 'associate touching host'
+                            elif 'associate touching host' not in host_record[OCCURRENCE_COMMENTS]:
+                                host_record[OCCURRENCE_COMMENTS] += ' | associate touching host'
                             time_diff = observation_time - upon_time
                             if time_diff.seconds > 300:
                                 # flag warning

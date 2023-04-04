@@ -167,8 +167,6 @@ class ConceptHandler:
                 if r.status_code == 200:
                     taxon_tree = r.json()
                     self.concept.flatten_taxa_tree(taxon_tree, self.concept.taxon_ranks)
-                    if 'Species' in self.concept.taxon_ranks.keys() and ' ' in self.concept.taxon_ranks['Species']:
-                        self.concept.taxon_ranks['Species'] = self.concept.taxon_ranks['Species'].split(' ')[1]
                     print(f'{" ✓" : <15}', end='')
                     sys.stdout.flush()
                 else:
