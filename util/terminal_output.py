@@ -1,6 +1,8 @@
 """ Contains functions for printing to terminal """
 
+
 class Color:
+    """ Some pretty colors """
     PURPLE = '\033[1;35;48m'
     CYAN = '\033[1;36;48m'
     BOLD = '\033[1;37;48m'
@@ -23,11 +25,16 @@ class Messages:
         print(f'###################################################################\n{Color.END}')
 
     @staticmethod
+    def dive_header():
+        print("\n%-35s%-30s%-30s%-s" % ('Dive Name', 'Annotations Found', 'Duplicates Removed', 'Status'))
+        print(
+            '=========================================================================================================')
+
+    @staticmethod
     def worms_header():
         print('\n\nWoRMS check:')
         print("\n%-40s %-35s%-15s%-15s%-15s%-15s" %
               ('VARS Concept Name', 'WoRMS Query', 'Taxon Record', 'Taxon Tree', 'Vernaculars',
                'Synonyms (VARS)'))
         print('============================================================================================'
-          '============================================')
-
+              '============================================')

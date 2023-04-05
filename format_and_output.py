@@ -75,8 +75,8 @@ with open('reference/Dives.csv', 'r', encoding='utf-8') as dive_csv:
 # Decides whether to load or overwrite concepts
 load_concepts = input('\nShould the program load previously encountered concept names '
                       'from saved file for a faster runtime?\n\n'
-                      'Y: Use the file \n'
-                      'N: Use WoRMS and overwrite the file (takes 15-20 minutes) \n\n'
+                      f'{Color.GREEN}Y{Color.END}: Use the file {Color.BOLD}(takes < 30 seconds){Color.END}\n'
+                      f'{Color.RED}N{Color.END}: Use WoRMS and overwrite the file {Color.BOLD}(takes 15-20 minutes){Color.END}\n\n'
                       '>> ').lower() in ['y', 'yes']
 
 concepts = {}
@@ -109,8 +109,7 @@ full_report_records = []  # list of every concept formatted for final output
 warning_messages = []  # list of items to review (QA/QC)
 
 if load_concepts:
-    print("\n%-35s%-30s%-30s%-s" % ('Dive Name', 'Annotations Found', 'Duplicates Removed', 'Status'))
-    print('=========================================================================================================')
+    Messages.dive_header()
 
 # Iterates over each dive listed in the input CSV file
 for dive_name in sequence_names:
@@ -177,7 +176,7 @@ for dive_name in sequence_names:
     for annotation in report_json['annotations']:
         concept_name = annotation['concept']
         annotation_row = AnnotationRow(concept_name)
-        annotation_row.populate_static_data()
+        annotation_row.set_simple_static_data()
         annotation_row.set_sample_id(dive_name)
         annotation_row.set_dive_info(dive_dict)
 
@@ -185,7 +184,7 @@ for dive_name in sequence_names:
             if concept_name not in concepts:  # if concept name not in saved concepts file, search WoRMS
                 if first_round:  # for printing worms header
                     first_round = False
-                    print_worms_header()
+                    Messages.worms_header()
                 concept = Concept(concept_name)
                 cons_handler = ConceptHandler(concept)
                 cons_handler.fetch_worms()
@@ -203,65 +202,17 @@ for dive_name in sequence_names:
 
             annotation_row.set_concept_info(concepts)
 
-            # Fill out the taxonomy from the taxon ranks
-            if taxon_ranks != {}:
-                for key in ['Kingdom', 'Phylum', 'Class', 'Subclass', 'Order',
-                            'Suborder', 'Family', 'Subfamily', 'Genus',
-                            'Subgenus', 'Species', 'Subspecies']:
-                    if key in taxon_ranks:
-                        annotation_row.set_rank(key, taxon_ranks[key])
-
-        # checking this first because we use this field to populate other fields :)
-        media_type = 'still image'
         # loop through timestamps and check if recorded_timestamps is in timestamps
+        media_type = 'still image'
         for i in range(len(dive_video_timestamps)):
-            if dive_video_timestamps[i][0] <= annotation_row.timestamp_processor.recorded_time <= dive_video_timestamps[i][1]:
+            if dive_video_timestamps[i][0] <= annotation_row.recorded_time.recorded_time <= dive_video_timestamps[i][1]:
                 media_type = 'video observation'
                 break
-        record_dict['RecordType'] = media_type
+        annotation_row.set_media_type(media_type)
+        annotation_row.set_id_comments()
 
-        if scientific_name != NULL_VAL_STRING:  # this row is also 'out of order' but must be filled before id comments
-            record_dict['IdentificationQualifier'] = \
-                'ID by expert from video' if media_type == 'video observation' else 'ID by expert from image'
 
-        record_dict['Citation'] = dive_dict['Citation'] if dive_dict['Citation'] != NULL_VAL_STRING else ''
-        record_dict['ScientificName'] = scientific_name
-        record_dict['VerbatimScientificName'] = scientific_name
-        record_dict['VernacularName'] = vernacular_name
-        record_dict['TaxonRank'] = tax_rank
-        record_dict['AphiaID'] = aphia_id
-        if aphia_id != NULL_VAL_INT:
-            record_dict['LifeScienceIdentifier'] = f'urn:lsid:marinespecies.org:taxname:{aphia_id}'
-        record_dict['ScientificNameAuthorship'] = authorship
-        record_dict['CombinedNameID'] = scientific_name
-        if descriptors:
-            record_dict['Morphospecies'] = ' '.join(descriptors)
-            # we don't want a combined name id of 'NA [descriptors]', just '[descriptors]'
-            if record_dict['CombinedNameID'] != NULL_VAL_STRING:
-                record_dict['CombinedNameID'] += f' {record_dict["Morphospecies"]}'
-            else:
-                record_dict['CombinedNameID'] = record_dict['Morphospecies']
-        record_dict['Synonyms'] = synonyms
-        id_comments = get_association(annotation, 'identity-certainty')
-        if id_comments:
-            id_comments = id_comments['link_value']
-            id_comments = id_comments.split('; ')
-            if 'maybe' in id_comments:
-                record_dict['IdentificationQualifier'] = record_dict['IdentificationQualifier'] + ' | ID Uncertain'
-                id_comments.remove('maybe')
-            id_comments = ' | '.join(id_comments)
-            record_dict['IdentificationComments'] = id_comments if id_comments != '' else NULL_VAL_STRING
-        record_dict['IdentifiedBy'] = convert_username_to_name(annotation['observer'])
-        observation_time = parse_datetime(annotation['observation_timestamp'])
-        record_dict['IdentificationDate'] = observation_time.strftime('%Y-%m-%d')
-        record_dict['IdentificationVerificationStatus'] = 1
-        record_dict['Ocean'] = dive_dict['Ocean']
-        record_dict['LargeMarineEcosystem'] = dive_dict['LargeMarineEcosystem']
-        record_dict['Country'] = dive_dict['Country']
-        record_dict['FishCouncilRegion'] = dive_dict['FishCouncilRegion']
-        record_dict['Locality'] = dive_dict['Locality'].replace(',', ' |')
-        record_dict['Latitude'] = round(annotation['ancillary_data']['latitude'], 8)
-        record_dict['Longitude'] = round(annotation['ancillary_data']['longitude'], 8)
+
         if 'depth_meters' in annotation['ancillary_data']:
             record_dict['DepthInMeters'] = round(annotation['ancillary_data']['depth_meters'], 3)
         else:
