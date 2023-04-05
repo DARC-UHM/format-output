@@ -3,6 +3,9 @@ This file contains functions that are used throughout the formatting process and
 """
 
 from datetime import datetime, timedelta
+
+from concept.concept import Concept
+from concept.concept_handler import ConceptHandler
 from util.constants import *
 
 
@@ -74,7 +77,6 @@ def convert_username_to_name(vars_username):
     return vars_username
 
 
-# todo add tests
 def translate_substrate_code(code):
     """ Translates substrate codes into human language """
     if code in SAMES:
@@ -118,3 +120,4 @@ def translate_substrate_code(code):
                     subs = f'{subs[5:]} (dead)'
                 return subs
     return ''
+

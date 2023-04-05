@@ -11,7 +11,9 @@ import errno
 
 from datetime import timezone
 from util.functions import *
+from annotation.annotation_row import AnnotationRow
 from concept.concept_handler import *
+from util.terminal_output import Color, Messages
 
 OUTPUT_FILE_NAME = ''
 OUTPUT_FILE_PATH = ''
@@ -26,10 +28,10 @@ code. """
 
 # the name of the output file without the .tsv extension, e.g. 'NA134'
 OUTPUT_FILE_NAME = 'test'
-# the path where you want the output file to be saved, e.g. '/Volumes/maxarray2/varsadditional/AnnotationExtracts'
+# path where you want the output file to be saved, e.g. '/Volumes/maxarray2/varsadditional/AnnotationExtracts'
 OUTPUT_FILE_PATH = '/Users/darc/Desktop'
-# the path e.g. '/Users/darc/Documents/GitHub/Format-Output/reference/test_sequences.csv'
-SEQUENCE_NAMES_PATH = '/Users/darc/Documents/Github/Data-Processing-Scripts/03_Format_and_WoRMS/reference/test_sequences.csv'
+# path to a csv of the sequence names, e.g. '/Users/darc/Documents/GitHub/Format-Output/reference/test_sequences.csv'
+SEQUENCE_NAMES_PATH = '/Users/darc/Documents/Github/Format-Output/reference/test_sequences.csv'
 
 """##################################################################################################################"""
 
@@ -104,7 +106,7 @@ with open(sequence_names_path, 'r') as seq_names_file:
 current_cmecs_geo_form = NULL_VAL_STRING
 
 full_report_records = []  # list of every concept formatted for final output
-observation_messages = [OBSERVATION_HEADERS]  # list of items to review (QA/QC)
+warning_messages = []  # list of items to review (QA/QC)
 
 if load_concepts:
     print("\n%-35s%-30s%-30s%-s" % ('Dive Name', 'Annotations Found', 'Duplicates Removed', 'Status'))
@@ -114,7 +116,6 @@ if load_concepts:
 for dive_name in sequence_names:
     first_round = True  # to print header in terminal
     report_records = []  # array of concepts records for the dive
-    concepts_from_save = 0  # count of how many concepts were loaded from the saved concepts file
     concepts_from_worms = 0   # count of how many concepts were loaded from worms
 
     if load_concepts:
@@ -131,10 +132,7 @@ for dive_name in sequence_names:
     # Tries to get the current dive from Dives.csv, links information from Dives.csv to the current dive
     dive_row = next((row for row in dive_info if row[0] in dive_name or dive_name in row[0]), None)
     if not dive_row:
-        print('\n###################################################################')
-        print(f'ERROR: Dive "{dive_name}" not found in Dives.csv file.')
-        print('This dive must be added to Dives.csv to continue processing.')
-        print('###################################################################\n')
+        Messages.dive_not_found(dive_name)
         break
 
     for i in range(len(dive_row)):
@@ -154,27 +152,15 @@ for dive_name in sequence_names:
     report_json['annotations'].sort(key=extract_time)
 
     if dive_dict['LocationAccuracy'] == NULL_VAL_STRING:
-        observation_messages.append([
-            dive_name,
-            NULL_VAL_STRING,
-            NULL_VAL_STRING,
-            NULL_VAL_STRING,
-            'LocationAccuracy',
-            NULL_VAL_STRING,
-            2,
-            'No location accuracy for this dive. Add this information to the dive record in Dives.csv'
+        warning_messages.append([
+            f'{Color.YELLOW}WARNING: {Color.END}'
+            f'No location accuracy data for dive {dive_name}. This information should be added to Dives.csv'
         ])
 
     if dive_dict['WebSite'] == NULL_VAL_STRING:
-        observation_messages.append([
-            dive_name,
-            NULL_VAL_STRING,
-            NULL_VAL_STRING,
-            NULL_VAL_STRING,
-            'WebSite',
-            NULL_VAL_STRING,
-            2,
-            'No website found for this dive. Add this information to the dive record in Dives.csv'
+        warning_messages.append([
+            f'{Color.YELLOW}WARNING: {Color.END}'
+            f'No website found for dive {dive_name}. This information should be added to Dives.csv'
         ])
 
     # get start time and end time of each video (to use later to check whether annotation falls inside a video time)
@@ -189,46 +175,21 @@ for dive_name in sequence_names:
 
     # Loops through all annotations and fills out the fields required by DSCRTP
     for annotation in report_json['annotations']:
-        record_dict = dict(zip(HEADERS, [NULL_VAL_STRING] * len(HEADERS)))
-
         concept_name = annotation['concept']
-        recorded_time = parse_datetime(annotation['recorded_timestamp'])
-        if recorded_time.microsecond >= 500000:
-            recorded_time = recorded_time + timedelta(seconds=1)
-        formatted_timestamp = '{:02}:{:02}:{:02}'.format(recorded_time.hour, recorded_time.minute, recorded_time.second)
-
-        record_dict['VARSConceptName'] = concept_name
-        record_dict['SampleID'] = dive_name.replace(' ', '_') + '_' + formatted_timestamp
-        record_dict['TrackingID'] = annotation['observation_uuid']
-        record_dict['Repository'] = (dive_dict['DataProvider'].split(';')[0]
-                                     + ' | University of Hawaii Deep-sea Animal Research Center')
-
-        aphia_id = NULL_VAL_INT
-        tax_rank = NULL_VAL_STRING
-        scientific_name = NULL_VAL_STRING
-        authorship = NULL_VAL_STRING
-        synonyms = NULL_VAL_STRING
-        descriptors = []
-        taxon_ranks = {}
-        vernacular_name = NULL_VAL_STRING
+        annotation_row = AnnotationRow(concept_name)
+        annotation_row.populate_static_data()
+        annotation_row.set_sample_id(dive_name)
+        annotation_row.set_dive_info(dive_dict)
 
         if concept_name != 'none':
-            # If concept name not in save concepts file, searches WoRMS
-            if concept_name not in concepts:
-                if first_round:
+            if concept_name not in concepts:  # if concept name not in saved concepts file, search WoRMS
+                if first_round:  # for printing worms header
                     first_round = False
-                    print('\n\nWoRMS check:')
-                    print("\n%-40s %-35s%-15s%-15s%-15s%-15s" %
-                          ('VARS Concept Name', 'WoRMS Query', 'Taxon Record', 'Taxon Tree', 'Vernaculars',
-                           'Synonyms (VARS)'))
-                    print('============================================================================================'
-                          '============================================')
+                    print_worms_header()
                 concept = Concept(concept_name)
                 cons_handler = ConceptHandler(concept)
-                cons_handler.fetch_worms_aphia_record()
-                cons_handler.fetch_worms_taxon_tree()
-                cons_handler.fetch_vernaculars()
-                cons_handler.fetch_vars_synonyms()
+                cons_handler.fetch_worms()
+                cons_handler.fetch_vars()
                 concepts[concept_name] = {
                     'scientific_name': concept.scientific_name,
                     'aphia_id': concept.aphia_id,
@@ -239,41 +200,8 @@ for dive_name in sequence_names:
                     'descriptors': concept.descriptors,
                     'vernacular_name': concept.vernacular_names
                 }
-                if concept.cf_flag:
-                    observation_messages.append([
-                        dive_name,
-                        annotation['observation_uuid'],
-                        annotation['concept'],
-                        recorded_time,
-                        'Concept name',
-                        concept_name,
-                        0,
-                        'Concept name contains cf; requires manual review for placement.'
-                    ])
-                if concept.concept_name_flag:
-                    observation_messages.append([
-                        dive_name,
-                        annotation['observation_uuid'],
-                        annotation['concept'],
-                        recorded_time,
-                        'Concept name',
-                        concept_name,
-                        2,
-                        'No words in concept match any object in WoRMS database. Check for spelling errors and fix.'
-                    ])
-                concepts_from_worms += 1
-            else:
-                concepts_from_save += 1
 
-            scientific_name = concepts[concept_name]['scientific_name']
-            aphia_id = concepts[concept_name]['aphia_id']
-            authorship = concepts[concept_name]['authorship']
-            synonyms = ' | '.join(concepts[concept_name]['synonyms']) if concepts[concept_name]['synonyms'] \
-                else NULL_VAL_STRING
-            tax_rank = concepts[concept_name]['taxon_rank']
-            taxon_ranks = concepts[concept_name]['taxon_ranks']
-            descriptors = concepts[concept_name]['descriptors']
-            vernacular_name = concepts[concept_name]['vernacular_name']
+            annotation_row.set_concept_info(concepts)
 
             # Fill out the taxonomy from the taxon ranks
             if taxon_ranks != {}:
@@ -281,13 +209,13 @@ for dive_name in sequence_names:
                             'Suborder', 'Family', 'Subfamily', 'Genus',
                             'Subgenus', 'Species', 'Subspecies']:
                     if key in taxon_ranks:
-                        record_dict[key] = taxon_ranks[key]
+                        annotation_row.set_rank(key, taxon_ranks[key])
 
         # checking this first because we use this field to populate other fields :)
         media_type = 'still image'
         # loop through timestamps and check if recorded_timestamps is in timestamps
         for i in range(len(dive_video_timestamps)):
-            if dive_video_timestamps[i][0] <= recorded_time <= dive_video_timestamps[i][1]:
+            if dive_video_timestamps[i][0] <= annotation_row.timestamp_processor.recorded_time <= dive_video_timestamps[i][1]:
                 media_type = 'video observation'
                 break
         record_dict['RecordType'] = media_type

@@ -17,6 +17,16 @@ class ConceptHandler:
         if 'NEED_PARENT' in concept.concept_words:
             self.find_parent()
 
+    def fetch_worms(self):
+        """ Easily call both WoRMS queries """
+        self.fetch_worms_aphia_record()
+        self.fetch_worms_taxon_tree()
+
+    def fetch_vars(self):
+        """ Easily call both VARS kb queries """
+        self.fetch_vernaculars()
+        self.fetch_vars_synonyms()
+
     def find_parent(self):
         """
         Gets concept's parent from VARS kb:
