@@ -1,8 +1,11 @@
+from datetime import datetime, timezone
 from typing import Dict
 
 from timestamp_processor import TimestampProcessor
 from util.constants import NULL_VAL_STRING, HEADERS, NULL_VAL_INT
-from util.functions import get_association, convert_username_to_name
+from util.functions import get_association, convert_username_to_name, get_associations_list, add_meters, \
+    translate_substrate_code
+from util.terminal_output import Color
 
 
 class AnnotationRow:
@@ -21,8 +24,27 @@ class AnnotationRow:
         self.columns['IdentificationVerificationStatus'] = 1
         self.columns['Latitude'] = round(self.annotation['ancillary_data']['latitude'], 8)
         self.columns['Longitude'] = round(self.annotation['ancillary_data']['longitude'], 8)
+        self.columns['DepthInMeters'] = round(self.annotation['ancillary_data']['depth_meters'], 3) \
+            if 'depth_meters' in self.annotation['ancillary_data'] else NULL_VAL_INT
+        self.columns['MinimumDepthInMeters'] = self.columns['DepthInMeters']
+        self.columns['MaximumDepthInMeters'] = self.columns['DepthInMeters']
+        self.columns['DepthMethod'] = 'reported'
+        self.columns['ObservationDate'] = self.recorded_time.timestamp.strftime('%Y-%m-%d')
+        self.columns['ObservationTime'] = self.recorded_time.timestamp.strftime('%H:%M:%S')
+        self.columns['VerbatimLatitude'] = self.annotation['ancillary_data']['latitude']
+        self.columns['VerbatimLongitude'] = self.annotation['ancillary_data']['longitude']
+        self.columns['OtherData'] = 'CTD'
+        self.columns['Modified'] = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+        self.columns['Reporter'] = 'Bingo, Sarah'
+        self.columns['ReporterEmail'] = 'sarahr6@hawaii.edu'
 
-        # these four values are hardcoded for now, keeping columns in case of future update
+        self.columns['EntryDate'] = ''  # this is left blank, to be filled by DSCRTP admin
+
+        # these eight values are hardcoded for now, keeping columns in case of future update
+        self.columns['SampleAreaInSquareMeters'] = NULL_VAL_INT
+        self.columns['Density'] = NULL_VAL_INT
+        self.columns['Cover'] = NULL_VAL_INT
+        self.columns['WeightInKg'] = NULL_VAL_INT
         self.columns['SampleAreaInSquareMeters'] = NULL_VAL_INT
         self.columns['Density'] = NULL_VAL_INT
         self.columns['Cover'] = NULL_VAL_INT
@@ -41,6 +63,23 @@ class AnnotationRow:
         self.columns['LargeMarineEcosystem'] = dive_info['LargeMarineEcosystem']
         self.columns['Country'] = dive_info['Country']
         self.columns['FishCouncilRegion'] = dive_info['FishCouncilRegion']
+        self.columns['SurveyID'] = dive_info['SurveyID']
+        self.columns['Vessel'] = dive_info['Vessel']
+        self.columns['PI'] = dive_info['PI']
+        self.columns['PIAffiliation'] = dive_info['PIAffiliation']
+        self.columns['Purpose'] = dive_info['Purpose']
+        self.columns['Station'] = dive_info['Station']
+        self.columns['EventID'] = dive_info['EventID']
+        self.columns['SamplingEquipment'] = dive_info['SamplingEquipment']
+        self.columns['VehicleName'] = dive_info['VehicleName']
+        self.columns['LocationAccuracy'] = \
+            add_meters(dive_info['LocationAccuracy']) if dive_info['LocationAccuracy'] != 'NA' else ''
+        self.columns['NavType'] = \
+            'USBL' if dive_info['Vessel'] == 'Okeanos Explorer' or dive_info['Vessel'] == 'Nautilus' else 'NA'
+        self.columns['WebSite'] = dive_info['WebSite']
+        self.columns['DataProvider'] = dive_info['DataProvider']
+        self.columns['DataContact'] = dive_info['DataContact']
+
 
     def set_concept_info(self, concepts):
         concept_name = self.annotation['concept']
@@ -95,3 +134,141 @@ class AnnotationRow:
                 id_comments.remove('maybe')
             id_comments = ' | '.join(id_comments)
             self.columns['IdentificationComments'] = id_comments if id_comments != '' else NULL_VAL_STRING
+
+    def set_pop_quantity_and_cat_abundance(self):
+        pop_quantity = get_association(self.annotation, 'population-quantity')
+        if pop_quantity:
+            self.columns['IndividualCount'] = pop_quantity['link_value']
+        elif self.columns['ScientificName'] != NULL_VAL_STRING:
+            self.columns['IndividualCount'] = '1'
+        else:
+            self.columns['IndividualCount'] = NULL_VAL_INT
+        cat_abundance = get_association(self.annotation, 'categorical-abundance')
+        if cat_abundance:
+            self.columns['CategoricalAbundance'] = cat_abundance['link_value']
+            self.columns['IndividualCount'] = NULL_VAL_INT
+
+    def set_size(self, warning_messages):
+        min_size = NULL_VAL_INT
+        max_size = NULL_VAL_INT
+        size_str = NULL_VAL_STRING
+        size_category = get_association(self.annotation, 'size')
+        if size_category:
+            size_str = size_category['to_concept']
+            # turns a 'size category' into a maximum and minimum size
+            match size_str:
+                case '0-10 cm':
+                    min_size = '0'
+                    max_size = '10'
+                case '10-30 cm':
+                    min_size = '10'
+                    max_size = '30'
+                case '30-50 cm':
+                    min_size = '30'
+                    max_size = '50'
+                case '50-100 cm':
+                    min_size = '50'
+                    max_size = '100'
+                case 'greater than 100 cm':
+                    min_size = '101'
+                case _:
+                    warning_messages.append([
+                        f'String not recognized as an established size category: {Color.BOLD}"{size_str}"{Color.END}'
+                        f'  Concept: {self.annotation["concept"]}   UUID:{self.annotation["observation_uuid"]}'
+                    ])
+        self.columns['VerbatimSize'] = size_str
+        self.columns['MinimumSize'] = min_size
+        self.columns['MaximumSize'] = max_size
+
+    def set_condition_comment(self, warning_messages):
+        condition_comment = get_association(self.annotation, 'condition-comment')
+        if condition_comment:
+            if condition_comment['link_value'] in ['dead', 'Dead']:
+                # flag warning
+                warning_messages.append([
+                    f'Dead animal reported.  Concept: {self.annotation["concept"]}'
+                    f'  UUID:{self.annotation["observation_uuid"]}'
+                ])
+                self.columns['Condition'] = 'Dead'
+            else:
+                self.columns['Condition'] = 'Damaged'
+        else:
+            self.columns['Condition'] = 'Live' if self.columns['ScientificName'] != NULL_VAL_STRING else NULL_VAL_STRING
+
+    def set_comments_and_sample(self):
+        # build occurrence remark string
+        occurrence_remark = get_associations_list(self.annotation, 'occurrence-remark')
+        remark_string = NULL_VAL_STRING
+        if occurrence_remark:
+            remark_list = []
+            for remark in occurrence_remark:
+                remark_list.append(remark['link_value'])
+            remark_string = ' | '.join(remark_list)
+        if self.columns['VerbatimSize'] != NULL_VAL_STRING:
+            if remark_string != NULL_VAL_STRING:
+                remark_string += ' | size is estimated greatest length of individual in cm. Size estimations placed into size category bins'
+            else:
+                remark_string = 'size is estimated greatest length of individual in cm. Size estimations placed into size category bins'
+        sampled_by = get_association(self.annotation, 'sampled-by')
+        if sampled_by:
+            if remark_string != NULL_VAL_STRING:
+                remark_string += f' | sampled by {sampled_by}'
+            else:
+                remark_string = f'sampled by {sampled_by}'
+        sample_ref = get_association(self.annotation, 'sample-reference')
+        if sample_ref:
+            self.columns['TrackingID'] += f' | {sample_ref}'
+
+        self.columns['OccurrenceComments'] = remark_string
+
+    def set_cmecs_geo(self, cmecs_geo):
+        self.columns['CMECSGeoForm'] = cmecs_geo
+
+    def set_habitat(self, warning_messages):
+        # habitat stuff
+        primary = ''
+        secondary = []
+        s1 = get_association(self.annotation, 's1')
+        if s1:
+            primary = translate_substrate_code(s1['to_concept'])
+            if not primary:
+                # flag warning
+                warning_messages.append([
+                    dive_name,
+                    annotation['observation_uuid'],
+                    annotation['concept'],
+                    recorded_time,
+                    's1',
+                    s1['to_concept'],
+                    1,
+                    f'Missing s1 or could not parse substrate code {s1["to_concept"]}.'
+                ])
+            else:
+                record_dict['Habitat'] = f'primarily: {primary}'
+
+        s2_records = get_associations_list(annotation, 's2')
+        if len(s2_records) != 0:
+            s2s_list = []
+            for s2 in s2_records:  # remove duplicates
+                if s2['to_concept'] not in s2s_list:
+                    s2s_list.append(s2['to_concept'])
+            s2s_list.sort(key=grain_size)
+            for s2 in s2s_list:
+                s2_temp = translate_substrate_code(s2)
+                if s2_temp:
+                    secondary.append(s2_temp)
+            if len(secondary) != len(s2s_list):
+                observation_messages.append([
+                    dive_name,
+                    annotation['observation_uuid'],
+                    annotation['concept'],
+                    recorded_time,
+                    's2',
+                    '; '.join(s2s_list),
+                    1,
+                    f'Could not parse a substrate code from list {secondary}.'
+                ])
+            record_dict['Habitat'] = record_dict['Habitat'] + f' / secondary: {"; ".join(secondary)}'
+        habitat_comment = get_association(annotation, 'habitat-comment')
+        if habitat_comment:
+            record_dict['Habitat'] = record_dict['Habitat'] + f' / comments: {habitat_comment["link_value"]}'

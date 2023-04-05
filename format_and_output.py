@@ -210,198 +210,17 @@ for dive_name in sequence_names:
                 break
         annotation_row.set_media_type(media_type)
         annotation_row.set_id_comments()
-
-
-
-        if 'depth_meters' in annotation['ancillary_data']:
-            record_dict['DepthInMeters'] = round(annotation['ancillary_data']['depth_meters'], 3)
-        else:
-            record_dict['DepthInMeters'] = NULL_VAL_INT
-            observation_messages.append([
-                dive_name,
-                annotation['observation_uuid'],
-                annotation['concept'],
-                recorded_time,
-                'Depth in meters',
-                '',
-                1,
-                'No depth measurement included in this record.'
-            ])
-        record_dict['MinimumDepthInMeters'] = record_dict['DepthInMeters']
-        record_dict['MaximumDepthInMeters'] = record_dict['DepthInMeters']
-        record_dict['DepthMethod'] = 'reported'
-        record_dict['ObservationDate'] = recorded_time.strftime('%Y-%m-%d')
-        record_dict['ObservationTime'] = recorded_time.strftime('%H:%M:%S')
-        record_dict['SurveyID'] = dive_dict['SurveyID']
-        record_dict['Vessel'] = dive_dict['Vessel']
-        record_dict['PI'] = dive_dict['PI']
-        record_dict['PIAffiliation'] = dive_dict['PIAffiliation']
-        record_dict['Purpose'] = dive_dict['Purpose']
-        record_dict['Station'] = dive_dict['Station']
-        record_dict['EventID'] = dive_dict['EventID']
-        record_dict['SamplingEquipment'] = dive_dict['SamplingEquipment']
-        record_dict['VehicleName'] = dive_dict['VehicleName']
-        # hardcoded for now, keeping column in case of future update
-        record_dict['SampleAreaInSquareMeters'] = NULL_VAL_INT
-        pop_quantity = get_association(annotation, 'population-quantity')
-        if pop_quantity:
-            record_dict['IndividualCount'] = pop_quantity['link_value']
-        elif record_dict['ScientificName'] != NULL_VAL_STRING:
-            record_dict['IndividualCount'] = '1'
-        else:
-            record_dict['IndividualCount'] = NULL_VAL_INT
-        cat_abundance = get_association(annotation, 'categorical-abundance')
-        if cat_abundance:
-            record_dict['CategoricalAbundance'] = cat_abundance['link_value']
-            record_dict['IndividualCount'] = NULL_VAL_INT
-        record_dict['Density'] = NULL_VAL_INT  # hardcoded for now, keeping column in case of future update
-        record_dict['Cover'] = NULL_VAL_INT  # hardcoded for now, keeping column in case of future update
-        min_size = NULL_VAL_INT
-        max_size = NULL_VAL_INT
-        size_str = NULL_VAL_STRING
-        size_category = get_association(annotation, 'size')
-        if size_category:
-            size_str = size_category['to_concept']
-            # turns a 'size category' into a maximum and minimum size
-            match size_str:
-                case '0-10 cm':
-                    min_size = '0'
-                    max_size = '10'
-                case '10-30 cm':
-                    min_size = '10'
-                    max_size = '30'
-                case '30-50 cm':
-                    min_size = '30'
-                    max_size = '50'
-                case '50-100 cm':
-                    min_size = '50'
-                    max_size = '100'
-                case 'greater than 100 cm':
-                    min_size = '101'
-                case _:
-                    # flag warning
-                    observation_messages.append([
-                        dive_name,
-                        annotation['observation_uuid'],
-                        annotation['concept'],
-                        recorded_time,
-                        'Size',
-                        size_str,
-                        1,
-                        'String not recognized as an established size category.'
-                    ])
-        record_dict['VerbatimSize'] = size_str
-        record_dict['MinimumSize'] = min_size
-        record_dict['MaximumSize'] = max_size
-        record_dict['WeightInKg'] = NULL_VAL_INT  # hardcoded for now, keeping column in case of future update
-        condition_comment = get_association(annotation, 'condition-comment')
-        if condition_comment:
-            if condition_comment['link_value'] in ['dead', 'Dead']:
-                # flag warning
-                observation_messages.append([
-                    dive_name,
-                    annotation['observation_uuid'],
-                    annotation['concept'],
-                    recorded_time,
-                    'Condition comment',
-                    condition_comment,
-                    1,
-                    'Dead creatures should typically not be reported.'
-                ])
-                record_dict['Condition'] = 'Dead'
-            else:
-                record_dict['Condition'] = 'Damaged'
-        else:
-            record_dict['Condition'] = 'Live' if record_dict['ScientificName'] != NULL_VAL_STRING else NULL_VAL_STRING
-
-        # build occurrence remark string
-        occurrence_remark = get_associations_list(annotation, 'occurrence-remark')
-        remark_string = NULL_VAL_STRING
-        if occurrence_remark:
-            remark_list = []
-            remark_string = ''
-            for remark in occurrence_remark:
-                remark_list.append(remark['link_value'])
-            remark_string = ' | '.join(remark_list)
-        if size_str != NULL_VAL_STRING:
-            if remark_string != NULL_VAL_STRING:
-                remark_string += ' | size is estimated greatest length of individual in cm. Size estimations placed into size category bins'
-            else:
-                remark_string = 'size is estimated greatest length of individual in cm. Size estimations placed into size category bins'
-        sampled_by = get_association(annotation, 'sampled-by')
-        if sampled_by:
-            if remark_string != NULL_VAL_STRING:
-                remark_string += f' | sampled by {sampled_by}'
-            else:
-                remark_string = f'sampled by {sampled_by}'
-        sample_ref = get_association(annotation, 'sample-reference')
-        if sample_ref:
-            record_dict['TrackingID'] += f' | {sample_ref}'
-
-        record_dict['OccurrenceComments'] = remark_string
-        record_dict['VerbatimLatitude'] = annotation['ancillary_data']['latitude']
-        record_dict['VerbatimLongitude'] = annotation['ancillary_data']['longitude']
-        record_dict['LocationAccuracy'] = \
-            add_meters(dive_dict['LocationAccuracy']) if dive_dict['LocationAccuracy'] != 'NA' else ''
-        record_dict['NavType'] = \
-            'USBL' if dive_dict['Vessel'] == 'Okeanos Explorer' or dive_dict['Vessel'] == 'Nautilus' else 'NA'
-        record_dict['OtherData'] = 'CTD'
-
-        record_dict['WebSite'] = dive_dict['WebSite']
+        annotation_row.set_pop_quantity_and_cat_abundance()
+        annotation_row.set_size(warning_messages)
+        annotation_row.set_condition_comment(warning_messages)
+        annotation_row.set_comments_and_sample()
 
         # if there is a cmecs geo form, update
         if get_association(annotation, 'habitat'):
             current_cmecs_geo_form = f'{get_association(annotation, "megahabitat")["to_concept"]}, ' \
                                      f'{get_association(annotation, "habitat")["to_concept"]}'
-        record_dict['CMECSGeoForm'] = current_cmecs_geo_form
-
-        # habitat stuff
-        primary = ''
-        secondary = []
-        s1 = get_association(annotation, 's1')
-        if s1:
-            primary = translate_substrate_code(s1['to_concept'])
-            if not primary:
-                # flag warning
-                observation_messages.append([
-                    dive_name,
-                    annotation['observation_uuid'],
-                    annotation['concept'],
-                    recorded_time,
-                    's1',
-                    s1['to_concept'],
-                    1,
-                    f'Missing s1 or could not parse substrate code {s1["to_concept"]}.'
-                ])
-            else:
-                record_dict['Habitat'] = f'primarily: {primary}'
-
-        s2_records = get_associations_list(annotation, 's2')
-        if len(s2_records) != 0:
-            s2s_list = []
-            for s2 in s2_records:  # remove duplicates
-                if s2['to_concept'] not in s2s_list:
-                    s2s_list.append(s2['to_concept'])
-            s2s_list.sort(key=grain_size)
-            for s2 in s2s_list:
-                s2_temp = translate_substrate_code(s2)
-                if s2_temp:
-                    secondary.append(s2_temp)
-            if len(secondary) != len(s2s_list):
-                observation_messages.append([
-                    dive_name,
-                    annotation['observation_uuid'],
-                    annotation['concept'],
-                    recorded_time,
-                    's2',
-                    '; '.join(s2s_list),
-                    1,
-                    f'Could not parse a substrate code from list {secondary}.'
-                ])
-            record_dict['Habitat'] = record_dict['Habitat'] + f' / secondary: {"; ".join(secondary)}'
-        habitat_comment = get_association(annotation, 'habitat-comment')
-        if habitat_comment:
-            record_dict['Habitat'] = record_dict['Habitat'] + f' / comments: {habitat_comment["link_value"]}'
+        annotation_row.set_cmecs_geo(current_cmecs_geo_form)
+        annotation_row.set_habitat(warning_messages)
 
         # checks if the item reported in 'upon' is in the list of accepted substrates - see translate_substrate_code
         # (substrate = ground, basically)
@@ -487,12 +306,7 @@ for dive_name in sequence_names:
         if highlight_image and highlight_image['to_concept'] == '1 best':
             record_dict['HighlightImageFilePath'] = record_dict['ImageFilePath']
 
-        record_dict['DataProvider'] = dive_dict['DataProvider']
-        record_dict['DataContact'] = dive_dict['DataContact']
-        record_dict['Modified'] = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-        record_dict['Reporter'] = 'Bingo, Sarah'
-        record_dict['ReporterEmail'] = 'sarahr6@hawaii.edu'
-        record_dict['EntryDate'] = ''  # this is left blank, to be filled by DSCRTP admin
+
         record = [record_dict[x] for x in HEADERS]
         report_records.append(record)
 
@@ -655,9 +469,5 @@ with open(output_file_name + '.tsv', 'w', newline='', encoding='utf-8') as file:
     csv_writer.writerow(HEADERS[:88])
     for record in full_report_records:
         csv_writer.writerow(record[:88])
-with open(output_file_name + '_messages.tsv', 'w', newline='', encoding='utf-8') as file:
-    csv_writer = csv.writer(file, delimiter='\t')
-    for message in observation_messages:
-        csv_writer.writerow(message)
 print(f'Output files saved at {output_file_path}')
 print(f'There are {str(len(observation_messages) - 1)} messages to review.')
