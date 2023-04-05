@@ -103,7 +103,8 @@ class ConceptHandler:
             simply check the concept's status in the response JSON and use that concept).
 
         Solution: If there is more than one object in the response body, get the concept's phylum by doing a VARS API
-            query with the concept name. Use the object in the response whose phylum matches the VARS phylum.
+            query with the concept name. Use the object in the response whose phylum matches the VARS phylum. If there
+            is more than one match, go with the match that is accepted.
         """
         if len(json_records) == 1:
             # there is only one record, use it
@@ -121,15 +122,25 @@ class ConceptHandler:
                         if 'rank' in vars_tree.keys() and vars_tree['rank'] == 'phylum':
                             self.phylum = vars_tree['name']
 
+            record_list = []
             for record in json_records:
                 # get record with matching phylum
                 if record['phylum'] == self.phylum:
-                    self.check_status(record)
+                    record_list.append(record)
+
+            for i in range(len(record_list)):
+                # look for accepted record in matching phylum list
+                if record_list[i]['status'] == 'accepted':
+                    self.check_status(record_list[i])
+                    del record_list[i]
                     break
 
             if not self.found_worms_match:
-                print('No match')
-                self.concept.concept_name_flag = True
+                if record_list:
+                    self.check_status(record_list[0])
+                else:
+                    print('No match')
+                    self.concept.concept_name_flag = True
 
     def check_status(self, json_record):
         """
