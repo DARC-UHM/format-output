@@ -215,12 +215,12 @@ class AnnotationRow:
         sampled_by = get_association(self.annotation, 'sampled-by')
         if sampled_by:
             if remark_string != NULL_VAL_STRING:
-                remark_string += f' | sampled by {sampled_by}'
+                remark_string += f' | sampled by {sampled_by["to_concept"]}'
             else:
-                remark_string = f'sampled by {sampled_by}'
+                remark_string = f'sampled by {sampled_by["to_concept"]}'
         sample_ref = get_association(self.annotation, 'sample-reference')
         if sample_ref:
-            self.columns['TrackingID'] += f' | {sample_ref}'
+            self.columns['TrackingID'] += f' | {sample_ref["link_value"]}'
 
         self.columns['OccurrenceComments'] = remark_string
 
