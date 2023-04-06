@@ -190,7 +190,7 @@ class AnnotationRow:
                     self.columns['SampleID'],
                     self.annotation["concept"],
                     self.annotation["observation_uuid"],
-                    f'Dead animal reported.'
+                    f'Dead animal reported'
                 ])
                 self.columns['Condition'] = 'Dead'
             else:
@@ -241,7 +241,7 @@ class AnnotationRow:
                     self.annotation["concept"],
                     self.annotation["observation_uuid"],
                     f'{Color.RED}Missing s1 or could not parse substrate code:{Color.END} '
-                    f'{Color.BOLD}{s1["to_concept"]}{Color.END}.'
+                    f'{Color.BOLD}{s1["to_concept"]}{Color.END}'
                 ])
             else:
                 self.columns['Habitat'] = f'primarily: {primary}'
@@ -262,7 +262,7 @@ class AnnotationRow:
                     self.columns['SampleID'],
                     self.annotation["concept"],
                     self.annotation["observation_uuid"],
-                    f'Could not parse a substrate code from list {Color.BOLD}{secondary}{Color.END}.'
+                    f'Could not parse a substrate code from list {Color.BOLD}{secondary}{Color.END}'
                 ])
             self.columns['Habitat'] = self.columns['Habitat'] + f' / secondary: {"; ".join(secondary)}'
         habitat_comment = get_association(self.annotation, 'habitat-comment')
@@ -301,7 +301,7 @@ class AnnotationRow:
                 self.columns['SampleID'],
                 self.annotation["concept"],
                 self.annotation["observation_uuid"],
-                'No temperature measurement included in this record.'
+                'No temperature measurement included in this record'
             ])
 
     def set_salinity(self, warning_messages):
@@ -314,7 +314,7 @@ class AnnotationRow:
                 self.columns['SampleID'],
                 self.annotation["concept"],
                 self.annotation["observation_uuid"],
-                'No salinity measurement included in this record.'
+                'No salinity measurement included in this record'
             ])
 
     def set_oxygen(self, warning_messages):
@@ -328,7 +328,7 @@ class AnnotationRow:
                 self.columns['SampleID'],
                 self.annotation["concept"],
                 self.annotation["observation_uuid"],
-                'No oxygen measurement included in this record.'
+                'No oxygen measurement included in this record'
             ])
 
     def set_image_paths(self):

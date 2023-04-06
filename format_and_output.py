@@ -319,7 +319,7 @@ for dive_name in sequence_names:
                                     associate_record[VARS_CONCEPT_NAME],
                                     associate_record[TRACKING_ID],
                                     f'{Color.RED}Time between record and upon record greater than 5 minutes {Color.END}'
-                                    f'({time_diff.seconds} seconds).'
+                                    f'({time_diff.seconds} seconds)'
                                 ])
                             elif time_diff.seconds > 60:
                                 # flag for review
@@ -328,7 +328,7 @@ for dive_name in sequence_names:
                                     associate_record[VARS_CONCEPT_NAME],
                                     associate_record[TRACKING_ID],
                                     f'{Color.YELLOW}Time between record and upon record greater than 1 minute {Color.END}'
-                                    f'({time_diff.seconds} seconds).'
+                                    f'({time_diff.seconds} seconds)'
                                 ])
                             found = True
                             break
@@ -338,7 +338,7 @@ for dive_name in sequence_names:
                         associate_record[SAMPLE_ID],
                         associate_record[VARS_CONCEPT_NAME],
                         associate_record[TRACKING_ID],
-                        f'{Color.RED}Upon not found in previous records.{Color.END}'
+                        f'{Color.RED}Upon not found in previous records{Color.END}'
                     ])
             else:
                 # flag error
@@ -347,7 +347,7 @@ for dive_name in sequence_names:
                     associate_record[VARS_CONCEPT_NAME],
                     associate_record[TRACKING_ID],
                     f'{Color.RED}"{associate_record[SUBSTRATE]}" is host for this record, but that concept name '
-                    f'was not found in concepts.{Color.END} Double-check spelling of concept name.'
+                    f'was not found in concepts.{Color.END}'
                 ])
 
     # translate substrate (upon) names - this must be done after finding the associated taxa (relies on concept name)
@@ -377,11 +377,16 @@ with open(output_file_name + '.tsv', 'w', newline='', encoding='utf-8') as file:
     for record in full_report_records:
         csv_writer.writerow(record[:88])
 print(f'\n{Color.BOLD}Output file saved to:{Color.END} {Color.UNDERLINE}{output_file_path}{Color.END}')
-print(f'\n{Color.YELLOW}There are {str(len(warning_messages) - 1)} warning messages.{Color.END}\n')
-print(f'View messages?')
-view_messages = input('\nEnter "y" to view, or press enter to skip >> ').lower() in ['y', 'yes']
+print(f'\n{Color.YELLOW}There are {len(warning_messages)} warning messages.{Color.END}\n')
 
-if view_messages:
-    print(Messages.warning_header())
-    for message in warning_messages:
-        print("%-30s%-25s%-40s%-s" % (message[0], message[1], message[2], message[3]))
+if len(warning_messages) > 0:
+    print(f'View messages?')
+    view_messages = input('\nEnter "y" to view, or press enter to skip >> ').lower() in ['y', 'yes']
+
+    if view_messages:
+        Messages.warning_header()
+        for message in warning_messages:
+            if len(message[1]) > 22:
+                message[1] = f'{message[1][:22]}...'
+            message[2] = message[2][:37]
+            print("%-30s%-25s%-40s%-s" % (message[0], message[1], message[2], message[3]))
