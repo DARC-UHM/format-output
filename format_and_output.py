@@ -175,10 +175,12 @@ for dive_name in sequence_names:
     # Loops through all annotations and fills out the fields required by DSCRTP
     for annotation in report_json['annotations']:
         concept_name = annotation['concept']
+
         annotation_row = AnnotationRow(concept_name)
+
         annotation_row.set_simple_static_data()
-        annotation_row.set_sample_id(dive_name)
         annotation_row.set_dive_info(dive_dict)
+        annotation_row.set_sample_id(dive_name)
 
         if concept_name != 'none':
             if concept_name not in concepts:  # if concept name not in saved concepts file, search WoRMS
@@ -221,91 +223,10 @@ for dive_name in sequence_names:
                                      f'{get_association(annotation, "habitat")["to_concept"]}'
         annotation_row.set_cmecs_geo(current_cmecs_geo_form)
         annotation_row.set_habitat(warning_messages)
-
-        # checks if the item reported in 'upon' is in the list of accepted substrates - see translate_substrate_code
-        # (substrate = ground, basically)
-        upon = get_association(annotation, 'upon')
-        record_dict['UponIsCreature'] = False
-        if upon:
-            subs = translate_substrate_code(upon['to_concept'])
-            if subs:
-                record_dict['Substrate'] = subs
-            else:
-                # if the item in 'upon' is not in the substrate list, it must be upon another creature
-                record_dict['Substrate'] = upon['to_concept']
-                record_dict['UponIsCreature'] = True
-
-        identity_reference = get_association(annotation, 'identity-reference')
-        if identity_reference:
-            record_dict['IdentityReference'] = int(identity_reference['link_value'])
-        else:
-            record_dict['IdentityReference'] = -1
-        if 'temperature_celsius' in annotation['ancillary_data']:
-            record_dict['Temperature'] = round(annotation['ancillary_data']['temperature_celsius'], 4)
-        else:
-            record_dict['Temperature'] = NULL_VAL_INT
-            # flag warning
-            observation_messages.append([
-                dive_name,
-                annotation['observation_uuid'],
-                annotation['concept'],
-                recorded_time,
-                'Temperature',
-                '',
-                1,
-                'No temperature measurement included in this record.'
-            ])
-        if 'salinity' in annotation['ancillary_data']:
-            record_dict['Salinity'] = round(annotation['ancillary_data']['salinity'], 4)
-        else:
-            record_dict['Salinity'] = NULL_VAL_INT
-            # flag warning
-            observation_messages.append([
-                dive_name,
-                annotation['observation_uuid'],
-                annotation['concept'],
-                recorded_time,
-                'Salinity',
-                '',
-                1,
-                'No salinity measurement included in this record.'
-            ])
-        if 'oxygen_ml_l' in annotation['ancillary_data']:
-            # convert to mL/L
-            record_dict['Oxygen'] = round(annotation['ancillary_data']['oxygen_ml_l'] / 1.42903, 4)
-        else:
-            record_dict['Oxygen'] = NULL_VAL_INT
-            # flag warning
-            observation_messages.append([
-                dive_name,
-                annotation['observation_uuid'],
-                annotation['concept'],
-                recorded_time,
-                'Oxygen',
-                '',
-                1,
-                'No oxygen measurement included in this record.'
-            ])
-
-        images = annotation['image_references']
-        image_paths = []
-        for image in images:
-            image_paths.append(image['url'].replace(
-                'http://hurlstor.soest.hawaii.edu/imagearchive',
-                'https://hurlimage.soest.hawaii.edu'))
-
-        if len(image_paths) == 1:
-            record_dict['ImageFilePath'] = image_paths[0]
-        elif len(image_paths) > 1:
-            if '.png' in image_paths[0]:
-                record_dict['ImageFilePath'] = image_paths[0]
-            else:
-                record_dict['ImageFilePath'] = image_paths[1]
-
-        highlight_image = get_association(annotation, 'guide-photo')
-        if highlight_image and highlight_image['to_concept'] == '1 best':
-            record_dict['HighlightImageFilePath'] = record_dict['ImageFilePath']
-
+        annotation_row.set_upon()
+        annotation_row.set_temperature(warning_messages)
+        annotation_row.set_salinity(warning_messages)
+        annotation_row.set_image_paths()
 
         record = [record_dict[x] for x in HEADERS]
         report_records.append(record)

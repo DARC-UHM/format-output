@@ -4,7 +4,7 @@ from typing import Dict
 from timestamp_processor import TimestampProcessor
 from util.constants import NULL_VAL_STRING, HEADERS, NULL_VAL_INT
 from util.functions import get_association, convert_username_to_name, get_associations_list, add_meters, \
-    translate_substrate_code
+    translate_substrate_code, grain_size
 from util.terminal_output import Color
 
 
@@ -38,7 +38,7 @@ class AnnotationRow:
         self.columns['Reporter'] = 'Bingo, Sarah'
         self.columns['ReporterEmail'] = 'sarahr6@hawaii.edu'
 
-        self.columns['EntryDate'] = ''  # this is left blank, to be filled by DSCRTP admin
+        self.columns['EntryDate'] = ''  # this column is left blank, to be filled by DSCRTP admin
 
         # these eight values are hardcoded for now, keeping columns in case of future update
         self.columns['SampleAreaInSquareMeters'] = NULL_VAL_INT
@@ -234,19 +234,13 @@ class AnnotationRow:
             if not primary:
                 # flag warning
                 warning_messages.append([
-                    dive_name,
-                    annotation['observation_uuid'],
-                    annotation['concept'],
-                    recorded_time,
-                    's1',
-                    s1['to_concept'],
-                    1,
-                    f'Missing s1 or could not parse substrate code {s1["to_concept"]}.'
+                    f'Missing s1 or could not parse substrate code. {Color.BOLD}{s1["to_concept"]}{Color.END}. '
+                    f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
                 ])
             else:
-                record_dict['Habitat'] = f'primarily: {primary}'
+                self.columns['Habitat'] = f'primarily: {primary}'
 
-        s2_records = get_associations_list(annotation, 's2')
+        s2_records = get_associations_list(self.annotation, 's2')
         if len(s2_records) != 0:
             s2s_list = []
             for s2 in s2_records:  # remove duplicates
@@ -258,17 +252,87 @@ class AnnotationRow:
                 if s2_temp:
                     secondary.append(s2_temp)
             if len(secondary) != len(s2s_list):
-                observation_messages.append([
-                    dive_name,
-                    annotation['observation_uuid'],
-                    annotation['concept'],
-                    recorded_time,
-                    's2',
-                    '; '.join(s2s_list),
-                    1,
-                    f'Could not parse a substrate code from list {secondary}.'
+                warning_messages.append([
+                    f'Could not parse a substrate code from list {Color.BOLD}{secondary}{Color.END}. '
+                    f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
                 ])
-            record_dict['Habitat'] = record_dict['Habitat'] + f' / secondary: {"; ".join(secondary)}'
-        habitat_comment = get_association(annotation, 'habitat-comment')
+            self.columns['Habitat'] = self.columns['Habitat'] + f' / secondary: {"; ".join(secondary)}'
+        habitat_comment = get_association(self.annotation, 'habitat-comment')
         if habitat_comment:
-            record_dict['Habitat'] = record_dict['Habitat'] + f' / comments: {habitat_comment["link_value"]}'
+            self.columns['Habitat'] = self.columns['Habitat'] + f' / comments: {habitat_comment["link_value"]}'
+
+    def set_upon(self):
+        """
+        Checks if the item reported in 'upon' is in the list of accepted substrates - see translate_substrate_code
+        """
+        upon = get_association(self. annotation, 'upon')
+        self.columns['UponIsCreature'] = False
+        if upon:
+            subs = translate_substrate_code(upon['to_concept'])
+            if subs:
+                self.columns['Substrate'] = subs
+            else:
+                # if the item in 'upon' is not in the substrate list, it must be upon another creature
+                self.columns['Substrate'] = upon['to_concept']
+                self.columns['UponIsCreature'] = True
+
+    def set_id_ref(self):
+        identity_reference = get_association(self.annotation, 'identity-reference')
+        if identity_reference:
+            self.columns['IdentityReference'] = int(identity_reference['link_value'])
+        else:
+            self.columns['IdentityReference'] = -1
+
+    def set_temperature(self, warning_messages):
+        if 'temperature_celsius' in self.annotation['ancillary_data']:
+            self.columns['Temperature'] = round(self.annotation['ancillary_data']['temperature_celsius'], 4)
+        else:
+            self.columns['Temperature'] = NULL_VAL_INT
+            # flag warning
+            warning_messages.append([
+                f'No temperature measurement included in this record. '
+                f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
+            ])
+
+    def set_salinity(self, warning_messages):
+        if 'salinity' in self.annotation['ancillary_data']:
+            self.columns['Salinity'] = round(self.annotation['ancillary_data']['salinity'], 4)
+        else:
+            self.columns['Salinity'] = NULL_VAL_INT
+            # flag warning
+            warning_messages.append([
+                f'No salinity measurement included in this record.  '
+                f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
+            ])
+
+    def set_oxygen(self, warning_messages):
+        if 'oxygen_ml_l' in self.annotation['ancillary_data']:
+            # convert to mL/L
+            self.columns['Oxygen'] = round(self.annotation['ancillary_data']['oxygen_ml_l'] / 1.42903, 4)
+        else:
+            self.columns['Oxygen'] = NULL_VAL_INT
+            # flag warning
+            warning_messages.append([
+                f'No oxygen measurement included in this record.  '
+                f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
+            ])
+
+    def set_image_paths(self):
+        images = self.annotation['image_references']
+        image_paths = []
+        for image in images:
+            image_paths.append(image['url'].replace(
+                'http://hurlstor.soest.hawaii.edu/imagearchive',
+                'https://hurlimage.soest.hawaii.edu'))
+
+        if len(image_paths) == 1:
+            self.columns['ImageFilePath'] = image_paths[0]
+        elif len(image_paths) > 1:
+            if '.png' in image_paths[0]:
+                self.columns['ImageFilePath'] = image_paths[0]
+            else:
+                self.columns['ImageFilePath'] = image_paths[1]
+
+        highlight_image = get_association(self.annotation, 'guide-photo')
+        if highlight_image and highlight_image['to_concept'] == '1 best':
+            self.columns['HighlightImageFilePath'] = self.columns['ImageFilePath']
