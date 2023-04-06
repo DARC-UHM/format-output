@@ -149,16 +149,14 @@ for dive_name in sequence_names:
 
     if dive_dict['LocationAccuracy'] == NULL_VAL_STRING:
         warning_messages.append([
-            f'{Color.YELLOW}WARNING: {Color.END}'
-            f'No location accuracy data for dive {dive_name}. '
-            f'This information should be added to {Color.UNDERLINE}Dives.csv{Color.END}'
+            dive_name, 'NA', 'NA',
+            f'{Color.YELLOW}No location accuracy found{Color.END} - Add to {Color.UNDERLINE}Dives.csv{Color.END}'
         ])
 
     if dive_dict['WebSite'] == NULL_VAL_STRING:
         warning_messages.append([
-            f'{Color.YELLOW}WARNING: {Color.END}'
-            f'No website found for dive {dive_name}. '
-            f'This information should be added to {Color.UNDERLINE}Dives.csv{Color.END}'
+            dive_name, 'NA', 'NA',
+            f'{Color.YELLOW}No website found{Color.END} - Add to {Color.UNDERLINE}Dives.csv{Color.END}'
         ])
 
     # get start time and end time of each video (to use later to check whether annotation falls inside a video time)
@@ -302,47 +300,55 @@ for dive_name in sequence_names:
                         if host_record[VARS_CONCEPT_NAME] == host_concept_name:
                             # the host record's name is equal to the host concept name (associate's 'upon' name)
                             upon_time = get_date_and_time(host_record)
-                            # if the host's 'associated taxa' field is blank, add the associate's concept name
                             if host_record[ASSOCIATED_TAXA] == NULL_VAL_STRING:
+                                # if the host's 'associated taxa' field is blank, add the associate's concept name
                                 host_record[ASSOCIATED_TAXA] = associate_record[COMBINED_NAME_ID]
-                            # otherwise, append the concept name if it's not already there
                             elif associate_record[COMBINED_NAME_ID] not in host_record[ASSOCIATED_TAXA]:
+                                # otherwise, append the concept name if it's not already there
                                 host_record[ASSOCIATED_TAXA] += f' | {associate_record[COMBINED_NAME_ID]}'
-                            # add touch to occurrence comments
                             if host_record[OCCURRENCE_COMMENTS] == NULL_VAL_STRING:
+                                # add touch to occurrence comments
                                 host_record[OCCURRENCE_COMMENTS] = 'associate touching host'
                             elif 'associate touching host' not in host_record[OCCURRENCE_COMMENTS]:
                                 host_record[OCCURRENCE_COMMENTS] += ' | associate touching host'
                             time_diff = observation_time - upon_time
                             if time_diff.seconds > 300:
                                 # flag warning
-                                warning_messages.append(
-                                    f'Time between record and upon record greater than 5 minutes '
-                                    f'{Color.RED}({time_diff.seconds} seconds).{Color.END}'
-                                    f'Concept: {associate_record[SCIENTIFIC_NAME]}  UUID: {associate_record[TRACKING_ID]}'
-                                )
+                                warning_messages.append([
+                                    associate_record[SAMPLE_ID],
+                                    associate_record[VARS_CONCEPT_NAME],
+                                    associate_record[TRACKING_ID],
+                                    f'{Color.RED}Time between record and upon record greater than 5 minutes {Color.END}'
+                                    f'({time_diff.seconds} seconds).'
+                                ])
                             elif time_diff.seconds > 60:
                                 # flag for review
-                                warning_messages.append(
-                                    f'Time between record and upon record greater than 1 minute '
-                                    f'{Color.YELLOW}({time_diff.seconds} seconds).{Color.END}'
-                                    f'Concept: {associate_record[SCIENTIFIC_NAME]}  UUID: {associate_record[TRACKING_ID]}'
-                                )
+                                warning_messages.append([
+                                    associate_record[SAMPLE_ID],
+                                    associate_record[VARS_CONCEPT_NAME],
+                                    associate_record[TRACKING_ID],
+                                    f'{Color.YELLOW}Time between record and upon record greater than 1 minute {Color.END}'
+                                    f'({time_diff.seconds} seconds).'
+                                ])
                             found = True
                             break
                 if not found:
                     # flag error
-                    warning_messages.append(
-                        f'{Color.RED}Upon not found in previous records.{Color.END}  '
-                        f'Concept: {associate_record[SCIENTIFIC_NAME]}  UUID: {associate_record[TRACKING_ID]}'
-                    )
+                    warning_messages.append([
+                        associate_record[SAMPLE_ID],
+                        associate_record[VARS_CONCEPT_NAME],
+                        associate_record[TRACKING_ID],
+                        f'{Color.RED}Upon not found in previous records.{Color.END}'
+                    ])
             else:
                 # flag error
-                warning_messages.append(
-                    f'\"{associate_record[SUBSTRATE]}\" is listed as the host for this record, but that concept name '
-                    f'{Color.RED}was not found in concepts.{Color.END} Double-check spelling of concept name.'
-                    f'Concept: {associate_record[SCIENTIFIC_NAME]}  UUID: {associate_record[TRACKING_ID]}'
-                )
+                warning_messages.append([
+                    associate_record[SAMPLE_ID],
+                    associate_record[VARS_CONCEPT_NAME],
+                    associate_record[TRACKING_ID],
+                    f'{Color.RED}"{associate_record[SUBSTRATE]}" is host for this record, but that concept name '
+                    f'was not found in concepts.{Color.END} Double-check spelling of concept name.'
+                ])
 
     # translate substrate (upon) names - this must be done after finding the associated taxa (relies on concept name)
     for i in range(len(report_records)):
@@ -376,5 +382,6 @@ print(f'View messages?')
 view_messages = input('\nEnter "y" to view, or press enter to skip >> ').lower() in ['y', 'yes']
 
 if view_messages:
+    print(Messages.warning_header())
     for message in warning_messages:
-        print(message)
+        print("%-30s%-25s%-40s%-s" % (message[0], message[1], message[2], message[3]))

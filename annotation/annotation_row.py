@@ -171,10 +171,12 @@ class AnnotationRow:
                 case 'greater than 100 cm':
                     min_size = '101'
                 case _:
-                    warning_messages.append(
+                    warning_messages.append([
+                        self.columns['SampleID'],
+                        self.annotation["concept"],
+                        self.annotation["observation_uuid"],
                         f'String not recognized as an established size category: {Color.BOLD}"{size_str}"{Color.END}'
-                        f'  Concept: {self.annotation["concept"]}   UUID:{self.annotation["observation_uuid"]}'
-                    )
+                    ])
         self.columns['VerbatimSize'] = size_str
         self.columns['MinimumSize'] = min_size
         self.columns['MaximumSize'] = max_size
@@ -184,10 +186,12 @@ class AnnotationRow:
         if condition_comment:
             if condition_comment['link_value'] in ['dead', 'Dead']:
                 # flag warning
-                warning_messages.append(
-                    f'Dead animal reported.  Concept: {self.annotation["concept"]}'
-                    f'  UUID:{self.annotation["observation_uuid"]}'
-                )
+                warning_messages.append([
+                    self.columns['SampleID'],
+                    self.annotation["concept"],
+                    self.annotation["observation_uuid"],
+                    f'Dead animal reported.'
+                ])
                 self.columns['Condition'] = 'Dead'
             else:
                 self.columns['Condition'] = 'Damaged'
@@ -232,10 +236,13 @@ class AnnotationRow:
             primary = translate_substrate_code(s1['to_concept'])
             if not primary:
                 # flag warning
-                warning_messages.append(
-                    f'Missing s1 or could not parse substrate code. {Color.BOLD}{s1["to_concept"]}{Color.END}. '
-                    f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
-                )
+                warning_messages.append([
+                    self.columns['SampleID'],
+                    self.annotation["concept"],
+                    self.annotation["observation_uuid"],
+                    f'{Color.RED}Missing s1 or could not parse substrate code:{Color.END} '
+                    f'{Color.BOLD}{s1["to_concept"]}{Color.END}.'
+                ])
             else:
                 self.columns['Habitat'] = f'primarily: {primary}'
 
@@ -251,10 +258,12 @@ class AnnotationRow:
                 if s2_temp:
                     secondary.append(s2_temp)
             if len(secondary) != len(s2s_list):
-                warning_messages.append(
-                    f'Could not parse a substrate code from list {Color.BOLD}{secondary}{Color.END}. '
-                    f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
-                )
+                warning_messages.append([
+                    self.columns['SampleID'],
+                    self.annotation["concept"],
+                    self.annotation["observation_uuid"],
+                    f'Could not parse a substrate code from list {Color.BOLD}{secondary}{Color.END}.'
+                ])
             self.columns['Habitat'] = self.columns['Habitat'] + f' / secondary: {"; ".join(secondary)}'
         habitat_comment = get_association(self.annotation, 'habitat-comment')
         if habitat_comment:
@@ -288,10 +297,12 @@ class AnnotationRow:
         else:
             self.columns['Temperature'] = NULL_VAL_INT
             # flag warning
-            warning_messages.append(
-                f'No temperature measurement included in this record. '
-                f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
-            )
+            warning_messages.append([
+                self.columns['SampleID'],
+                self.annotation["concept"],
+                self.annotation["observation_uuid"],
+                'No temperature measurement included in this record.'
+            ])
 
     def set_salinity(self, warning_messages):
         if 'salinity' in self.annotation['ancillary_data']:
@@ -299,10 +310,12 @@ class AnnotationRow:
         else:
             self.columns['Salinity'] = NULL_VAL_INT
             # flag warning
-            warning_messages.append(
-                f'No salinity measurement included in this record.  '
-                f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
-            )
+            warning_messages.append([
+                self.columns['SampleID'],
+                self.annotation["concept"],
+                self.annotation["observation_uuid"],
+                'No salinity measurement included in this record.'
+            ])
 
     def set_oxygen(self, warning_messages):
         if 'oxygen_ml_l' in self.annotation['ancillary_data']:
@@ -311,10 +324,12 @@ class AnnotationRow:
         else:
             self.columns['Oxygen'] = NULL_VAL_INT
             # flag warning
-            warning_messages.append(
-                f'No oxygen measurement included in this record.  '
-                f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
-            )
+            warning_messages.append([
+                self.columns['SampleID'],
+                self.annotation["concept"],
+                self.annotation["observation_uuid"],
+                'No oxygen measurement included in this record.'
+            ])
 
     def set_image_paths(self):
         images = self.annotation['image_references']
