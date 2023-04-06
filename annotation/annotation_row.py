@@ -8,6 +8,7 @@ from util.functions import get_association, convert_username_to_name, get_associ
 from util.terminal_output import Color
 
 
+# todo add tests
 class AnnotationRow:
     def __init__(self, annotation: Dict):
         self.columns = dict(zip(HEADERS, [NULL_VAL_STRING] * len(HEADERS)))

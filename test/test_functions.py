@@ -17,7 +17,7 @@ class TestFunctions:
 
     def test_get_association_none(self):
         test_obj = get_association(annotations[0], 'test')
-        assert test_obj is None
+        assert test_obj == {}
 
     def test_get_associations_list(self):
         test_list = get_associations_list(annotations[1], 's2')
@@ -70,11 +70,11 @@ class TestFunctions:
         uuid = extract_uuid(annotations[2])
         assert uuid == '080118db-baa2-468a-d06a-144249c1d41e'
 
-    def test_add_meters(self):
+    def test_add_meters_no_m(self):
         accuracy = add_meters('50')
         assert accuracy == '50 m'
 
-    def test_add_meters(self):
+    def test_add_meters_m(self):
         accuracy = add_meters('50 m')
         assert accuracy == '50 m'
 
@@ -109,3 +109,13 @@ class TestFunctions:
     def test_translate_substrate_code_complex3(self):
         test_translated = translate_substrate_code('boucre')
         assert test_translated == 'boulder crevice'
+
+    def test_translate_substrate_code_fail(self):
+        test_translated = translate_substrate_code('hehehe')
+        assert test_translated == ''
+
+    def test_collapse_id_records(self):
+        temp_records = sample_report_records
+        test_dupes_removed = collapse_id_records(temp_records)
+        assert test_dupes_removed == 1
+        assert temp_records == sample_report_records[1:]

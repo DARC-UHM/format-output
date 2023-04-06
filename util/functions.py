@@ -39,7 +39,7 @@ def get_date_and_time(record: Dict) -> datetime:
     return datetime.strptime(record[OBSERVATION_DATE] + record[OBSERVATION_TIME], '%Y-%m-%d%H:%M:%S')
 
 
-def parse_datetime(timestamp: Dict) -> datetime:
+def parse_datetime(timestamp: str) -> datetime:
     """ Returns a datetime object given a timestamp string """
     if '.' in timestamp:
         return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -65,7 +65,7 @@ def extract_uuid(json_object: Dict) -> str:
 def add_meters(accuracy: str) -> str:
     """ Takes input and appends an 'm' to the end if one is not there already """
     if accuracy[-1:] != 'm':
-        accuracy = accuracy + 'm'
+        accuracy = accuracy + ' m'
     return accuracy
 
 
@@ -159,6 +159,7 @@ def collapse_id_records(report_records: list) -> int:
     return dupes_removed
 
 
+# todo add tests
 def find_associated_taxa(report_records: list, concepts: Dict, warning_messages: list):
     """
     Fills in the AssociatedTaxa fields: retrieves records from the output table that have another VARS concept listed
