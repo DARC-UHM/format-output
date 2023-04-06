@@ -348,5 +348,9 @@ class AnnotationRow:
                 self.columns['ImageFilePath'] = image_paths[1]
 
         highlight_image = get_association(self.annotation, 'guide-photo')
-        if highlight_image and highlight_image['to_concept'] == '1 best':
+        if highlight_image and (highlight_image['to_concept'] == '1 best' or highlight_image['to_concept'] == '2 good'):
+            self.columns['HighlightImageFilePath'] = self.columns['ImageFilePath']
+
+        population_density = get_association(self.annotation, 'population-density')
+        if population_density and population_density['link_value'] == 'dense':
             self.columns['HighlightImageFilePath'] = self.columns['ImageFilePath']
