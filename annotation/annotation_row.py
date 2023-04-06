@@ -50,11 +50,11 @@ class AnnotationRow:
         self.columns['Cover'] = NULL_VAL_INT
         self.columns['WeightInKg'] = NULL_VAL_INT
 
-    def set_sample_id(self, dive_name):
+    def set_sample_id(self, dive_name: str):
         self.columns['SampleID'] = dive_name.replace(' ',
                                                      '_') + '_' + self.recorded_time.get_formatted_timestamp()
 
-    def set_dive_info(self, dive_info):
+    def set_dive_info(self, dive_info: dict):
         self.columns['Citation'] = dive_info['Citation'] if dive_info['Citation'] != NULL_VAL_STRING else ''
         self.columns['Repository'] = dive_info['DataProvider'].split(';')[0] + \
                                      ' | University of Hawaii Deep-sea Animal Research Center'
@@ -80,7 +80,7 @@ class AnnotationRow:
         self.columns['DataProvider'] = dive_info['DataProvider']
         self.columns['DataContact'] = dive_info['DataContact']
 
-    def set_concept_info(self, concepts):
+    def set_concept_info(self, concepts: dict):
         concept_name = self.annotation['concept']
         scientific_name = concepts[concept_name]['scientific_name']
         aphia_id = concepts[concept_name]['aphia_id']
@@ -99,7 +99,7 @@ class AnnotationRow:
             for key in ['Kingdom', 'Phylum', 'Class', 'Subclass', 'Order', 'Suborder', 'Family',
                         'Subfamily', 'Genus', 'Subgenus', 'Species', 'Subspecies']:
                 if key in taxon_ranks:
-                    self.set_rank(key, taxon_ranks[key])
+                    self.set_rank(rank=key, val=taxon_ranks[key])
 
         self.columns['ScientificNameAuthorship'] = concepts[concept_name]['authorship']
         self.columns['CombinedNameID'] = scientific_name
@@ -114,10 +114,10 @@ class AnnotationRow:
         self.columns['Synonyms'] = ' | '.join(concepts[concept_name]['synonyms']) \
             if concepts[concept_name]['synonyms'] else NULL_VAL_STRING
 
-    def set_rank(self, rank, val):
+    def set_rank(self, rank: str, val: str):
         self.columns[rank] = val
 
-    def set_media_type(self, media_type):
+    def set_media_type(self, media_type: str):
         self.columns['RecordType'] = media_type
         if self.columns['ScientificName'] != NULL_VAL_STRING:
             self.columns['IdentificationQualifier'] = \
@@ -147,7 +147,7 @@ class AnnotationRow:
             self.columns['CategoricalAbundance'] = cat_abundance['link_value']
             self.columns['IndividualCount'] = NULL_VAL_INT
 
-    def set_size(self, warning_messages):
+    def set_size(self, warning_messages: list):
         min_size = NULL_VAL_INT
         max_size = NULL_VAL_INT
         size_str = NULL_VAL_STRING
@@ -181,7 +181,7 @@ class AnnotationRow:
         self.columns['MinimumSize'] = min_size
         self.columns['MaximumSize'] = max_size
 
-    def set_condition_comment(self, warning_messages):
+    def set_condition_comment(self, warning_messages: list):
         condition_comment = get_association(self.annotation, 'condition-comment')
         if condition_comment:
             if condition_comment['link_value'] in ['dead', 'Dead']:
@@ -224,7 +224,7 @@ class AnnotationRow:
 
         self.columns['OccurrenceComments'] = remark_string
 
-    def set_cmecs_geo(self, cmecs_geo):
+    def set_cmecs_geo(self, cmecs_geo: str):
         self.columns['CMECSGeoForm'] = cmecs_geo
 
     def set_habitat(self, warning_messages):
@@ -291,7 +291,7 @@ class AnnotationRow:
         else:
             self.columns['IdentityReference'] = -1
 
-    def set_temperature(self, warning_messages):
+    def set_temperature(self, warning_messages: list):
         if 'temperature_celsius' in self.annotation['ancillary_data']:
             self.columns['Temperature'] = round(self.annotation['ancillary_data']['temperature_celsius'], 4)
         else:
@@ -304,7 +304,7 @@ class AnnotationRow:
                 'No temperature measurement included in this record'
             ])
 
-    def set_salinity(self, warning_messages):
+    def set_salinity(self, warning_messages: list):
         if 'salinity' in self.annotation['ancillary_data']:
             self.columns['Salinity'] = round(self.annotation['ancillary_data']['salinity'], 4)
         else:
@@ -317,7 +317,7 @@ class AnnotationRow:
                 'No salinity measurement included in this record'
             ])
 
-    def set_oxygen(self, warning_messages):
+    def set_oxygen(self, warning_messages: list):
         if 'oxygen_ml_l' in self.annotation['ancillary_data']:
             # convert to mL/L
             self.columns['Oxygen'] = round(self.annotation['ancillary_data']['oxygen_ml_l'] / 1.42903, 4)

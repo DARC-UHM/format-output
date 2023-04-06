@@ -17,6 +17,12 @@ class Color:
 
 class Messages:
 
+    load_concepts_prompt = '\nShould the program load previously encountered concept names '\
+              'from saved file for a faster runtime?\n\n'\
+              f'{Color.GREEN}Y: Use the file {Color.END}(takes < 30 seconds)\n'\
+              f'{Color.RED}N: Use WoRMS and overwrite the file {Color.END}(takes 15-20 minutes)\n\n'\
+              '>> '
+
     @staticmethod
     def dive_not_found(dive_name):
         print(f'\n{Color.RED}###################################################################')
