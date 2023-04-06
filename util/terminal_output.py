@@ -5,7 +5,7 @@ class Color:
     """ Some pretty colors """
     PURPLE = '\033[1;35;48m'
     CYAN = '\033[1;36;48m'
-    BOLD = '\033[1;37;48m'
+    BOLD = '\033[1m'
     BLUE = '\033[1;34;48m'
     GREEN = '\033[1;32;48m'
     YELLOW = '\033[1;33;48m'
