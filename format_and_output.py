@@ -9,7 +9,6 @@ import csv
 import os
 import errno
 
-from datetime import timezone
 from util.functions import *
 from annotation.annotation_row import AnnotationRow
 from concept.concept_handler import *
@@ -18,7 +17,6 @@ from util.terminal_output import Color, Messages
 OUTPUT_FILE_NAME = ''
 OUTPUT_FILE_PATH = ''
 SEQUENCE_NAMES_PATH = ''
-
 
 """#####################################################################################################################
 If you need to run this script multiple times (e.g. for testing or troubleshooting), you can hardcode names and file
@@ -34,7 +32,6 @@ OUTPUT_FILE_PATH = '/Users/darc/Desktop'
 SEQUENCE_NAMES_PATH = '/Users/darc/Documents/Github/Format-Output/reference/test_sequences.csv'
 
 """##################################################################################################################"""
-
 
 # Initialization: Get the cache directory (note: does not consider Linux file structure)
 current_folder = os.getcwd()
@@ -58,7 +55,7 @@ except OSError as err:
     pass
 
 save_folder = os.path.join(save_folder, 'CTDProcess')
-print(f'\nSaved cache files located in: {save_folder}')
+print(f'\n{Color.BOLD}Saved cache files located in:{Color.END} {Color.UNDERLINE}{save_folder}{Color.END}')
 
 os.chdir(current_folder)
 
@@ -75,8 +72,8 @@ with open('reference/Dives.csv', 'r', encoding='utf-8') as dive_csv:
 # Decides whether to load or overwrite concepts
 load_concepts = input('\nShould the program load previously encountered concept names '
                       'from saved file for a faster runtime?\n\n'
-                      f'{Color.GREEN}Y{Color.END}: Use the file {Color.BOLD}(takes < 30 seconds){Color.END}\n'
-                      f'{Color.RED}N{Color.END}: Use WoRMS and overwrite the file {Color.BOLD}(takes 15-20 minutes){Color.END}\n\n'
+                      f'{Color.GREEN}Y: Use the file {Color.END}(takes < 30 seconds)\n'
+                      f'{Color.RED}N: Use WoRMS and overwrite the file {Color.END}(takes 15-20 minutes)\n\n'
                       '>> ').lower() in ['y', 'yes']
 
 concepts = {}
@@ -115,13 +112,13 @@ if load_concepts:
 for dive_name in sequence_names:
     first_round = True  # to print header in terminal
     report_records = []  # array of concepts records for the dive
-    concepts_from_worms = 0   # count of how many concepts were loaded from worms
+    concepts_from_worms = 0  # count of how many concepts were loaded from worms
 
     if load_concepts:
-        print('%-35s' % dive_name, end='')
+        print(f'{Color.BOLD}%-35s{Color.END}' % dive_name, end='')
         sys.stdout.flush()
     else:
-        print(f'\nFetching annotations for {dive_name}')
+        print(f'\nFetching annotations for {Color.CYAN}{dive_name}{Color.END}')
 
     url = f'http://hurlstor.soest.hawaii.edu:8086/query/dive/{dive_name.replace(" ", "%20")}'
 
@@ -153,13 +150,15 @@ for dive_name in sequence_names:
     if dive_dict['LocationAccuracy'] == NULL_VAL_STRING:
         warning_messages.append([
             f'{Color.YELLOW}WARNING: {Color.END}'
-            f'No location accuracy data for dive {dive_name}. This information should be added to Dives.csv'
+            f'No location accuracy data for dive {dive_name}. '
+            f'This information should be added to {Color.UNDERLINE}Dives.csv{Color.END}'
         ])
 
     if dive_dict['WebSite'] == NULL_VAL_STRING:
         warning_messages.append([
             f'{Color.YELLOW}WARNING: {Color.END}'
-            f'No website found for dive {dive_name}. This information should be added to Dives.csv'
+            f'No website found for dive {dive_name}. '
+            f'This information should be added to {Color.UNDERLINE}Dives.csv{Color.END}'
         ])
 
     # get start time and end time of each video (to use later to check whether annotation falls inside a video time)
@@ -176,7 +175,7 @@ for dive_name in sequence_names:
     for annotation in report_json['annotations']:
         concept_name = annotation['concept']
 
-        annotation_row = AnnotationRow(concept_name)
+        annotation_row = AnnotationRow(annotation)
 
         annotation_row.set_simple_static_data()
         annotation_row.set_dive_info(dive_dict)
@@ -207,7 +206,7 @@ for dive_name in sequence_names:
         # loop through timestamps and check if recorded_timestamps is in timestamps
         media_type = 'still image'
         for i in range(len(dive_video_timestamps)):
-            if dive_video_timestamps[i][0] <= annotation_row.recorded_time.recorded_time <= dive_video_timestamps[i][1]:
+            if dive_video_timestamps[i][0] <= annotation_row.recorded_time.timestamp <= dive_video_timestamps[i][1]:
                 media_type = 'video observation'
                 break
         annotation_row.set_media_type(media_type)
@@ -224,11 +223,13 @@ for dive_name in sequence_names:
         annotation_row.set_cmecs_geo(current_cmecs_geo_form)
         annotation_row.set_habitat(warning_messages)
         annotation_row.set_upon()
+        annotation_row.set_id_ref()
         annotation_row.set_temperature(warning_messages)
         annotation_row.set_salinity(warning_messages)
+        annotation_row.set_oxygen(warning_messages)
         annotation_row.set_image_paths()
 
-        record = [record_dict[x] for x in HEADERS]
+        record = [annotation_row.columns[x] for x in HEADERS]
         report_records.append(record)
 
     identity_references = {}
@@ -243,7 +244,8 @@ for dive_name in sequence_names:
             if id_ref not in identity_references:
                 identity_references[id_ref] = report_records[i]
             else:
-                for j in [ID_COMMENTS, HABITAT, SUBSTRATE, INDV_COUNT, VERBATIM_SIZE, OCCURRENCE_COMMENTS, CMECS_GEO_FORM]:
+                for j in [ID_COMMENTS, HABITAT, SUBSTRATE, INDV_COUNT, VERBATIM_SIZE, OCCURRENCE_COMMENTS,
+                          CMECS_GEO_FORM]:
                     if identity_references[id_ref][j] == NULL_VAL_STRING and report_records[i][j] != NULL_VAL_STRING:
                         identity_references[id_ref][j] = report_records[i][j]
                 for j in [MIN_SIZE, MAX_SIZE]:
@@ -314,55 +316,33 @@ for dive_name in sequence_names:
                             time_diff = observation_time - upon_time
                             if time_diff.seconds > 300:
                                 # flag warning
-                                observation_messages.append([
-                                    dive_name,
-                                    associate_record[TRACKING_ID],
-                                    associate_record[SCIENTIFIC_NAME],
-                                    observation_time,
-                                    'Associated taxa',
-                                    host_concept_name,
-                                    1,
-                                    f'Time between record and upon record greater than 5 minutes ({time_diff.seconds} seconds).'
-                                ])
+                                warning_messages.append(
+                                    f'Time between record and upon record greater than 5 minutes '
+                                    f'{Color.RED}({time_diff.seconds} seconds).{Color.END}'
+                                    f'Concept: {associate_record[SCIENTIFIC_NAME]}  UUID: {associate_record[TRACKING_ID]}'
+                                )
                             elif time_diff.seconds > 60:
                                 # flag for review
-                                observation_messages.append([
-                                    dive_name,
-                                    associate_record[TRACKING_ID],
-                                    associate_record[SCIENTIFIC_NAME],
-                                    observation_time,
-                                    'Associated taxa',
-                                    host_concept_name,
-                                    0,
-                                    f'Time between record and upon record greater than 1 minute ({time_diff.seconds} seconds).'
-                                ])
+                                warning_messages.append(
+                                    f'Time between record and upon record greater than 1 minute '
+                                    f'{Color.YELLOW}({time_diff.seconds} seconds).{Color.END}'
+                                    f'Concept: {associate_record[SCIENTIFIC_NAME]}  UUID: {associate_record[TRACKING_ID]}'
+                                )
                             found = True
                             break
                 if not found:
                     # flag error
-                    observation_messages.append([
-                        dive_name,
-                        associate_record[TRACKING_ID],
-                        associate_record[SCIENTIFIC_NAME],
-                        observation_time,
-                        'Associated taxa',
-                        host_concept_name,
-                        2,
-                        'Upon of specified concept name not found in previous records. Make sure this creature is annotated.'
-                    ])
+                    warning_messages.append(
+                        f'{Color.RED}Upon not found in previous records.{Color.END}  '
+                        f'Concept: {associate_record[SCIENTIFIC_NAME]}  UUID: {associate_record[TRACKING_ID]}'
+                    )
             else:
                 # flag error
-                observation_messages.append([
-                    dive_name,
-                    associate_record[TRACKING_ID],
-                    associate_record[SCIENTIFIC_NAME],
-                    get_date_and_time(associate_record),
-                    'Associated taxa',
-                    associate_record[SUBSTRATE],
-                    2,
+                warning_messages.append(
                     f'\"{associate_record[SUBSTRATE]}\" is listed as the host for this record, but that concept name '
-                    'was not found in concepts. Double-check spelling of concept name.'
-                ])
+                    f'{Color.RED}was not found in concepts.{Color.END} Double-check spelling of concept name.'
+                    f'Concept: {associate_record[SCIENTIFIC_NAME]}  UUID: {associate_record[TRACKING_ID]}'
+                )
 
     # translate substrate (upon) names - this must be done after finding the associated taxa (relies on concept name)
     for i in range(len(report_records)):
@@ -377,10 +357,10 @@ for dive_name in sequence_names:
 
     # Add this formatted dive to the full list of report associate_records
     full_report_records += report_records
-    print('Complete')
+    print(f'{Color.GREEN}Complete{Color.END}')
 
 # Save everything into output files
-print('\nSaving output files...')
+print('\nSaving output file...')
 os.chdir(save_folder)
 with open('concepts.json', 'w') as file:
     json.dump(concepts, file)
@@ -390,5 +370,11 @@ with open(output_file_name + '.tsv', 'w', newline='', encoding='utf-8') as file:
     csv_writer.writerow(HEADERS[:88])
     for record in full_report_records:
         csv_writer.writerow(record[:88])
-print(f'Output files saved at {output_file_path}')
-print(f'There are {str(len(observation_messages) - 1)} messages to review.')
+print(f'\n{Color.BOLD}Output file saved to:{Color.END} {Color.UNDERLINE}{output_file_path}{Color.END}')
+print(f'\n{Color.YELLOW}There are {str(len(warning_messages) - 1)} warning messages.{Color.END}\n')
+print(f'View messages?')
+view_messages = input('\nEnter "y" to view, or press enter to skip >> ').lower() in ['y', 'yes']
+
+if view_messages:
+    for message in warning_messages:
+        print(message)

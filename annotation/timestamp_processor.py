@@ -1,8 +1,6 @@
 from datetime import timedelta
 from util.functions import parse_datetime
 
-from util.constants import NULL_VAL_STRING
-
 
 class TimestampProcessor:
 

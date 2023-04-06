@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Dict
 
-from timestamp_processor import TimestampProcessor
+from annotation.timestamp_processor import TimestampProcessor
 from util.constants import NULL_VAL_STRING, HEADERS, NULL_VAL_INT
 from util.functions import get_association, convert_username_to_name, get_associations_list, add_meters, \
     translate_substrate_code, grain_size
@@ -79,7 +79,6 @@ class AnnotationRow:
         self.columns['WebSite'] = dive_info['WebSite']
         self.columns['DataProvider'] = dive_info['DataProvider']
         self.columns['DataContact'] = dive_info['DataContact']
-
 
     def set_concept_info(self, concepts):
         concept_name = self.annotation['concept']
@@ -172,10 +171,10 @@ class AnnotationRow:
                 case 'greater than 100 cm':
                     min_size = '101'
                 case _:
-                    warning_messages.append([
+                    warning_messages.append(
                         f'String not recognized as an established size category: {Color.BOLD}"{size_str}"{Color.END}'
                         f'  Concept: {self.annotation["concept"]}   UUID:{self.annotation["observation_uuid"]}'
-                    ])
+                    )
         self.columns['VerbatimSize'] = size_str
         self.columns['MinimumSize'] = min_size
         self.columns['MaximumSize'] = max_size
@@ -185,10 +184,10 @@ class AnnotationRow:
         if condition_comment:
             if condition_comment['link_value'] in ['dead', 'Dead']:
                 # flag warning
-                warning_messages.append([
+                warning_messages.append(
                     f'Dead animal reported.  Concept: {self.annotation["concept"]}'
                     f'  UUID:{self.annotation["observation_uuid"]}'
-                ])
+                )
                 self.columns['Condition'] = 'Dead'
             else:
                 self.columns['Condition'] = 'Damaged'
@@ -233,10 +232,10 @@ class AnnotationRow:
             primary = translate_substrate_code(s1['to_concept'])
             if not primary:
                 # flag warning
-                warning_messages.append([
+                warning_messages.append(
                     f'Missing s1 or could not parse substrate code. {Color.BOLD}{s1["to_concept"]}{Color.END}. '
                     f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
-                ])
+                )
             else:
                 self.columns['Habitat'] = f'primarily: {primary}'
 
@@ -252,10 +251,10 @@ class AnnotationRow:
                 if s2_temp:
                     secondary.append(s2_temp)
             if len(secondary) != len(s2s_list):
-                warning_messages.append([
+                warning_messages.append(
                     f'Could not parse a substrate code from list {Color.BOLD}{secondary}{Color.END}. '
                     f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
-                ])
+                )
             self.columns['Habitat'] = self.columns['Habitat'] + f' / secondary: {"; ".join(secondary)}'
         habitat_comment = get_association(self.annotation, 'habitat-comment')
         if habitat_comment:
@@ -289,10 +288,10 @@ class AnnotationRow:
         else:
             self.columns['Temperature'] = NULL_VAL_INT
             # flag warning
-            warning_messages.append([
+            warning_messages.append(
                 f'No temperature measurement included in this record. '
                 f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
-            ])
+            )
 
     def set_salinity(self, warning_messages):
         if 'salinity' in self.annotation['ancillary_data']:
@@ -300,10 +299,10 @@ class AnnotationRow:
         else:
             self.columns['Salinity'] = NULL_VAL_INT
             # flag warning
-            warning_messages.append([
+            warning_messages.append(
                 f'No salinity measurement included in this record.  '
                 f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
-            ])
+            )
 
     def set_oxygen(self, warning_messages):
         if 'oxygen_ml_l' in self.annotation['ancillary_data']:
@@ -312,10 +311,10 @@ class AnnotationRow:
         else:
             self.columns['Oxygen'] = NULL_VAL_INT
             # flag warning
-            warning_messages.append([
+            warning_messages.append(
                 f'No oxygen measurement included in this record.  '
                 f'Concept: {self.annotation["concept"]}  UUID:{self.annotation["observation_uuid"]}'
-            ])
+            )
 
     def set_image_paths(self):
         images = self.annotation['image_references']

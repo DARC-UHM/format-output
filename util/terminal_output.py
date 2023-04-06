@@ -26,15 +26,15 @@ class Messages:
 
     @staticmethod
     def dive_header():
-        print("\n%-35s%-30s%-30s%-s" % ('Dive Name', 'Annotations Found', 'Duplicates Removed', 'Status'))
-        print(
-            '=========================================================================================================')
+        print(f"\n{Color.BOLD}%-35s%-30s%-30s%-s" % ('Dive Name', 'Annotations Found', 'Duplicates Removed', 'Status'))
+        print('============================================================================================'
+              f'============={Color.END}')
 
     @staticmethod
     def worms_header():
-        print('\n\nWoRMS check:')
+        print(f'\n\n{Color.BOLD}WoRMS check:')
         print("\n%-40s %-35s%-15s%-15s%-15s%-15s" %
               ('VARS Concept Name', 'WoRMS Query', 'Taxon Record', 'Taxon Tree', 'Vernaculars',
                'Synonyms (VARS)'))
         print('============================================================================================'
-              '============================================')
+              f'============================================{Color.END}')
