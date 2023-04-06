@@ -3,6 +3,7 @@ import requests
 
 from util.constants import NULL_VAL_STRING
 from concept.concept import Concept
+from util.terminal_output import Color
 
 
 class ConceptHandler:
@@ -16,6 +17,16 @@ class ConceptHandler:
 
         if 'NEED_PARENT' in concept.concept_words:
             self.find_parent()
+
+    def fetch_worms(self):
+        """ Easily call both WoRMS queries """
+        self.fetch_worms_aphia_record()
+        self.fetch_worms_taxon_tree()
+
+    def fetch_vars(self):
+        """ Easily call both VARS kb queries """
+        self.fetch_vernaculars()
+        self.fetch_vars_synonyms()
 
     def find_parent(self):
         """
@@ -51,7 +62,8 @@ class ConceptHandler:
             sys.stdout.flush()
             return
 
-        print("%-40s %-35s" % (self.concept.concept_name, " ".join(self.concept.concept_words)), end='')
+        print(f"{Color.BOLD}%-40s %-35s{Color.END}" %
+              (self.concept.concept_name, " ".join(self.concept.concept_words)), end='')
         sys.stdout.flush()
 
         with requests.get('https://www.marinespecies.org/rest/AphiaRecordsByName/' +
@@ -60,7 +72,7 @@ class ConceptHandler:
                 json_records = r.json()
                 self.find_accepted_record(json_records, self.concept.concept_words)
             else:
-                print(f'{"No match" : <15}', end='')
+                print(f'{Color.YELLOW}{"No match" : <15}{Color.END}', end='')
                 # Check for extra bits
                 for i in range(len(self.concept.concept_words)):
                     if self.concept.concept_words[i] == 'shrimp':
@@ -72,7 +84,8 @@ class ConceptHandler:
                     # skip this query if the name is exactly the same as the first name we used
                     if self.concept.concept_name == ' '.join(self.concept.concept_add_words):
                         break
-                    print("\n%-40s %-35s" % ('', " ".join(self.concept.concept_add_words)), end='')
+                    print(f"\n{Color.BOLD}%-40s %-35s{Color.END}" %
+                          ('', " ".join(self.concept.concept_add_words)), end='')
                     sys.stdout.flush()
                     with requests.get('https://www.marinespecies.org/rest/AphiaRecordsByName/' + '%20'.join(
                             self.concept.concept_add_words) + '?like=false&marine_only=true&offset=1') as r2:
@@ -80,7 +93,7 @@ class ConceptHandler:
                             json_records = r2.json()
                             self.find_accepted_record(json_records, self.concept.concept_words)
                         else:
-                            print(f'{"No match" : <15}', end='')
+                            print(f'{Color.YELLOW}{"No match" : <15}{Color.END}', end='')
                             self.concept.descriptors.append(word)
                             self.concept.concept_add_words.remove(word)
                 if len(self.concept.concept_add_words) == 0:
@@ -139,7 +152,7 @@ class ConceptHandler:
                 if record_list:
                     self.check_status(record_list[0])
                 else:
-                    print('No match')
+                    print(f'{Color.RED}{"No match" : <15}{Color.END}')
                     self.concept.concept_name_flag = True
 
     def check_status(self, json_record):
@@ -148,14 +161,14 @@ class ConceptHandler:
         If it doesn't, it fetches the 'valid name' record that the unaccepted record points to.
         """
         if json_record['status'] == 'accepted':
-            print(f'{" ✓" : <15}', end='')
+            print(f'{Color.GREEN}{" ✓" : <15}{Color.END}', end='')
             sys.stdout.flush()
             self.found_worms_match = True
             self.concept.load_from_record(json_record)
         else:
-            print('Unaccepted')
+            print(f'{Color.RED}Unaccepted{Color.END}')
             self.unaccepted_names.append(json_record['scientificname'])
-            print("%-40s %-35s" % ('', json_record['valid_name']), end='')
+            print(f"{Color.BOLD}%-40s %-35s{Color.END}" % ('', json_record['valid_name']), end='')
             sys.stdout.flush()
             with requests.get('https://www.marinespecies.org/rest/AphiaRecordsByName/' + json_record['valid_name'] +
                               '?like=false&marine_only=true&offset=1') as r:
@@ -178,10 +191,10 @@ class ConceptHandler:
                 if r.status_code == 200:
                     taxon_tree = r.json()
                     self.concept.flatten_taxa_tree(taxon_tree, self.concept.taxon_ranks)
-                    print(f'{" ✓" : <15}', end='')
+                    print(f'{Color.GREEN}{" ✓" : <15}{Color.END}', end='')
                     sys.stdout.flush()
                 else:
-                    print(f'{"No match" : <15}')
+                    print(f'{Color.RED}{"No match" : <15}{Color.END}')
 
     def fetch_vernaculars(self):
         """
@@ -200,7 +213,7 @@ class ConceptHandler:
                             vern_names = f'{vern_names} | {record["vernacular"]}'
                         else:
                             vern_names = record["vernacular"]
-                print(f'{" ✓" : <15}', end='')
+                print(f'{Color.GREEN}{" ✓" : <15}{Color.END}', end='')
                 sys.stdout.flush()
             else:
                 print(f'{"None found" : <15}', end='')
@@ -223,5 +236,5 @@ class ConceptHandler:
                     # names starting with a lowercase letter are common names, not of interest
                     if syn[0].isupper():
                         nicknames.append(syn)
-                print(' ✓') if nicknames else print('None found')
+                print(f'{Color.GREEN} ✓{Color.END}') if nicknames else print('None found')
                 self.concept.synonyms = nicknames

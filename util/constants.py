@@ -196,13 +196,3 @@ SUFFIXES_MAN = ['art', 'cem', 'fib', 'met', 'tra', 'ord', 'made', 'wre', 'pla']
 
 ALL_AFFIXES = SUFFIXES + SUFFIXES_FORMS + PREFIXES + SUFFIXES_DEAD + SUFFIXES_MAN
 ALL_AFFIXES.sort(key=len, reverse=True)
-
-# column headers for qaqc error/warning messages
-OBSERVATION_HEADERS = ['Video sequence name',
-                       'Observation UUID',
-                       'Concept',
-                       'Recorded timestamp',
-                       'Field',
-                       'Link value',
-                       'Message type',
-                       'Message']

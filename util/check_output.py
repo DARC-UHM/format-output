@@ -2,7 +2,7 @@ import csv
 
 # Define the file paths for the two TSV files
 test_file = '/Users/darc/Desktop/test.tsv'  # the file we want to test
-expected_file = '/Users/darc/Desktop/expected_3.tsv'  # the file we want to check against
+expected_file = '/Users/darc/Desktop/test1.tsv'  # the file we want to check against
 
 with open(test_file, "r", encoding='ISO-8859-1') as test, open(expected_file, 'r', encoding='ISO-8859-1') as expected:
     test_reader = csv.reader(test, delimiter="\t")
