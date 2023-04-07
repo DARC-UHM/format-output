@@ -124,12 +124,6 @@ class TestFunctions:
         assert test_dupes_removed == 0
         assert sample_report_records_collapsed == sample_report_records_collapsed
 
-    # associated taxa checks:
-    # - multiple animals on host
-    # - upon is not in concept list (fail)
-    # - no concept name even though uponIsCreature is true
-    # sub 10 from test.tsv
-
     def test_find_associated_taxa_host_before(self):
         """ Check for a host recorded before associate """
         find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
@@ -149,16 +143,17 @@ class TestFunctions:
         warnings = []
         find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
                              warning_messages=warnings)
-        assert sample_records_for_associates[2][ASSOCIATED_TAXA] == 'NA'
-        assert '974406ba-5336-4ceb-4361-26ca178fd91e | NA134-001-02-B-MCZ' in warnings[1]
+        assert sample_records_for_associates[2][ASSOCIATED_TAXA] == NULL_VAL_STRING
+        print(warnings)
+        assert 'Upon not found in previous records' in warnings[1][3]
 
     def test_find_associated_taxa_prev_dive(self):
         """ Associate not found in current dive, but exists in previous dive (fail) """
         warnings = []
         find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
                              warning_messages=warnings)
-        assert sample_records_for_associates[1][ASSOCIATED_TAXA] == 'NA'
-        assert '95b32fce-afd5-4f62-1a62-fcadc6f4d61e | NA134-001-01-C-GSO' in warnings[0]
+        assert sample_records_for_associates[1][ASSOCIATED_TAXA] == NULL_VAL_STRING
+        assert 'Upon not found in previous records' in warnings[0][3]
 
     def test_find_associated_taxa_host_same_concept(self):
         """ Check for a record where the host and the associate are the same concept """
@@ -166,3 +161,34 @@ class TestFunctions:
                              warning_messages=[])
         assert sample_records_for_associates[3][ASSOCIATED_TAXA] == 'Narella sp.'
         assert 'associate touching host' in sample_records_for_associates[3][OCCURRENCE_COMMENTS]
+
+    def test_find_associated_taxa_multiple_associates(self):
+        """ Check for a record where multiple associates are on the same host """
+        find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
+                             warning_messages=[])
+        assert sample_records_for_associates[7][ASSOCIATED_TAXA] == 'Keratoisididae unbranched | Alternatipathes cf. alternata'
+        assert 'associate touching host' in sample_records_for_associates[7][OCCURRENCE_COMMENTS]
+
+    def test_find_associated_taxa_upon_not_in_concepts(self):
+        """ Check for an 'upon' that is not in concepts """
+        warnings = []
+        find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
+                             warning_messages=warnings)
+        assert sample_records_for_associates[20][ASSOCIATED_TAXA] == NULL_VAL_STRING
+        assert 'My Special Concept' in warnings[2][3]
+
+    def test_find_associated_taxa_upon_over_one_min(self):
+        """ Check for an 'upon' that is reported over one minute after its host """
+        warnings = []
+        find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
+                             warning_messages=warnings)
+        assert sample_records_for_associates[18][ASSOCIATED_TAXA] == 'Ophiacanthidae'
+        assert 'greater than 1 minute' in warnings[3][3]
+
+    def test_find_associated_taxa_upon_over_five_mins(self):
+        """ Check for an 'upon' that is reported over five minutes after its host """
+        warnings = []
+        find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
+                             warning_messages=warnings)
+        assert sample_records_for_associates[18][ASSOCIATED_TAXA] == 'Ophiacanthidae'
+        assert 'greater than 5 minutes' in warnings[4][3]
