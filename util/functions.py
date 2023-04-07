@@ -65,7 +65,7 @@ def extract_uuid(json_object: Dict) -> str:
 def add_meters(accuracy: str) -> str:
     """ Takes input and appends an 'm' to the end if one is not there already """
     if accuracy[-1:] != 'm':
-        accuracy = accuracy + ' m'
+        accuracy = accuracy + 'm'
     return accuracy
 
 
@@ -159,7 +159,6 @@ def collapse_id_records(report_records: list) -> int:
     return dupes_removed
 
 
-# todo add tests
 def find_associated_taxa(report_records: list, concepts: Dict, warning_messages: list):
     """
     Fills in the AssociatedTaxa fields: retrieves records from the output table that have another VARS concept listed
@@ -174,9 +173,9 @@ def find_associated_taxa(report_records: list, concepts: Dict, warning_messages:
                 observation_time = get_date_and_time(associate_record)
                 found = False
                 for j in range(i + 10, -1, -1):
-                    ''' checks backward, looking for the most recent host w/ matching name. we start at i + 10 because 
+                    """ checks backward, looking for the most recent host w/ matching name. we start at i + 10 because 
                         there can be multiple records with the exact same timestamp, and one of those records could be 
-                        the 'upon' '''
+                        the 'upon' """
                     # to catch index out of range exception
                     while j >= len(report_records):
                         j -= 1

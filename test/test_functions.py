@@ -22,12 +22,12 @@ class TestFunctions:
     def test_get_associations_list(self):
         test_list = get_associations_list(annotations[1], 's2')
         assert test_list == [{
-                "uuid": "a1c3990e-3566-4832-4d6d-6e4fb25dd41e",
-                "link_name": "s2",
-                "to_concept": "mantra",
-                "link_value": "nil",
-                "mime_type": "text/plain"
-            }]
+            "uuid": "a1c3990e-3566-4832-4d6d-6e4fb25dd41e",
+            "link_name": "s2",
+            "to_concept": "mantra",
+            "link_value": "nil",
+            "mime_type": "text/plain"
+        }]
 
     def test_get_associations_list_none(self):
         test_list = get_associations_list(annotations[0], 's2')
@@ -72,11 +72,11 @@ class TestFunctions:
 
     def test_add_meters_no_m(self):
         accuracy = add_meters('50')
-        assert accuracy == '50 m'
+        assert accuracy == '50m'
 
     def test_add_meters_m(self):
-        accuracy = add_meters('50 m')
-        assert accuracy == '50 m'
+        accuracy = add_meters('50m')
+        assert accuracy == '50m'
 
     def test_convert_username_to_name(self):
         test_name = convert_username_to_name('SarahBingo')
@@ -115,7 +115,54 @@ class TestFunctions:
         assert test_translated == ''
 
     def test_collapse_id_records(self):
-        temp_records = sample_report_records
-        test_dupes_removed = collapse_id_records(temp_records)
+        test_dupes_removed = collapse_id_records(sample_report_records)
         assert test_dupes_removed == 1
-        assert temp_records == sample_report_records[1:]
+        assert sample_report_records == sample_report_records_collapsed
+
+    def test_collapse_id_records_none(self):
+        test_dupes_removed = collapse_id_records(sample_report_records_collapsed)
+        assert test_dupes_removed == 0
+        assert sample_report_records_collapsed == sample_report_records_collapsed
+
+    # associated taxa checks:
+    # - multiple animals on host
+    # - upon is not in concept list (fail)
+    # - no concept name even though uponIsCreature is true
+    # sub 10 from test.tsv
+
+    def test_find_associated_taxa_host_before(self):
+        """ Check for a host recorded before associate """
+        find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
+                             warning_messages=[])
+        assert sample_records_for_associates[18][ASSOCIATED_TAXA] == 'Ophiacanthidae'
+        assert 'associate touching host' in sample_records_for_associates[18][OCCURRENCE_COMMENTS]
+
+    def test_find_associated_taxa_host_same_time(self):
+        """ Check for a host recorded at the same time as the associate """
+        find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
+                             warning_messages=[])
+        assert sample_records_for_associates[14][ASSOCIATED_TAXA] == 'Ophiacanthidae'
+        assert 'associate touching host' in sample_records_for_associates[14][OCCURRENCE_COMMENTS]
+
+    def test_find_associated_taxa_host_future(self):
+        """ Check for a host recorded after the associate (fail) """
+        warnings = []
+        find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
+                             warning_messages=warnings)
+        assert sample_records_for_associates[2][ASSOCIATED_TAXA] == 'NA'
+        assert '974406ba-5336-4ceb-4361-26ca178fd91e | NA134-001-02-B-MCZ' in warnings[1]
+
+    def test_find_associated_taxa_prev_dive(self):
+        """ Associate not found in current dive, but exists in previous dive (fail) """
+        warnings = []
+        find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
+                             warning_messages=warnings)
+        assert sample_records_for_associates[1][ASSOCIATED_TAXA] == 'NA'
+        assert '95b32fce-afd5-4f62-1a62-fcadc6f4d61e | NA134-001-01-C-GSO' in warnings[0]
+
+    def test_find_associated_taxa_host_same_concept(self):
+        """ Check for a record where the host and the associate are the same concept """
+        find_associated_taxa(report_records=sample_records_for_associates, concepts=sample_concepts,
+                             warning_messages=[])
+        assert sample_records_for_associates[3][ASSOCIATED_TAXA] == 'Narella sp.'
+        assert 'associate touching host' in sample_records_for_associates[3][OCCURRENCE_COMMENTS]

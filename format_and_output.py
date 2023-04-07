@@ -227,7 +227,6 @@ for dive_name in sequence_names:
         report_records.append(record)
 
     dupes_removed = collapse_id_records(report_records)
-    find_associated_taxa(report_records, concepts, warning_messages)
 
     if load_concepts:
         print('%-30s' % str(dupes_removed), end='')
