@@ -24,7 +24,7 @@ class Messages:
               '>> '
 
     @staticmethod
-    def dive_not_found(dive_name):
+    def dive_not_found(dive_name: str):
         print(f'\n{Color.RED}###################################################################')
         print(f'ERROR: Dive "{dive_name}" not found in Dives.csv file.')
         print('This dive must be added to Dives.csv to continue processing.')

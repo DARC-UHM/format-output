@@ -1,3 +1,5 @@
+from typing import Dict
+
 from util.constants import *
 
 
@@ -24,7 +26,7 @@ class Concept:
 
         self.analyze_concept_name()
 
-    def flatten_taxa_tree(self, tree, flat):
+    def flatten_taxa_tree(self, tree: Dict, flat: Dict):
         """ Recursive function taking a taxonomy tree returned from WoRMS API. Flattens tree and saves to self. """
         flat[tree['rank']] = tree['scientificname']
         if tree['child'] is not None:
@@ -35,7 +37,7 @@ class Concept:
                 if tree['rank'] == ranks[i]:
                     flat[ranks[i - 1]] = f'cf. {" ".join(self.cf_flag)}'  # add 'cf. [concept]' to the rank below
 
-    def load_from_record(self, record):
+    def load_from_record(self, record: Dict):
         """ Assigns concept values given json object """
         self.aphia_id = record['AphiaID']
         self.scientific_name = record['scientificname']

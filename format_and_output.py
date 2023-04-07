@@ -104,7 +104,9 @@ warning_messages = []  # list of items to review (QA/QC)
 if load_concepts:
     Messages.dive_header()
 
-# Iterates over each dive listed in the input CSV file
+###################################################################
+# Outer loop: iterates over each dive listed in the input CSV file
+###################################################################
 for dive_name in sequence_names:
     first_round = True  # to print header in terminal
     report_records = []  # array of concepts records for the dive
@@ -124,9 +126,10 @@ for dive_name in sequence_names:
     # Tries to get the current dive from Dives.csv, links information from Dives.csv to the current dive
     dive_row = next((row for row in dive_info if row[0] in dive_name or dive_name in row[0]), None)
     if not dive_row:
-        Messages.dive_not_found(dive_name)
+        Messages.dive_not_found(dive_name=dive_name)
         break
 
+    # Set all blank values to the null val string
     for i in range(len(dive_row)):
         if dive_row[i] == '':
             dive_row[i] = NULL_VAL_STRING
@@ -165,23 +168,27 @@ for dive_name in sequence_names:
             start_time = parse_datetime(report_json['media'][i]['start_timestamp'])
             dive_video_timestamps.append([start_time, start_time + timedelta(milliseconds=media['duration_millis'])])
 
-    # Loops through all annotations and fills out the fields required by DSCRTP
+    #############################################################################################################
+    # Main inner loop: iterates through all annotations for the dive and fills out the fields required by DSCRTP
+    #############################################################################################################
     for annotation in report_json['annotations']:
         concept_name = annotation['concept']
 
-        annotation_row = AnnotationRow(annotation)
+        annotation_row = AnnotationRow(annotation)  # object to store all annotation information
 
+        # populate simple data from annotation & Dives.csv
         annotation_row.set_simple_static_data()
-        annotation_row.set_dive_info(dive_dict)
-        annotation_row.set_sample_id(dive_name)
+        annotation_row.set_dive_info(dive_info=dive_dict)
+        annotation_row.set_sample_id(dive_name=dive_name)
 
+        # get concept info: check WoRMS if specified by user OR if concept info missing from save file
         if concept_name != 'none':
             if concept_name not in concepts:  # if concept name not in saved concepts file, search WoRMS
                 if first_round:  # for printing worms header
                     first_round = False
                     Messages.worms_header()
-                concept = Concept(concept_name)
-                cons_handler = ConceptHandler(concept)
+                concept = Concept(concept_name=concept_name)
+                cons_handler = ConceptHandler(concept=concept)
                 cons_handler.fetch_worms()
                 cons_handler.fetch_vars()
                 concepts[concept_name] = {
@@ -195,38 +202,41 @@ for dive_name in sequence_names:
                     'vernacular_name': concept.vernacular_names
                 }
 
-            annotation_row.set_concept_info(concepts)
+            annotation_row.set_concept_info(concepts=concepts)  # populate annotation row object with concept info
 
-        # loop through timestamps and check if recorded_timestamps is in timestamps
+        # loop through timestamps and check if recorded_timestamps is in retrieved timestamp ranges
         media_type = 'still image'
         for i in range(len(dive_video_timestamps)):
             if dive_video_timestamps[i][0] <= annotation_row.recorded_time.timestamp <= dive_video_timestamps[i][1]:
                 media_type = 'video observation'
                 break
-        annotation_row.set_media_type(media_type)
-        annotation_row.set_id_comments()
-        annotation_row.set_pop_quantity_and_cat_abundance()
-        annotation_row.set_size(warning_messages)
-        annotation_row.set_condition_comment(warning_messages)
-        annotation_row.set_comments_and_sample()
 
         # if there is a cmecs geo form, update
         if get_association(annotation, 'habitat'):
             current_cmecs_geo_form = f'{get_association(annotation, "megahabitat")["to_concept"]}, ' \
                                      f'{get_association(annotation, "habitat")["to_concept"]}'
+
+        # populate the rest of the annotation data
+        annotation_row.set_media_type(media_type=media_type)
+        annotation_row.set_id_comments()
+        annotation_row.set_pop_quantity_and_cat_abundance()
+        annotation_row.set_size(warning_messages=warning_messages)
+        annotation_row.set_condition_comment(warning_messages=warning_messages)
+        annotation_row.set_comments_and_sample()
         annotation_row.set_cmecs_geo(cmecs_geo=current_cmecs_geo_form)
-        annotation_row.set_habitat(warning_messages)
+        annotation_row.set_habitat(warning_messages=warning_messages)
         annotation_row.set_upon()
         annotation_row.set_id_ref()
-        annotation_row.set_temperature(warning_messages)
-        annotation_row.set_salinity(warning_messages)
-        annotation_row.set_oxygen(warning_messages)
+        annotation_row.set_temperature(warning_messages=warning_messages)
+        annotation_row.set_salinity(warning_messages=warning_messages)
+        annotation_row.set_oxygen(warning_messages=warning_messages)
         annotation_row.set_image_paths()
 
-        record = [annotation_row.columns[x] for x in HEADERS]
-        report_records.append(record)
+        record = [annotation_row.columns[x] for x in HEADERS]  # convert to list
+        report_records.append(record)  # append annotation to a list of all annotations from this dive
 
-    dupes_removed = collapse_id_records(report_records)
+    # remove duplicates (ie records with matching id reference numbers)
+    dupes_removed = collapse_id_records(report_records=report_records)
 
     if load_concepts:
         print('%-30s' % str(dupes_removed), end='')
@@ -234,7 +244,8 @@ for dive_name in sequence_names:
     else:
         print(f'\n{str(dupes_removed)} duplicate records removed')
 
-    find_associated_taxa(report_records, concepts, warning_messages)
+    # find associates and hosts
+    find_associated_taxa(report_records=report_records, concepts=concepts, warning_messages=warning_messages)
 
     # translate substrate (upon) names - this must be done after finding the associated taxa (relies on concept name)
     for i in range(len(report_records)):
@@ -251,20 +262,24 @@ for dive_name in sequence_names:
     full_report_records += report_records
     print(f'{Color.GREEN}Complete{Color.END}')
 
-# Save everything into output files
+# Save everything to output file
 print('\nSaving output file...')
 os.chdir(save_folder)
+
 with open('concepts.json', 'w') as file:
     json.dump(concepts, file)
 os.chdir(output_file_path)
+
 with open(output_file_name + '.tsv', 'w', newline='', encoding='utf-8') as file:
     csv_writer = csv.writer(file, delimiter='\t')
     csv_writer.writerow(HEADERS[:88])
     for record in full_report_records:
         csv_writer.writerow(record[:88])
+
 print(f'\n{Color.BOLD}Output file saved to:{Color.END} {Color.UNDERLINE}{output_file_path}{Color.END}')
 print(f'\n{Color.YELLOW}There are {len(warning_messages)} warning messages.{Color.END}\n')
 
+# Print warning messages
 if len(warning_messages) > 0:
     print(f'View messages?')
     view_messages = input('\nEnter "y" to view, or press enter to skip >> ').lower() in ['y', 'yes']

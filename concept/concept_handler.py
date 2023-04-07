@@ -1,4 +1,6 @@
 import sys
+from typing import Dict
+
 import requests
 
 from util.constants import NULL_VAL_STRING
@@ -105,7 +107,7 @@ class ConceptHandler:
                     if word not in self.concept.scientific_name and word not in self.unaccepted_names:
                         self.concept.descriptors.append(word)
 
-    def find_accepted_record(self, json_records, concept_words):
+    def find_accepted_record(self, json_records: list, concept_words: list):
         """
         Finds matching record in API query from WoRMS:
         http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/[VARS_CONCEPT_NAME]
@@ -155,7 +157,7 @@ class ConceptHandler:
                     print(f'{Color.RED}{"No match" : <15}{Color.END}')
                     self.concept.concept_name_flag = True
 
-    def check_status(self, json_record):
+    def check_status(self, json_record: Dict):
         """
         Checks a record to see if it has a status of 'accepted'. If it does, it uses that record to load concept info.
         If it doesn't, it fetches the 'valid name' record that the unaccepted record points to.
