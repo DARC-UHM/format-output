@@ -126,7 +126,7 @@ for dive_name in sequence_names:
     # Tries to get the current dive from Dives.csv, links information from Dives.csv to the current dive
     dive_row = next((row for row in dive_info if row[0] in dive_name or dive_name in row[0]), None)
     if not dive_row:
-        Messages.dive_not_found(dive_name=dive_name)
+        print(Messages.dive_not_found(dive_name=dive_name))
         break
 
     # Set all blank values to the null val string

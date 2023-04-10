@@ -184,10 +184,19 @@ SUB_CONCEPTS = {
     'tube': 'Animal-made tube'
 }
 
+# VARS shorthand for substrates
 ROOTS = ['sed', 'nodmn', 'peb', 'cob', 'bou', 'blk', 'bed', 'orgcn', 'orgal',
          'orgrho', 'dead', 'man', 'rov', 'ven', 'org', 'tube']
+
+# VARS substrates that don't have a shorthand
 SAMES = ['organism', 'man-made trash', 'Animal-made tube', 'debris',
          'sediment', 'pebble', 'cobble', 'boulder', 'bedrock']
+
+"""
+Suffixes and prefixes are additional descriptors added to a root. For example, 'scbedmn' consists of a prefix ('sc'), 
+a root ('bed'), and a suffix ('mn'). These will be added together and the final translation will be 
+'sediment-covered bedrock with manganese crust'.
+"""
 SUFFIXES = ['mn', 'pi', 'a', 't', 'po', 'hp']
 SUFFIXES_FORMS = ['led', 'cre', 'cha', 'cav', 'cra', 'bu', 'mo', 'ho', 'tr', 'du']
 PREFIXES = ['dik', 'fl', 'sc', 'tu', 'mu', 'ri', 'col', 'c', 'b', 'l', 'm']

@@ -4,7 +4,7 @@ from util.constants import *
 
 
 class Concept:
-    """ Class to store information retrieved from WoRMS/VARS kb. """
+    """ Stores information retrieved from WoRMS/VARS kb. """
 
     def __init__(self, concept_name: str):
         self.concept_name = concept_name        # the given concept name from the VARS annotation record

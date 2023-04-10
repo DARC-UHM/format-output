@@ -8,15 +8,28 @@ from util.functions import get_association, convert_username_to_name, get_associ
 from util.terminal_output import Color
 
 
+# Reporter values - update these if reporter changes
+REPORTER = 'Bingo, Sarah'
+REPORTER_EMAIL = 'sarahr6@hawaii.edu'
+
+
 # todo add tests
 class AnnotationRow:
+    """ Stores information for a specific annotation. See util.constants.HEADERS for a list of all the columns. """
+
     def __init__(self, annotation: Dict):
-        self.columns = dict(zip(HEADERS, [NULL_VAL_STRING] * len(HEADERS)))
+        """
+        :param dict annotation: A VARS annotation object retrieved from the HURL server.
+        """
+        self.columns = dict(zip(HEADERS, [NULL_VAL_STRING] * len(HEADERS)))  # inits dict of header keys with NA vals
         self.annotation = annotation
         self.recorded_time = TimestampProcessor(self.annotation['recorded_timestamp'])
         self.observation_time = TimestampProcessor(self.annotation['observation_timestamp'])
 
     def set_simple_static_data(self):
+        """
+        Sets simple annotation data directly from the annotation JSON object.
+        """
         self.columns['VARSConceptName'] = self.annotation['concept']
         self.columns['TrackingID'] = self.annotation['observation_uuid']
         self.columns['AphiaID'] = NULL_VAL_INT
@@ -36,8 +49,8 @@ class AnnotationRow:
         self.columns['VerbatimLongitude'] = self.annotation['ancillary_data']['longitude']
         self.columns['OtherData'] = 'CTD'
         self.columns['Modified'] = datetime.now(timezone.utc).strftime('%Y-%m-%d')
-        self.columns['Reporter'] = 'Bingo, Sarah'
-        self.columns['ReporterEmail'] = 'sarahr6@hawaii.edu'
+        self.columns['Reporter'] = REPORTER  # defined at top of file
+        self.columns['ReporterEmail'] = REPORTER_EMAIL  # ""
 
         self.columns['EntryDate'] = ''  # this column is left blank, to be filled by DSCRTP admin
 
@@ -52,10 +65,20 @@ class AnnotationRow:
         self.columns['WeightInKg'] = NULL_VAL_INT
 
     def set_sample_id(self, dive_name: str):
+        """
+        Sets the SampleID column with the properly formatted SampleID: [DIVE_NAME]_[TIMESTAMP]
+
+        :param str dive_name: The name of the dive, e.g. 'Deep Discoverer 14040201'
+        """
         self.columns['SampleID'] = dive_name.replace(' ',
                                                      '_') + '_' + self.recorded_time.get_formatted_timestamp()
 
     def set_dive_info(self, dive_info: dict):
+        """
+        Sets dive-related annotation data from passed dive_info dict.
+
+        :param dict dive_info: A dictionary of information about the dive (imported from Dives.csv).
+        """
         self.columns['Citation'] = dive_info['Citation'] if dive_info['Citation'] != NULL_VAL_STRING else ''
         self.columns['Repository'] = dive_info['DataProvider'].split(';')[0] + \
                                      ' | University of Hawaii Deep-sea Animal Research Center'
@@ -82,6 +105,11 @@ class AnnotationRow:
         self.columns['DataContact'] = dive_info['DataContact']
 
     def set_concept_info(self, concepts: dict):
+        """
+        Sets annotation's concept info from saved concept dict.
+
+        :param dict concepts: Dictionary of all locally saved concepts.
+        """
         concept_name = self.annotation['concept']
         scientific_name = concepts[concept_name]['scientific_name']
         aphia_id = concepts[concept_name]['aphia_id']
@@ -116,6 +144,11 @@ class AnnotationRow:
             if concepts[concept_name]['synonyms'] else NULL_VAL_STRING
 
     def set_rank(self, rank: str, val: str):
+        """
+
+        :param str rank:
+        :param str val:
+        """
         self.columns[rank] = val
 
     def set_media_type(self, media_type: str):

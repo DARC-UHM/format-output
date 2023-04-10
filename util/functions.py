@@ -78,7 +78,12 @@ def convert_username_to_name(vars_username: str) -> str:
 
 
 def translate_substrate_code(code: str) -> str:
-    """ Translates substrate codes into human language """
+    """
+    Translates substrate codes into human language.
+
+    :param str code: The VARS code of the substrate, e.g. 'peb'
+    :return str: The code translated into human language
+    """
     if code in SAMES:
         return code
     substrate_word_list = []

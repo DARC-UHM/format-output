@@ -24,11 +24,19 @@ class Messages:
               '>> '
 
     @staticmethod
-    def dive_not_found(dive_name: str):
-        print(f'\n{Color.RED}###################################################################')
-        print(f'ERROR: Dive "{dive_name}" not found in Dives.csv file.')
-        print('This dive must be added to Dives.csv to continue processing.')
-        print(f'###################################################################\n{Color.END}')
+    def dive_not_found(dive_name: str) -> str:
+        """
+        Returns an error message about missing dive information.
+
+        :param str dive_name: Name of the dive
+        :return str: Error message
+        """
+        return(
+            f'\n{Color.RED}###################################################################' +
+            f'\nERROR: Dive "{dive_name}" not found in Dives.csv file.' +
+            '\nThis dive must be added to Dives.csv to continue processing.' +
+            f'\n###################################################################\n{Color.END}'
+        )
 
     @staticmethod
     def dive_header():

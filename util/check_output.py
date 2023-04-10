@@ -1,5 +1,11 @@
 import csv
 
+""" 
+Script that checks every cell of two TSV files and outputs the number of differences between the two files and the
+number of differences in each column. It also has the option to view all of the values in a specific row that are 
+different.
+"""
+
 # Define the file paths for the two TSV files
 test_file = '/Users/darc/Desktop/test.tsv'  # the file we want to test
 expected_file = '/Users/darc/Desktop/test1.tsv'  # the file we want to check against
