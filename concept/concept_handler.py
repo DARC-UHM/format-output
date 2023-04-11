@@ -9,9 +9,14 @@ from util.terminal_output import Color
 
 
 class ConceptHandler:
-    """ Handles all API requests required to populate Concept fields. Prints status info to terminal. """
+    """
+    Handles all API requests required to populate Concept fields. Prints status info to terminal.
+    """
 
     def __init__(self, concept: Concept):
+        """
+        :param Concept concept: The concept object to update.
+        """
         self.concept = concept                  # concept to update
         self.phylum = ''                        # necessary for confirming correct worms record
         self.found_worms_match = False          # to let user know if matching record has been found
@@ -21,12 +26,16 @@ class ConceptHandler:
             self.find_parent()
 
     def fetch_worms(self):
-        """ Easily call both WoRMS queries """
+        """
+        Easily call both WoRMS queries.
+        """
         self.fetch_worms_aphia_record()
         self.fetch_worms_taxon_tree()
 
     def fetch_vars(self):
-        """ Easily call both VARS kb queries """
+        """
+        Easily call both VARS kb queries.
+        """
         self.fetch_vernaculars()
         self.fetch_vars_synonyms()
 
@@ -112,14 +121,19 @@ class ConceptHandler:
         Finds matching record in API query from WoRMS:
         http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/[VARS_CONCEPT_NAME]
 
+        :param list json_records: A list of JSON objects returned by WoRMS that match the given concept name.
+        :param list concept_words: The words we should use to query WoRMS.
+        """
+        """
         Problem: There are multiple concepts with the same scientific name.
-            e.g. Stolonifera: there is one concept named Stolonifera in phylum Bryozoa and another concept named
-            Stolonifera in phylum Cnidaria. We want the one from Cnidaria, but its status is unaccepted (so we can't
-            simply check the concept's status in the response JSON and use that concept).
+        e.g. Stolonifera: there is one concept named Stolonifera in phylum Bryozoa and another concept named
+        Stolonifera in phylum Cnidaria. We want the one from Cnidaria, but its status is unaccepted (so we can't
+        simply check the concept's status in the response JSON and use that concept).
 
         Solution: If there is more than one object in the response body, get the concept's phylum by doing a VARS API
-            query with the concept name. Use the object in the response whose phylum matches the VARS phylum. If there
-            is more than one match, go with the match that is accepted.
+        query with the concept name. Use the object in the response whose phylum matches the VARS phylum. If there
+        is more than one match, go with the match that is accepted.
+
         """
         if len(json_records) == 1:
             # there is only one record, use it
@@ -161,6 +175,8 @@ class ConceptHandler:
         """
         Checks a record to see if it has a status of 'accepted'. If it does, it uses that record to load concept info.
         If it doesn't, it fetches the 'valid name' record that the unaccepted record points to.
+
+        :param Dict json_record: The record to check.
         """
         if json_record['status'] == 'accepted':
             print(f'{Color.GREEN}{" ✓" : <15}{Color.END}', end='')
@@ -180,7 +196,7 @@ class ConceptHandler:
 
     def fetch_worms_taxon_tree(self):
         """
-        Pulls taxon tree info from WoRMS:
+        Pulls phylogeny/taxon tree info from WoRMS:
         https://www.marinespecies.org/rest/AphiaClassificationByAphiaID/[APHIA_ID]
         """
         if self.concept.concept_name == 'eggs' or self.concept.concept_name == 'eggcase':

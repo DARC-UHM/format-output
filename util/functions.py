@@ -10,7 +10,13 @@ from util.terminal_output import Color
 
 
 def get_association(annotation: Dict, link_name: str) -> dict:
-    """ Obtains an association value from the annotation data structure """
+    """
+    Obtains an association value from the annotation data structure.
+
+    :param Dict annotation: The complete annotation dictionary.
+    :param str link_name: The specific key we want to get the value for.
+    :return dict: The matching value dict.
+    """
     for association in annotation['associations']:
         if association['link_name'] == link_name:
             return association
@@ -18,7 +24,14 @@ def get_association(annotation: Dict, link_name: str) -> dict:
 
 
 def get_associations_list(annotation: Dict, link_name: str) -> list:
-    """ Obtains a list association values from the annotation data structure """
+    """
+    Obtains a list of association values from the annotation data structure (for when there is more than one
+    association).
+
+    :param Dict annotation: The complete annotation dictionary.
+    :param str link_name: The specific key we want to get the value for.
+    :return list: A list of the matching value dicts.
+    """
     association_matches = []
     for association in annotation['associations']:
         if association['link_name'] == link_name:
@@ -27,7 +40,12 @@ def get_associations_list(annotation: Dict, link_name: str) -> list:
 
 
 def grain_size(sub: list) -> int:
-    """ Gets the relative grain size of a substrate concept """
+    """
+    Gets the relative grain size of a substrate concept.
+
+    :param list sub: The substrate.
+    :return int: The position of the substrate in ROOTS.
+    """
     for i in range(len(ROOTS)):
         if ROOTS[i] in sub:
             return i
@@ -35,12 +53,22 @@ def grain_size(sub: list) -> int:
 
 
 def get_date_and_time(record: Dict) -> datetime:
-    """ Returns a datetime timestamp from a record """
+    """
+    Returns a datetime timestamp from a completed annotation record.
+
+    :param Dict record: The annotation record after it has been converted from an AnnotationRow to a list.
+    :return datetime: A datetime object of the observation date/time.
+    """
     return datetime.strptime(record[OBSERVATION_DATE] + record[OBSERVATION_TIME], '%Y-%m-%d%H:%M:%S')
 
 
 def parse_datetime(timestamp: str) -> datetime:
-    """ Returns a datetime object given a timestamp string """
+    """
+    Returns a datetime object given a timestamp string.
+
+    :param str timestamp: The timestamp to parse.
+    :return datetime: The timestamp parsed as a datetime object.
+    """
     if '.' in timestamp:
         return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')
     return datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%SZ')

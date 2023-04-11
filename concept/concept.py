@@ -4,9 +4,14 @@ from util.constants import *
 
 
 class Concept:
-    """ Stores information retrieved from WoRMS/VARS kb. """
+    """
+    Stores concept information retrieved from WoRMS and the VARS kb.
+    """
 
     def __init__(self, concept_name: str):
+        """
+        :param str concept_name: The VARS concept name of the organism we want to get information about.
+        """
         self.concept_name = concept_name        # the given concept name from the VARS annotation record
         self.aphia_id = NULL_VAL_INT            # to fetch from WoRMS
         self.scientific_name = NULL_VAL_STRING  # to fetch from WoRMS
@@ -14,9 +19,9 @@ class Concept:
         self.vernacular_names = NULL_VAL_STRING # to fetch from WoRMS
         self.synonyms = []                      # to fetch from VARS kb
         self.taxon_rank = NULL_VAL_STRING       # to fetch from WoRMS
-        self.taxon_ranks = {}                   # the taxon tree (kingdom, phylum, class, etc)
+        self.taxon_ranks = {}                   # the phylogeny/taxon tree (kingdom, phylum, class, etc)
         self.descriptors = []                   # extra words from the annotation record that aren't the scientific name
-        self.concept_name_flag = False          # no concept matching given concept name found in WoRMS
+        self.concept_name_flag = False          # True if no concept matching given concept name found in WoRMS
         self.concept_words = []                 # for cleaning concept name
         self.concept_add_words = []             # for cleaning concept name
         self.cf_flag = []                       # (cf = compare with) if record includes cf, should be manually reviewed
@@ -27,7 +32,12 @@ class Concept:
         self.analyze_concept_name()
 
     def flatten_taxa_tree(self, tree: Dict, flat: Dict):
-        """ Recursive function taking a taxonomy tree returned from WoRMS API. Flattens tree and saves to self. """
+        """
+        Recursive function taking a taxonomy tree returned from WoRMS API. Flattens tree and saves to self.
+
+        :param Dict tree: The nested taxon tree from WoRMS.
+        :param Dict flat: The newly created flat taxon tree.
+        """
         flat[tree['rank']] = tree['scientificname']
         if tree['child'] is not None:
             self.flatten_taxa_tree(tree['child'], flat)
@@ -38,7 +48,11 @@ class Concept:
                     flat[ranks[i - 1]] = f'cf. {" ".join(self.cf_flag)}'  # add 'cf. [concept]' to the rank below
 
     def load_from_record(self, record: Dict):
-        """ Assigns concept values given json object """
+        """
+        Assigns concept values given JSON object.
+
+        :param Dict record: The JSON object to load data from.
+        """
         self.aphia_id = record['AphiaID']
         self.scientific_name = record['scientificname']
         self.taxon_rank = record['rank']
