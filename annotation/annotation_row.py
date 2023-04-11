@@ -15,7 +15,9 @@ REPORTER_EMAIL = 'sarahr6@hawaii.edu'
 
 # todo add tests
 class AnnotationRow:
-    """ Stores information for a specific annotation. See util.constants.HEADERS for a list of all the columns. """
+    """
+    Stores information for a specific annotation. See util.constants.HEADERS for a list of all the columns.
+    """
 
     def __init__(self, annotation: Dict):
         """
@@ -28,7 +30,7 @@ class AnnotationRow:
 
     def set_simple_static_data(self):
         """
-        Sets simple annotation data directly from the annotation JSON object.
+        Sets columns values to simple annotation data directly from the annotation JSON object.
         """
         self.columns['VARSConceptName'] = self.annotation['concept']
         self.columns['TrackingID'] = self.annotation['observation_uuid']
@@ -68,7 +70,7 @@ class AnnotationRow:
         """
         Sets the SampleID column with the properly formatted SampleID: [DIVE_NAME]_[TIMESTAMP]
 
-        :param str dive_name: The name of the dive, e.g. 'Deep Discoverer 14040201'
+        :param str dive_name: The name of the dive, e.g. 'Deep Discoverer 14040201'.
         """
         self.columns['SampleID'] = dive_name.replace(' ',
                                                      '_') + '_' + self.recorded_time.get_formatted_timestamp()
@@ -128,7 +130,7 @@ class AnnotationRow:
             for key in ['Kingdom', 'Phylum', 'Class', 'Subclass', 'Order', 'Suborder', 'Family',
                         'Subfamily', 'Genus', 'Subgenus', 'Species', 'Subspecies']:
                 if key in taxon_ranks:
-                    self.set_rank(rank=key, val=taxon_ranks[key])
+                    self.columns[key] = taxon_ranks[key]
 
         self.columns['ScientificNameAuthorship'] = concepts[concept_name]['authorship']
         self.columns['CombinedNameID'] = scientific_name
@@ -143,21 +145,21 @@ class AnnotationRow:
         self.columns['Synonyms'] = ' | '.join(concepts[concept_name]['synonyms']) \
             if concepts[concept_name]['synonyms'] else NULL_VAL_STRING
 
-    def set_rank(self, rank: str, val: str):
-        """
-
-        :param str rank:
-        :param str val:
-        """
-        self.columns[rank] = val
-
     def set_media_type(self, media_type: str):
+        """
+        Populates the 'RecordType' column with the passed media type if it is an annotation of an organism.
+
+        :param str media_type: The type of media for the annotation record ('still image' or 'video observation').
+        """
         self.columns['RecordType'] = media_type
         if self.columns['ScientificName'] != NULL_VAL_STRING:
             self.columns['IdentificationQualifier'] = \
                 'ID by expert from video' if media_type == 'video observation' else 'ID by expert from image'
 
     def set_id_comments(self):
+        """
+        Populates 'IdentificationQualifier' column with ID comments from annotation object.
+        """
         id_comments = get_association(self.annotation, 'identity-certainty')
         if id_comments:
             id_comments = id_comments['link_value']
@@ -168,7 +170,10 @@ class AnnotationRow:
             id_comments = ' | '.join(id_comments)
             self.columns['IdentificationComments'] = id_comments if id_comments != '' else NULL_VAL_STRING
 
-    def set_pop_quantity_and_cat_abundance(self):
+    def set_indv_count_and_cat_abundance(self):
+        """
+        Populates the 'IndividualCount' and 'CategoricalAbundance' columns from annotation object.
+        """
         pop_quantity = get_association(self.annotation, 'population-quantity')
         if pop_quantity:
             self.columns['IndividualCount'] = pop_quantity['link_value']
@@ -177,11 +182,18 @@ class AnnotationRow:
         else:
             self.columns['IndividualCount'] = NULL_VAL_INT
         cat_abundance = get_association(self.annotation, 'categorical-abundance')
-        if cat_abundance:
+        if cat_abundance:  # if there are a lot of cats
             self.columns['CategoricalAbundance'] = cat_abundance['link_value']
             self.columns['IndividualCount'] = NULL_VAL_INT
 
     def set_size(self, warning_messages: list):
+        """
+        Populates columns related to size ('VerbatimSize', 'MinimumSize', and 'MaximumSize') with the size from the
+        annotation object. Saves a warning message if the size in the annotation object does not match one of the
+        expected size categories.
+
+        :param list warning_messages: The list of warning messages to display at the end of the script.
+        """
         min_size = NULL_VAL_INT
         max_size = NULL_VAL_INT
         size_str = NULL_VAL_STRING
@@ -216,6 +228,12 @@ class AnnotationRow:
         self.columns['MaximumSize'] = max_size
 
     def set_condition_comment(self, warning_messages: list):
+        """
+        Populates the 'Condition' column with information from the annotation object. Assumes all organisms are 'Live'
+        unless otherwise noted. Saves a warning message if a dead animal is reported.
+
+        :param list warning_messages: The list of warning messages to display at the end of the script.
+        """
         condition_comment = get_association(self.annotation, 'condition-comment')
         if condition_comment:
             if condition_comment['link_value'] in ['dead', 'Dead']:
@@ -233,6 +251,10 @@ class AnnotationRow:
             self.columns['Condition'] = 'Live' if self.columns['ScientificName'] != NULL_VAL_STRING else NULL_VAL_STRING
 
     def set_comments_and_sample(self):
+        """
+        Populates 'OccurrenceComments' column with information from the annotation object. If there is a sample, appends
+        the sample ID to the 'TrackingID' column and appends a note to 'OccurrenceComments'.
+        """
         # build occurrence remark string
         occurrence_remark = get_associations_list(self.annotation, 'occurrence-remark')
         remark_string = NULL_VAL_STRING
@@ -259,11 +281,20 @@ class AnnotationRow:
         self.columns['OccurrenceComments'] = remark_string
 
     def set_cmecs_geo(self, cmecs_geo: str):
+        """
+        Sets the 'CMECSGeoForm' column to the value passed in the function call.
+
+        :param str cmecs_geo: The current habitat.
+        """
         self.columns['CMECSGeoForm'] = cmecs_geo
 
     def set_habitat(self, warning_messages):
-        # habitat stuff
-        primary = ''
+        """
+        Populates the 'Habitat' with information from the annotation object. Adds a warning message if one of the
+        habitats is missing or cannot be parsed.
+
+        :param list warning_messages: The list of warning messages to display at the end of the script.
+        """
         secondary = []
         s1 = get_association(self.annotation, 's1')
         if s1:
@@ -305,7 +336,7 @@ class AnnotationRow:
 
     def set_upon(self):
         """
-        Checks if the item reported in 'upon' is in the list of accepted substrates - see translate_substrate_code
+        Sets the 'Substrate' column if there is an 'upon' record in the annotation object.
         """
         upon = get_association(self. annotation, 'upon')
         self.columns['UponIsCreature'] = False
@@ -319,6 +350,10 @@ class AnnotationRow:
                 self.columns['UponIsCreature'] = True
 
     def set_id_ref(self):
+        """
+        Sets the 'IdentityReference' column with the value pulled from the annotation object. ID reference is populated
+        when there are multiple annotations with the exact same animal.
+        """
         identity_reference = get_association(self.annotation, 'identity-reference')
         if identity_reference:
             self.columns['IdentityReference'] = int(identity_reference['link_value'])
@@ -326,6 +361,11 @@ class AnnotationRow:
             self.columns['IdentityReference'] = -1
 
     def set_temperature(self, warning_messages: list):
+        """
+        Sets temperature based on data from annotation object. Adds a warning message if temperature is missing.
+
+        :param list warning_messages: The list of warning messages to display at the end of the script.
+        """
         if 'temperature_celsius' in self.annotation['ancillary_data']:
             self.columns['Temperature'] = round(self.annotation['ancillary_data']['temperature_celsius'], 4)
         else:
@@ -339,6 +379,11 @@ class AnnotationRow:
             ])
 
     def set_salinity(self, warning_messages: list):
+        """
+        Sets salinity based on data from annotation object. Adds a warning message if salinity is missing.
+
+        :param list warning_messages: The list of warning messages to display at the end of the script.
+        """
         if 'salinity' in self.annotation['ancillary_data']:
             self.columns['Salinity'] = round(self.annotation['ancillary_data']['salinity'], 4)
         else:
@@ -352,6 +397,12 @@ class AnnotationRow:
             ])
 
     def set_oxygen(self, warning_messages: list):
+        """
+        Converts the oxygen data from the annotation object to mL/L and populates the 'Oxygen' column. Adds a warning
+        message if oxygen data is missing.
+
+        :param list warning_messages: The list of warning messages to display at the end of the script.
+        """
         if 'oxygen_ml_l' in self.annotation['ancillary_data']:
             # convert to mL/L
             self.columns['Oxygen'] = round(self.annotation['ancillary_data']['oxygen_ml_l'] / 1.42903, 4)
@@ -366,6 +417,9 @@ class AnnotationRow:
             ])
 
     def set_image_paths(self):
+        """
+        Populates the 'ImageFilePath' and 'HighlightImageFilePath' columns with information from the annotation object.
+        """
         images = self.annotation['image_references']
         image_paths = []
         for image in images:

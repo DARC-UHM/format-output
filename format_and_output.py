@@ -219,7 +219,7 @@ for dive_name in sequence_names:
         # populate the rest of the annotation data
         annotation_row.set_media_type(media_type=media_type)
         annotation_row.set_id_comments()
-        annotation_row.set_pop_quantity_and_cat_abundance()
+        annotation_row.set_indv_count_and_cat_abundance()
         annotation_row.set_size(warning_messages=warning_messages)
         annotation_row.set_condition_comment(warning_messages=warning_messages)
         annotation_row.set_comments_and_sample()
