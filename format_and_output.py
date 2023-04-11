@@ -1,7 +1,15 @@
 """
-This script is used to get VARS records from the HURL database and reformat them into
-Deep Sea Corals Research and Technology Program's submission format. Also performs
-various QA/QC checks and verifies taxa with WORMS.
+This script is used to retrieve all annotations for a specified list of dives from HURLSTOR and reformat them into
+Deep Sea Corals Research and Technology Program's submission format.
+
+The basic program structure:
+
+1) For each dive in the specified list, get the dive information from Dives.csv.
+2) For each dive in the specified list, get every annotation for the dive from HURLSTOR.
+3) For each annotation in the dive, load the annotation data and update the taxon info from WoRMS (optional).
+4) For each annotation, merge the annotation data, the dive information, and the WoRMS information.
+5) Perform merging and checks (e.g. remove duplicate records and populate 'associated taxa' fields).
+6) Output a formatted .tsv file.
 """
 
 import json
@@ -70,7 +78,7 @@ with open('reference/Dives.csv', 'r', encoding='utf-8') as dive_csv:
         dive_info.append(row)
 
 # Decides whether to load or overwrite concepts
-load_concepts = input(Messages.load_concepts_prompt).lower() in ['y', 'yes']
+load_concepts = input(Messages.LOAD_CONCEPTS_PROMPT).lower() in ['y', 'yes']
 
 concepts = {}
 
@@ -80,7 +88,7 @@ if load_concepts:
         with open('concepts.json') as file:
             concepts = json.load(file)
     except FileNotFoundError:
-        print('No concepts file found; using WoRMS instead')
+        print('No concepts file found, using WoRMS instead.')
 
 output_file_name = OUTPUT_FILE_NAME or input('Name of output file (without the .tsv file extension: ')
 output_file_path = OUTPUT_FILE_PATH or input('Path to folder of output files: ')
@@ -102,7 +110,7 @@ full_report_records = []  # list of every concept formatted for final output
 warning_messages = []  # list of items to review (QA/QC)
 
 if load_concepts:
-    Messages.dive_header()
+    print(Messages.DIVE_HEADER)
 
 ###################################################################
 # Outer loop: iterates over each dive listed in the input CSV file
@@ -186,7 +194,7 @@ for dive_name in sequence_names:
             if concept_name not in concepts:  # if concept name not in saved concepts file, search WoRMS
                 if first_round:  # for printing worms header
                     first_round = False
-                    Messages.worms_header()
+                    print(Messages.WORMS_HEADER)
                 concept = Concept(concept_name=concept_name)
                 cons_handler = ConceptHandler(concept=concept)
                 cons_handler.fetch_worms()
@@ -285,7 +293,7 @@ if len(warning_messages) > 0:
     view_messages = input('\nEnter "y" to view, or press enter to skip >> ').lower() in ['y', 'yes']
 
     if view_messages:
-        Messages.warning_header()
+        print(Messages.WARNINGS_HEADER)
         for message in warning_messages:
             if len(message[1]) > 22:
                 message[1] = f'{message[1][:22]}...'

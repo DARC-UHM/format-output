@@ -75,7 +75,12 @@ def parse_datetime(timestamp: str) -> datetime:
 
 
 def extract_time(json_object: Dict) -> datetime:
-    """ For sorting json object by timestamp given a json object """
+    """
+    Used to sort json objects by timestamp, given the json object.
+
+    :param Dict json_object: A json object with the time we want to sort by.
+    :return datetime: A datetime object of the timestamp from the json object.
+    """
     if '.' in json_object['recorded_timestamp']:
         timestamp = datetime.strptime(json_object['recorded_timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
         if timestamp.microsecond >= 500000:
@@ -85,20 +90,34 @@ def extract_time(json_object: Dict) -> datetime:
 
 
 def extract_uuid(json_object: Dict) -> str:
-    """ For sorting annotations by UUID so we can check final output against expected
-    (the expected out put is sorted by uuid, then by time) """
+    """
+    Used for sorting annotations by UUID (for testing).
+
+    :param Dict json_object: A json object with the UUID we want to sort by.
+    :return str: The UUID.
+    """
     return json_object['observation_uuid']
 
 
 def add_meters(accuracy: str) -> str:
-    """ Takes input and appends an 'm' to the end if one is not there already """
+    """
+    Takes input and appends an 'm' to the end, if one is not there already.
+
+    :param str accuracy: The accuracy string, e.g. '50m' or '50'.
+    :return str: The string with an 'm' on the end.
+    """
     if accuracy[-1:] != 'm':
         accuracy = accuracy + 'm'
     return accuracy
 
 
 def convert_username_to_name(vars_username: str) -> str:
-    """ Converts VARS username to proper format: [FirstnameLastName] -> [Lastname, FirstName] """
+    """
+    Converts format of VARS username: [FirstnameLastName] -> [Lastname, FirstName]
+
+    :param str vars_username: VARS username, e.g. 'SarahBingo'.
+    :return str: The converted name string, e.g. 'Bingo, Sarah'.
+    """
     for i in range(1, len(vars_username)):
         if vars_username[i].isupper():
             return vars_username[i:] + ', ' + vars_username[0:i]
@@ -109,8 +128,8 @@ def translate_substrate_code(code: str) -> str:
     """
     Translates substrate codes into human language.
 
-    :param str code: The VARS code of the substrate, e.g. 'peb'
-    :return str: The code translated into human language
+    :param str code: The VARS code of the substrate, e.g. 'peb'.
+    :return str: The translated code, e.g. 'pebble'.
     """
     if code in SAMES:
         return code
@@ -156,7 +175,12 @@ def translate_substrate_code(code: str) -> str:
 
 
 def collapse_id_records(report_records: list) -> int:
-    """ Collapses records with the same identity-reference. Returns number of records collapsed. """
+    """
+    Collapses records with the same identity-reference. Returns number of records collapsed.
+
+    :param list report_records: A list of annotation rows (i.e., a list of every annotation in a dive).
+    :return int: The number of records collapsed.
+    """
     identity_references = {}
     dupes_removed = 0
     num_records = len(report_records)
@@ -165,8 +189,10 @@ def collapse_id_records(report_records: list) -> int:
         id_ref = report_records[i][IDENTITY_REF]
         if id_ref != -1:
             if id_ref not in identity_references:
+                # add a new key to identity_references with the current annotation as the value
                 identity_references[id_ref] = report_records[i]
             else:
+                # collapse the values in the current annotation into the annotation in identity_references
                 for j in [ID_COMMENTS, HABITAT, SUBSTRATE, INDV_COUNT, VERBATIM_SIZE, OCCURRENCE_COMMENTS,
                           CMECS_GEO_FORM]:
                     if identity_references[id_ref][j] == NULL_VAL_STRING and report_records[i][j] != NULL_VAL_STRING:
@@ -183,9 +209,9 @@ def collapse_id_records(report_records: list) -> int:
                             identity_references[id_ref][j] = report_records[i][j]
                 if int(identity_references[id_ref][INDV_COUNT]) < int(report_records[i][INDV_COUNT]):
                     identity_references[id_ref][INDV_COUNT] = report_records[i][INDV_COUNT]
-                del report_records[i]
-                i -= 1
-                num_records -= 1
+                del report_records[i]  # remove the duplicate record
+                i -= 1  # to account for the record that was just deleted
+                num_records -= 1  # ^
                 dupes_removed += 1
         i += 1
 
@@ -196,6 +222,10 @@ def find_associated_taxa(report_records: list, concepts: Dict, warning_messages:
     """
     Fills in the AssociatedTaxa fields: retrieves records from the output table that have another VARS concept listed
     as a substrate.
+
+    :param list report_records: A list of annotation rows (i.e., a list of every annotation in a dive).
+    :param Dict concepts: Dictionary of all locally saved concepts.
+    :param list warning_messages: The list of warning messages to display at the end of the script.
     """
     for i in range(len(report_records)):
         associate_record = report_records[i]

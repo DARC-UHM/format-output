@@ -1,8 +1,12 @@
-""" Contains functions for printing to terminal """
+"""
+Contains functions and constants for printing to terminal.
+"""
 
 
 class Color:
-    """ Some pretty colors """
+    """
+    Some pretty colors.
+    """
     PURPLE = '\033[1;35;48m'
     CYAN = '\033[1;36;48m'
     BOLD = '\033[1m'
@@ -16,20 +20,35 @@ class Color:
 
 
 class Messages:
+    """
+    Messages to print to the terminal.
+    """
 
-    load_concepts_prompt = '\nShould the program load previously encountered concept names '\
+    LOAD_CONCEPTS_PROMPT = '\nShould the program load previously encountered concept names '\
               'from saved file for a faster runtime?\n\n'\
               f'{Color.GREEN}Y: Use the file {Color.END}(takes < 30 seconds)\n'\
               f'{Color.RED}N: Use WoRMS and overwrite the file {Color.END}(takes 15-20 minutes)\n\n'\
               '>> '
+
+    DIVE_HEADER = f"\n{Color.BOLD}%-35s%-30s%-30s%-s" % ('Dive Name', 'Annotations Found', 'Duplicates Removed', 'Status') + \
+        f'\n========================================================================================================={Color.END}'
+
+    WORMS_HEADER = f'\n\n{Color.BOLD}WoRMS check:\n%-40s %-35s%-15s%-15s%-15s%-15s' % \
+                   ('VARS Concept Name', 'WoRMS Query', 'Taxon Record', 'Taxon Tree', 'Vernaculars', 'Synonyms (VARS)') + \
+                    '\n============================================================================================' + \
+                    f'============================================{Color.END}'
+
+    WARNINGS_HEADER = f"\n{Color.BOLD}%-30s%-25s%-40s%-s" % ('Sample ID', 'Concept Name', 'UUID', 'Message') + \
+                      '\n============================================================================================' + \
+                      f'=========================================================================================={Color.END}'
 
     @staticmethod
     def dive_not_found(dive_name: str) -> str:
         """
         Returns an error message about missing dive information.
 
-        :param str dive_name: Name of the dive
-        :return str: Error message
+        :param str dive_name: Name of the dive.
+        :return str: Error message.
         """
         return(
             f'\n{Color.RED}###################################################################' +
@@ -37,24 +56,3 @@ class Messages:
             '\nThis dive must be added to Dives.csv to continue processing.' +
             f'\n###################################################################\n{Color.END}'
         )
-
-    @staticmethod
-    def dive_header():
-        print(f"\n{Color.BOLD}%-35s%-30s%-30s%-s" % ('Dive Name', 'Annotations Found', 'Duplicates Removed', 'Status'))
-        print('============================================================================================'
-              f'============={Color.END}')
-
-    @staticmethod
-    def worms_header():
-        print(f'\n\n{Color.BOLD}WoRMS check:')
-        print("\n%-40s %-35s%-15s%-15s%-15s%-15s" %
-              ('VARS Concept Name', 'WoRMS Query', 'Taxon Record', 'Taxon Tree', 'Vernaculars',
-               'Synonyms (VARS)'))
-        print('============================================================================================'
-              f'============================================{Color.END}')
-
-    @staticmethod
-    def warning_header():
-        print(f"\n{Color.BOLD}%-30s%-25s%-40s%-s" % ('Sample ID', 'Concept Name', 'UUID', 'Message'))
-        print('============================================================================================'
-              f'=========================================================================================={Color.END}')
