@@ -56,14 +56,13 @@ class AnnotationRow:
 
         self.columns['EntryDate'] = ''  # this column is left blank, to be filled by DSCRTP admin
 
-        # these eight values are hardcoded for now, keeping columns in case of future update
+        # these seven values are hardcoded for now, keeping columns in case of future update
         self.columns['SampleAreaInSquareMeters'] = NULL_VAL_INT
         self.columns['Density'] = NULL_VAL_INT
         self.columns['Cover'] = NULL_VAL_INT
         self.columns['WeightInKg'] = NULL_VAL_INT
         self.columns['SampleAreaInSquareMeters'] = NULL_VAL_INT
         self.columns['Density'] = NULL_VAL_INT
-        self.columns['Cover'] = NULL_VAL_INT
         self.columns['WeightInKg'] = NULL_VAL_INT
 
     def set_sample_id(self, dive_name: str):

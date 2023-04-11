@@ -1,5 +1,5 @@
 from concept.concept import Concept
-from test.data_test_concept import *
+from test.data_for_tests import *
 from util.constants import NULL_VAL_INT, NULL_VAL_STRING
 
 

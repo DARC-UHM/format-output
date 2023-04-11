@@ -1,6 +1,6 @@
 from util.functions import *
 from util.constants import ROOTS
-from test.data_test_functions import *
+from test.data_for_tests import *
 
 
 class TestFunctions:

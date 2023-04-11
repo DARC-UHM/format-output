@@ -124,6 +124,59 @@ annotations = [
             "temperature_celsius": 3.8610000610351562,
             "uuid": "5b9fd45e-a771-4ae2-4c6c-8cd75f66d71e"
         }
+    },
+    {
+        "observation_uuid": "35aa2bb9-d067-419b-9a6e-09cdce8ed41e",
+        "concept": "Demospongiae encrusting",
+        "observer": "MeaganPutts",
+        "observation_timestamp": "2022-10-10T22:43:14.208Z",
+        "video_reference_uuid": "9888ccf0-22d7-40a1-9dc6-70e029c45155",
+        "imaged_moment_uuid": "74c08709-b3ab-43d0-bb6c-0ecdce8ed41e",
+        "elapsed_time_millis": 3995082,
+        "recorded_timestamp": "2014-09-06T13:35:03.082Z",
+        "group": "ROV",
+        "activity": "cruise",
+        "associations": [
+            {
+                "uuid": "163c3b22-ac82-43de-5e61-8f02cf8ed41e",
+                "link_name": "s2",
+                "to_concept": "bou",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "297d23d7-5979-46e7-6f66-8f1fcf8ed41e",
+                "link_name": "upon",
+                "to_concept": "bed",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "954b0835-ca6d-4180-1d6f-4ee4ce8ed41e",
+                "link_name": "s2",
+                "to_concept": "sed",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "cd581243-bdfb-469e-dc6a-b9dbce8ed41e",
+                "link_name": "s1",
+                "to_concept": "bed",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            }
+        ],
+        "image_references": [],
+        "ancillary_data": {
+            "altitude": 1.600000023841858,
+            "depth_meters": 639.4940185546875,
+            "latitude": 37.410213069179,
+            "longitude": -74.464855305838,
+            "oxygen_ml_l": 7.184100151062012,
+            "salinity": 35.87260055541992,
+            "temperature_celsius": 5.309000015258789,
+            "uuid": "855dc798-961a-460f-886e-f53bbbb3d41e"
+        }
     }
 ]
 
@@ -836,3 +889,166 @@ sample_records_for_associates = [
      'https://nautiluslive.org/cruise/na134', '', 'Bingo, Sarah', 'sarahr6@hawaii.edu', 'NA', -1, True,
      'Ophiacanthidae'],
 ]
+
+taxon_tree = {
+    "AphiaID": 1,
+    "rank": "Superdomain",
+    "scientificname": "Biota",
+    "child": {
+        "AphiaID": 2,
+        "rank": "Kingdom",
+        "scientificname": "Animalia",
+        "child": {
+            "AphiaID": 1267,
+            "rank": "Phylum",
+            "scientificname": "Cnidaria",
+            "child": {
+                "AphiaID": 1292,
+                "rank": "Class",
+                "scientificname": "Anthozoa",
+                "child": {
+                    "AphiaID": 1340,
+                    "rank": "Subclass",
+                    "scientificname": "Hexacorallia",
+                    "child": {
+                        "AphiaID": 1360,
+                        "rank": "Order",
+                        "scientificname": "Actiniaria",
+                        "child": {
+                            "AphiaID": 888371,
+                            "rank": "Suborder",
+                            "scientificname": "Enthemonae",
+                            "child": {
+                                "AphiaID": 853973,
+                                "rank": "Superfamily",
+                                "scientificname": "Actinioidea",
+                                "child": {
+                                    "AphiaID": 100653,
+                                    "rank": "Family",
+                                    "scientificname": "Actiniidae",
+                                    "child": {
+                                        "AphiaID": 100698,
+                                        "rank": "Genus",
+                                        "scientificname": "Bolocera",
+                                        "child": None
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+flattened_tree = {
+    'Superdomain': 'Biota',
+    'Kingdom': 'Animalia',
+    'Phylum': 'Cnidaria',
+    'Class': 'Anthozoa',
+    'Subclass': 'Hexacorallia',
+    'Order': 'Actiniaria',
+    'Suborder': 'Enthemonae',
+    'Superfamily': 'Actinioidea',
+    'Family': 'Actiniidae',
+    'Genus': 'Bolocera'
+}
+
+aphia_record = {
+    "AphiaID": 140621,
+    "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=140621",
+    "scientificname": "Illex coindetii",
+    "authority": "(Vérany, 1839)",
+    "status": "accepted",
+    "unacceptreason": None,
+    "taxonRankID": 220,
+    "rank": "Species",
+    "valid_AphiaID": 140621,
+    "valid_name": "Illex coindetii",
+    "valid_authority": "(Vérany, 1839)",
+    "parentNameUsageID": 138278,
+    "kingdom": "Animalia",
+    "phylum": "Mollusca",
+    "class": "Cephalopoda",
+    "order": "Oegopsida",
+    "family": "Ommastrephidae",
+    "genus": "Illex",
+    "citation": "MolluscaBase eds. (2023). MolluscaBase. Illex coindetii (Vérany, 1839). Accessed through: World Register of Marine Species at: https://www.marinespecies.org/aphia.php?p=taxdetails&id=140621 on 2023-03-31",
+    "lsid": "urn:lsid:marinespecies.org:taxname:140621",
+    "isMarine": 1,
+    "isBrackish": None,
+    "isFreshwater": 0,
+    "isTerrestrial": 0,
+    "isExtinct": None,
+    "match_type": "like",
+    "modified": "2016-06-11T23:30:29.807Z"
+}
+
+dive_dict = {
+    'DIVENUMBER': 'Hercules 1341884',
+    'Date': '11/19/21',
+    'Expedition': '134',
+    'Leg': 'NA',
+    'Dive': '1884',
+    'Site': 'Unnamed seamount A',
+    'Ocean': 'North Pacific',
+    'LargeMarineEcosystem': 'Insular Pacific-Hawaiian',
+    'Country': 'USA',
+    'FishCouncilRegion': 'Western Pacific',
+    'Locality': 'Papah_naumoku_kea Marine National Monument (PMNM), Northwestern Hawaiian Islands, Unnamed Seamount A',
+    'SurveyID': 'NA134',
+    'Station': 'NA134-H1884',
+    'PI': 'Kelley, Christopher; Kosaki, Randy; Orcutt, Beth; Petruncio, Emil',
+    'PIAffiliation': 'NA',
+    'Purpose': 'Document whether these underwater mountains support vibrant coral and sponge communities like others in the region',
+    'CruiseComments': 'NA',
+    'EventID': 'NA134-H1884',
+    'SamplingEquipment': 'ROV',
+    'VehicleName': 'Hercules',
+    'DataProvider': 'Ocean Exploration Trust; University of Hawaiʻi',
+    'DataContact': 'Bingo, Sarah; sarahr6@hawaii.edu',
+    'Vessel': 'Nautilus',
+    'LocationAccuracy': '50',
+    'WebSite': 'https://nautiluslive.org/cruise/na134',
+    'Citation': 'NA'
+}
+
+concepts = {
+    "Paralepididae": {
+        "scientific_name": "Paralepididae",
+        "aphia_id": 125447,
+        "authorship": "Bonaparte, 1835",
+        "synonyms": [],
+        "taxon_rank": "Family",
+        "taxon_ranks": {
+            'Superdomain': 'Biota',
+            'Kingdom': 'Animalia',
+            'Phylum': 'Chordata',
+            'Subphylum': 'Vertebrata',
+            'Infraphylum': 'Gnathostomata',
+            'Parvphylum': 'Osteichthyes',
+            'Gigaclass': 'Actinopterygii',
+            'Superclass': 'Actinopteri',
+            'Class': 'Teleostei',
+            'Order': 'Aulopiformes',
+            'Family': 'Paralepididae'
+        },
+        "descriptors": [],
+        "vernacular_name": "barracudinas"
+    },
+    "Demospongiae encrusting": {
+        "scientific_name": "Demospongiae",
+        "aphia_id": 164811,
+        "authorship": "Sollas, 1885",
+        "synonyms": ["hehe", "test"],
+        "taxon_rank": "Class",
+        "taxon_ranks": {
+            "Superdomain": "Biota",
+            "Kingdom": "Animalia",
+            "Phylum": "Porifera",
+            "Class": "Demospongiae"},
+        "descriptors": ["encrusting"],
+        "vernacular_name": "demosponges | horny sponges"
+    }
+}
