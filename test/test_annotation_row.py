@@ -308,15 +308,78 @@ class TestAnnotationRow:
         test_row.set_cmecs_geo('get out of my swamp')
         assert test_row.columns['CMECSGeoForm'] == 'get out of my swamp'
 
+    def test_set_habitat_s1(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[5])
+        test_row.set_habitat(warnings)
+        assert test_row.columns['Habitat'] == 'primarily: sediment'
+        assert warnings == []
+
+    def test_set_habitat_s1_none(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[6])
+        test_row.columns['ScientificName'] = 'Gyarados'
+        test_row.set_habitat(warnings)
+        assert test_row.columns['Habitat'] == NULL_VAL_STRING
+        assert len(warnings) == 1
+
+    def test_set_habitat_s1_fail(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[8])
+        test_row.set_habitat(warnings)
+        assert NULL_VAL_STRING in test_row.columns['Habitat']
+        assert len(warnings) == 1
+
+    def test_set_habitat_one_s2(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[3])
+        test_row.set_habitat(warnings)
+        assert test_row.columns['Habitat'] == 'primarily: bedrock / secondary: sediment'
+        assert warnings == []
+
+    def test_set_habitat_multiple_s2(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[2])
+        test_row.set_habitat(warnings)
+        assert test_row.columns['Habitat'] == 'primarily: sediment / secondary: boulder; bedrock'
+        assert warnings == []
+
+    def test_set_habitat_s2_fail(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[8])
+        test_row.set_habitat(warnings)
+        assert NULL_VAL_STRING in test_row.columns['Habitat']
+        assert len(warnings) == 1
+
+    def test_set_habitat_comment(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[1])
+        test_row.set_habitat(warnings)
+        print(f'"{test_row.columns["Habitat"]}"')
+        print('"primarily: sediment / secondary: man-made trash / comments: loose talus"')
+        assert test_row.columns['Habitat'] == 'primarily: sediment / secondary: man-made trash / comments: loose talus'
+        assert warnings == []
+
+    def test_set_upon_not_creature(self):
+        test_row = AnnotationRow(annotations[0])
+        test_row.set_upon()
+        assert test_row.columns['UponIsCreature'] is False
+        assert test_row.columns['Substrate'] == 'sediment'
+
+    def test_set_upon_is_creature(self):
+        test_row = AnnotationRow(annotations[9])
+        test_row.set_upon()
+        assert test_row.columns['UponIsCreature'] is True
+        assert test_row.columns['Substrate'] == 'some creature'
+
+    def test_set_upon_no_upon(self):
+        test_row = AnnotationRow(annotations[1])
+        test_row.set_upon()
+        assert test_row.columns['UponIsCreature'] is False
+        assert test_row.columns['Substrate'] == NULL_VAL_STRING
+
+
 """
-    def test_set_habitat(self):
-        test_row = AnnotationRow(annotations[1])
-        assert 1 == 0
-
-    def test_set_upon(self):
-        test_row = AnnotationRow(annotations[1])
-        assert 1 == 0
-
     def test_set_id_ref(self):
         test_row = AnnotationRow(annotations[1])
         assert 1 == 0

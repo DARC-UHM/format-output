@@ -85,7 +85,14 @@ annotations = [
                 "to_concept": "manipulator",
                 "link_value": "nil",
                 "mime_type": "text/plain"
-            }
+            },
+            {
+                "uuid": "ae29252c-325d-43ce-b263-ce0d41c7d81e",
+                "link_name": "habitat-comment",
+                "to_concept": "nil",
+                "link_value": "loose talus",
+                "mime_type": "text/plain"
+            },
         ],
         "image_references": [],
         "ancillary_data": {
@@ -173,13 +180,6 @@ annotations = [
         "group": "ROV",
         "activity": "cruise",
         "associations": [
-            {
-                "uuid": "163c3b22-ac82-43de-5e61-8f02cf8ed41e",
-                "link_name": "s2",
-                "to_concept": "bou",
-                "link_value": "nil",
-                "mime_type": "text/plain"
-            },
             {
                 "uuid": "297d23d7-5979-46e7-6f66-8f1fcf8ed41e",
                 "link_name": "upon",
@@ -505,7 +505,7 @@ annotations = [
             {
                 "uuid": "9bca3c04-2ddf-4140-d662-0cc26b3adb1e",
                 "link_name": "s1",
-                "to_concept": "bedbmn",
+                "to_concept": "fail s1",
                 "link_value": "nil",
                 "mime_type": "text/plain"
             },
@@ -589,7 +589,7 @@ annotations = [
             {
                 "uuid": "8e86307e-981b-4762-4063-c1f33ed2db1e",
                 "link_name": "upon",
-                "to_concept": "bedbmn",
+                "to_concept": "some creature",
                 "link_value": "nil",
                 "mime_type": "text/plain"
             },

@@ -308,6 +308,14 @@ class AnnotationRow:
                 ])
             else:
                 self.columns['Habitat'] = f'primarily: {primary}'
+        elif self.columns['ScientificName'] != NULL_VAL_STRING:
+            # flag warning
+            warning_messages.append([
+                self.columns['SampleID'],
+                self.annotation["concept"],
+                self.annotation["observation_uuid"],
+                f'{Color.RED}Missing s1{Color.END}'
+            ])
 
         s2_records = get_associations_list(self.annotation, 's2')
         if len(s2_records) != 0:
