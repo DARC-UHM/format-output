@@ -13,7 +13,6 @@ REPORTER = 'Bingo, Sarah'
 REPORTER_EMAIL = 'sarahr6@hawaii.edu'
 
 
-# todo add tests
 class AnnotationRow:
     """
     Stores information for a specific annotation. See util.constants.HEADERS for a list of all the columns.

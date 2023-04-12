@@ -160,3 +160,180 @@ class TestAnnotationRow:
         assert test_row.columns['CombinedNameID'] == 'Demospongiae encrusting'
         assert test_row.columns['Morphospecies'] == 'encrusting'
         assert test_row.columns['Synonyms'] == 'hehe | test'
+
+    def test_set_media_type(self):
+        test_row = AnnotationRow(annotations[1])
+        test_row.columns['ScientificName'] = 'this was a triumph'
+        test_row.set_media_type('im making a note here, huge success')  # it's hard to overstate my satisfaction
+        assert test_row.columns['RecordType'] == 'im making a note here, huge success'
+        assert test_row.columns['IdentificationQualifier'] == 'ID by expert from image'
+
+    def test_set_media_type_no_name(self):
+        test_row = AnnotationRow(annotations[4])
+        test_row.set_media_type('still image')
+        assert test_row.columns['RecordType'] == 'still image'
+        assert test_row.columns['IdentificationQualifier'] == NULL_VAL_STRING
+
+    def test_set_id_comments_maybe(self):
+        test_row = AnnotationRow(annotations[2])
+        test_row.columns['ScientificName'] = 'test'
+        test_row.columns['IdentificationQualifier'] = 'ID by expert from taste'
+        test_row.set_id_comments()
+        assert test_row.columns['IdentificationQualifier'] == 'ID by expert from taste | ID Uncertain'
+        assert test_row.columns['IdentificationComments'] == NULL_VAL_STRING
+
+    def test_set_id_comments_other(self):
+        test_row = AnnotationRow(annotations[6])
+        test_row.columns['ScientificName'] = 'test'
+        test_row.columns['IdentificationQualifier'] = 'ID by expert from smell'
+        test_row.set_id_comments()
+        assert test_row.columns['IdentificationQualifier'] == 'ID by expert from smell'
+        assert test_row.columns['IdentificationComments'] == 'small head | long ribbon body'
+
+    def test_set_id_comments_none(self):
+        test_row = AnnotationRow(annotations[4])
+        test_row.set_id_comments()
+        assert test_row.columns['IdentificationQualifier'] == NULL_VAL_STRING
+        assert test_row.columns['IdentificationComments'] == NULL_VAL_STRING
+
+    def test_set_indv_count(self):
+        test_row = AnnotationRow(annotations[5])
+        test_row.set_indv_count_and_cat_abundance()
+        assert test_row.columns['IndividualCount'] == '2'
+        assert test_row.columns['CategoricalAbundance'] == NULL_VAL_STRING
+
+    def test_set_cat_abundance(self):
+        test_row = AnnotationRow(annotations[7])
+        test_row.set_indv_count_and_cat_abundance()
+        assert test_row.columns['IndividualCount'] == NULL_VAL_INT
+        assert test_row.columns['CategoricalAbundance'] == '\u003e100'
+
+    def test_set_indv_count_and_cat_abundance_none(self):
+        test_row = AnnotationRow(annotations[4])
+        test_row.set_indv_count_and_cat_abundance()
+        assert test_row.columns['IndividualCount'] == NULL_VAL_INT
+        assert test_row.columns['CategoricalAbundance'] == NULL_VAL_STRING
+
+    def test_set_size(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[8])
+        test_row.set_size(warnings)
+        assert test_row.columns['VerbatimSize'] == '50-100 cm'
+        assert test_row.columns['MinimumSize'] == '50'
+        assert test_row.columns['MaximumSize'] == '100'
+        assert warnings == []
+
+    def test_set_size_no_size(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[4])
+        test_row.set_size(warnings)
+        assert test_row.columns['VerbatimSize'] == NULL_VAL_STRING
+        assert test_row.columns['MinimumSize'] == NULL_VAL_INT
+        assert test_row.columns['MaximumSize'] == NULL_VAL_INT
+        assert warnings == []
+
+    def test_set_size_no_match(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[7])
+        test_row.set_size(warnings)
+        assert test_row.columns['VerbatimSize'] == '5-1000000 cm'
+        assert test_row.columns['MinimumSize'] == NULL_VAL_INT
+        assert test_row.columns['MaximumSize'] == NULL_VAL_INT
+        assert len(warnings) == 1
+
+    def test_set_condition_comment(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[1])
+        test_row.columns['ScientificName'] = 'Magikarp'
+        test_row.set_condition_comment(warnings)
+        assert test_row.columns['Condition'] == 'Live'
+        assert warnings == []
+
+    def test_set_condition_comment_none(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[1])
+        test_row.set_condition_comment(warnings)
+        assert test_row.columns['Condition'] == NULL_VAL_STRING
+        assert warnings == []
+
+    def test_set_condition_comment_damaged(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[7])
+        test_row.set_condition_comment(warnings)
+        assert test_row.columns['Condition'] == 'Damaged'
+        assert warnings == []
+
+    def test_set_condition_comment_dead(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[8])
+        test_row.set_condition_comment(warnings)
+        assert test_row.columns['Condition'] == 'Dead'
+        assert len(warnings) == 1
+
+    def test_set_comments_simple_remark(self):
+        test_row = AnnotationRow(annotations[6])
+        test_row.set_comments_and_sample()
+        assert test_row.columns['OccurrenceComments'] == 'in water column on descent'
+
+    def test_set_comments_simple_size(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[8])
+        test_row.set_size(warnings)
+        test_row.set_comments_and_sample()
+        assert test_row.columns['OccurrenceComments'] == 'size is estimated greatest length of individual in cm. Size estimations placed into size category bins'
+
+    def test_set_comments_simple_sample(self):
+        test_row = AnnotationRow(annotations[9])
+        test_row.columns['TrackingID'] = '1234'
+        test_row.set_comments_and_sample()
+        assert test_row.columns['OccurrenceComments'] == 'sampled by manipulator'
+        assert test_row.columns['TrackingID'] == '1234 | NA134-158-B-MCZ'
+
+    def test_set_comments_and_sample_none(self):
+        test_row = AnnotationRow(annotations[2])
+        test_row.set_comments_and_sample()
+        assert test_row.columns['OccurrenceComments'] == NULL_VAL_STRING
+
+    def test_set_comments_and_sample(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[1])
+        test_row.set_size(warnings)
+        test_row.set_comments_and_sample()
+        assert test_row.columns['OccurrenceComments'] == \
+               'in water column on descent | another remark | size is estimated greatest length of individual in cm. ' \
+               'Size estimations placed into size category bins | sampled by manipulator'
+
+    def test_set_cmecs_geo(self):
+        test_row = AnnotationRow(annotations[1])
+        test_row.set_cmecs_geo('get out of my swamp')
+        assert test_row.columns['CMECSGeoForm'] == 'get out of my swamp'
+
+"""
+    def test_set_habitat(self):
+        test_row = AnnotationRow(annotations[1])
+        assert 1 == 0
+
+    def test_set_upon(self):
+        test_row = AnnotationRow(annotations[1])
+        assert 1 == 0
+
+    def test_set_id_ref(self):
+        test_row = AnnotationRow(annotations[1])
+        assert 1 == 0
+
+    def test_set_temperature(self):
+        test_row = AnnotationRow(annotations[1])
+        assert 1 == 0
+
+    def test_set_salinity(self):
+        test_row = AnnotationRow(annotations[1])
+        assert 1 == 0
+
+    def test_set_oxygen(self):
+        test_row = AnnotationRow(annotations[1])
+        assert 1 == 0
+
+    def test_set_image_paths(self):
+        test_row = AnnotationRow(annotations[1])
+        assert 1 == 0
+"""

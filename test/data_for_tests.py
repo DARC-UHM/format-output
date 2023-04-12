@@ -1,4 +1,9 @@
+"""
+Sample data to use for tests. Do not alter this file unless you are prepared to rewrite all of the test cases :)
+"""
+
 annotations = [
+    # annotations[0]
     {
         "observation_uuid": "0059f860-4799-485f-c06c-5830e5ddd31e",
         "concept": "Chaceon quinquedens",
@@ -26,6 +31,7 @@ annotations = [
             }
         ]
     },
+    # annotations[1]
     {
         "observation_uuid": "0d9133d7-1d49-47d5-4b6d-6e4fb25dd41e",
         "concept": "Paralepididae",
@@ -51,6 +57,34 @@ annotations = [
                 "to_concept": "mantra",
                 "link_value": "nil",
                 "mime_type": "text/plain"
+            },
+            {
+                "uuid": "d37d482e-5d56-4267-786b-0dfb525bd41e",
+                "link_name": "occurrence-remark",
+                "to_concept": "nil",
+                "link_value": "in water column on descent",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "d37d482e-5d56-4267-786b-0dfb525bd41e",
+                "link_name": "occurrence-remark",
+                "to_concept": "nil",
+                "link_value": "another remark",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "8c46c0fc-28d9-47e6-9a62-94e36b3adb1e",
+                "link_name": "size",
+                "to_concept": "50-100 cm",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "37c87be6-8b2c-436c-8b6a-fc0f42d2db1e",
+                "link_name": "sampled-by",
+                "to_concept": "manipulator",
+                "link_value": "nil",
+                "mime_type": "text/plain"
             }
         ],
         "image_references": [],
@@ -65,6 +99,7 @@ annotations = [
             "uuid": "b5bdfa60-9b20-40c4-6462-9d4db9b3d41e"
         }
     },
+    # annotations[2]
     {
         "observation_uuid": "080118db-baa2-468a-d06a-144249c1d41e",
         "concept": "Etmopteridae",
@@ -125,6 +160,7 @@ annotations = [
             "uuid": "5b9fd45e-a771-4ae2-4c6c-8cd75f66d71e"
         }
     },
+    # annotations[3]
     {
         "observation_uuid": "35aa2bb9-d067-419b-9a6e-09cdce8ed41e",
         "concept": "Demospongiae encrusting",
@@ -176,6 +212,424 @@ annotations = [
             "salinity": 35.87260055541992,
             "temperature_celsius": 5.309000015258789,
             "uuid": "855dc798-961a-460f-886e-f53bbbb3d41e"
+        }
+    },
+    # annotations[4]
+    {
+        "observation_uuid": "673754bb-81c7-4866-8362-1dfc4e5bd41e",
+        "concept": "none",
+        "observer": "MeaganPutts",
+        "observation_timestamp": "2022-10-06T20:24:56.933Z",
+        "video_reference_uuid": "9cb8f6cd-9720-4f51-aaac-4d7da1dec55a",
+        "imaged_moment_uuid": "7cea8785-2b33-4c96-a460-22fc4e5bd41e",
+        "elapsed_time_millis": 4017817,
+        "recorded_timestamp": "2014-09-05T13:52:23.817Z",
+        "group": "ROV",
+        "activity": "descend",
+        "associations": [
+            {
+                "uuid": "02dd535d-84fb-47a2-d56a-e674505bd41e",
+                "link_name": "occurrence-remark",
+                "to_concept": "nil",
+                "link_value": "bottom in sight",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "aa6c0f9d-2794-4e0d-8d6d-389e545bd41e",
+                "link_name": "s1",
+                "to_concept": "sed",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "b503cd40-bfb5-4f35-076a-a1a7515bd41e",
+                "link_name": "megahabitat",
+                "to_concept": "continental shelf",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "e6b76818-4f08-4e43-166f-0e21515bd41e",
+                "link_name": "habitat",
+                "to_concept": "canyon",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            }
+        ],
+        "image_references": [],
+        "ancillary_data": {
+            "altitude": 3.299999952316284,
+            "depth_meters": 669.0770263671875,
+            "latitude": 38.793091602349,
+            "longitude": -72.992535573368,
+            "oxygen_ml_l": 7.413400173187256,
+            "salinity": 35.86410140991211,
+            "temperature_celsius": 5.09060001373291,
+            "uuid": "173228c6-acad-4bd1-5d62-9d4db9b3d41e"
+        }
+    },
+    # annotations[5]
+    {
+        "observation_uuid": "034e6380-f1d0-4e16-c86d-32c7e15dd41e",
+        "concept": "Cyclothone sp",
+        "observer": "MeaganPutts",
+        "observation_timestamp": "2022-10-07T01:19:38.153Z",
+        "video_reference_uuid": "9cb8f6cd-9720-4f51-aaac-4d7da1dec55a",
+        "imaged_moment_uuid": "953c9cc7-d3a6-4182-c76d-32c7e15dd41e",
+        "elapsed_time_millis": 8214963,
+        "recorded_timestamp": "2014-09-05T15:02:20.963Z",
+        "group": "ROV",
+        "activity": "cruise",
+        "associations": [
+            {
+                "uuid": "34f6e28b-d09c-42bb-3b66-a8cfe15dd41e",
+                "link_name": "population-quantity",
+                "to_concept": "self",
+                "link_value": "2",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "8b583938-0f2b-41a4-c96d-32c7e15dd41e",
+                "link_name": "s1",
+                "to_concept": "sed",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "d2eb3cb2-b04b-4af9-ca6d-32c7e15dd41e",
+                "link_name": "identity-certainty",
+                "to_concept": "self",
+                "link_value": "maybe",
+                "mime_type": "text/plain"
+            }
+        ],
+        "image_references": [],
+        "ancillary_data": {
+            "altitude": 2.0999999046325684,
+            "depth_meters": 665.6820068359375,
+            "latitude": 38.793244783845,
+            "longitude": -72.992023355233,
+            "oxygen_ml_l": 7.297399997711182,
+            "salinity": 35.868900299072266,
+            "temperature_celsius": 5.169400215148926,
+            "uuid": "d798c0ae-ef79-4612-be69-9f4db9b3d41e"
+        }
+    },
+    # annotations[6]
+    {
+        "observation_uuid": "eb288157-9e2c-4fcf-1863-3c2be5ddd31e",
+        "concept": "Nemichthys scolopaceus cf",
+        "observer": "NikkiCunanan",
+        "observation_timestamp": "2022-11-17T21:26:14.245Z",
+        "video_reference_uuid": "cd74c489-6336-4b97-89a6-f151872f282b",
+        "imaged_moment_uuid": "cb776b90-8d21-4412-076c-7750ad58ca1e",
+        "elapsed_time_millis": 0,
+        "recorded_timestamp": "2014-09-05T13:50:40Z",
+        "group": "ROV",
+        "associations": [
+            {
+                "uuid": "46c6ec04-ed4c-4f16-496c-839f535bd41e",
+                "link_name": "guide-photo",
+                "to_concept": "1 best",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "5c5888ce-99e1-4125-0162-597a0bdfd31e",
+                "link_name": "identity-certainty",
+                "to_concept": "self",
+                "link_value": "small head; long ribbon body",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "d37d482e-5d56-4267-786b-0dfb525bd41e",
+                "link_name": "occurrence-remark",
+                "to_concept": "nil",
+                "link_value": "in water column on descent",
+                "mime_type": "text/plain"
+            }
+        ],
+        "image_references": [
+            {
+                "uuid": "5387fdb9-08b9-4153-d968-802be5ddd31e",
+                "description": "imported image",
+                "url": "https://hurlimage.soest.hawaii.edu/SupplementalPhotos/D2photos/EX1404photos/EX1404L2_DIVE01_20140905/EX1404L2_IMG_20140905T135040Z_ROVHD_NICE_EEL_BOTTOM.jpg"
+            },
+            {
+                "uuid": "7eaf9918-344f-4be0-486a-cf50ad58ca1e",
+                "description": "imported image",
+                "url": "http://hurlstor.soest.hawaii.edu/imagearchive/SupplementalPhotos/D2photos/EX1404photos/EX1404L2_DIVE01_20140905/EX1404L2_IMG_20140905T135040Z_ROVHD_NICE_EEL_BOTTOM.jpg"
+            }
+        ],
+        "ancillary_data": {
+            "altitude": 26.5,
+            "depth_meters": 646.5650024414062,
+            "latitude": 38.793034716155,
+            "longitude": -72.99254911661,
+            "oxygen_ml_l": 7.321300029754639,
+            "salinity": 35.86949920654297,
+            "temperature_celsius": 5.182499885559082,
+            "uuid": "1533fda8-4180-478f-606a-a867b9b3d41e"
+        }
+    },
+    # annotations[7]
+    {
+        "observation_uuid": "24e9a5d5-b65e-4926-ee65-30cad2bcda1e",
+        "concept": "Trissopathes sp",
+        "observer": "MeaganPutts",
+        "observation_timestamp": "2023-02-24T01:20:58.388Z",
+        "video_reference_uuid": "48229df3-0f41-43f8-8ec4-605c3314943d",
+        "imaged_moment_uuid": "8cba8d06-bf4d-4580-ef65-30cad2bcda1e",
+        "recorded_timestamp": "2021-11-30T09:07:25Z",
+        "associations": [
+            {
+                "uuid": "2bcd2b8d-c5f2-4b99-b069-cc29183edb1e",
+                "link_name": "upon",
+                "to_concept": "bedbmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "44c371ee-ba03-4c00-cf65-611cf4d4db1e",
+                "link_name": "categorical-abundance",
+                "to_concept": "self",
+                "link_value": "\u003e100",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "b5f0ca93-4800-43cf-1f6f-da05183edb1e",
+                "link_name": "s2",
+                "to_concept": "sed",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "cc9f2172-03f1-4077-5e6e-06ff173edb1e",
+                "link_name": "s2",
+                "to_concept": "cobbmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "d8adca83-411c-4f31-5c62-6ef3173edb1e",
+                "link_name": "s1",
+                "to_concept": "bedbmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "e1219ef3-36c2-4902-cd6a-72f9173edb1e",
+                "link_name": "s2",
+                "to_concept": "boubmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "8c46c0fc-28d9-47e6-9a62-94e36b3adb1e",
+                "link_name": "size",
+                "to_concept": "5-1000000 cm",  # to fail
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "6cbe7784-92b5-414a-cd66-6c303b96db1e",
+                "link_name": "condition-comment",
+                "to_concept": "self",
+                "link_value": "damaged",
+                "mime_type": "text/plain"
+            }
+        ],
+        "image_references": [
+            {
+                "uuid": "be9e0179-5fbc-4309-c061-50cad2bcda1e",
+                "description": "imported image",
+                "url": "https://hurlimage.soest.hawaii.edu/SupplementalPhotos/Hphotos/NA134photos/H1895/cam1_20211130090725.png"
+            }
+        ],
+        "ancillary_data": {
+            "depth_meters": 1861.291015625,
+            "latitude": 23.83022078,
+            "longitude": -172.817877,
+            "oxygen_ml_l": 2.172351121902466,
+            "salinity": 34.588722229003906,
+            "temperature_celsius": 2.1976208686828613,
+            "uuid": "0dc42ad6-ca57-44f7-7e69-e2adba9adc1e"
+        }
+    },
+    # annotations[8]
+    {
+        "observation_uuid": "26d38322-b92b-4211-596d-24bed2bcda1e",
+        "concept": "Trissopathes sp",
+        "observer": "MeaganPutts",
+        "observation_timestamp": "2023-02-23T18:29:34.133Z",
+        "video_reference_uuid": "48229df3-0f41-43f8-8ec4-605c3314943d",
+        "imaged_moment_uuid": "0fe852fe-3699-494a-5a6d-24bed2bcda1e",
+        "recorded_timestamp": "2021-11-30T08:07:00Z",
+        "activity": "stationary",
+        "associations": [
+            {
+                "uuid": "2d51a65b-3fe0-46f1-586b-e3cb6b3adb1e",
+                "link_name": "s2",
+                "to_concept": "cobbmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "604c3e40-1ac9-42ba-bb67-32f86b3adb1e",
+                "link_name": "upon",
+                "to_concept": "bedbmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "8c46c0fc-28d9-47e6-9a62-94e36b3adb1e",
+                "link_name": "size",
+                "to_concept": "50-100 cm",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "8f0ad450-04b3-447a-0768-f5c66b3adb1e",
+                "link_name": "s2",
+                "to_concept": "boubmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "8fd64fc9-c9f0-493d-7c6f-9f136c3adb1e",
+                "link_name": "identity-reference",
+                "to_concept": "self",
+                "link_value": "20",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "9bca3c04-2ddf-4140-d662-0cc26b3adb1e",
+                "link_name": "s1",
+                "to_concept": "bedbmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "f7de4fc4-6a42-450c-fd61-b5490cd5db1e",
+                "link_name": "s2",
+                "to_concept": "sed",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "6cbe7784-92b5-414a-cd66-6c303b96db1e",
+                "link_name": "condition-comment",
+                "to_concept": "self",
+                "link_value": "dead",
+                "mime_type": "text/plain"
+            }
+        ],
+        "image_references": [
+            {
+                "uuid": "5c5c759c-f71d-4ed0-1b62-42bed2bcda1e",
+                "description": "imported image",
+                "url": "https://hurlimage.soest.hawaii.edu/SupplementalPhotos/Hphotos/NA134photos/H1895/cam1_20211130080700.png"
+            }
+        ],
+        "ancillary_data": {
+            "depth_meters": 1908.455322265625,
+            "latitude": 23.8309845,
+            "longitude": -172.8196795,
+            "oxygen_ml_l": 2.2894139289855957,
+            "salinity": 34.598243713378906,
+            "temperature_celsius": 2.0848000049591064,
+            "uuid": "5479105b-966c-4685-4162-e0adba9adc1e"
+        }
+    },
+    # annotations[9]
+    {
+        "observation_uuid": "42c8308b-a92b-4105-c86a-9affd2bcda1e",
+        "concept": "Narella sp",
+        "observer": "MeaganPutts",
+        "observation_timestamp": "2023-03-07T20:08:12.815Z",
+        "video_reference_uuid": "48229df3-0f41-43f8-8ec4-605c3314943d",
+        "imaged_moment_uuid": "a4a0e81b-d708-477d-c96a-9affd2bcda1e",
+        "recorded_timestamp": "2021-11-30T14:57:09Z",
+        "associations": [
+            {
+                "uuid": "0e92de19-a916-4dd0-ac60-b0c13cd2db1e",
+                "link_name": "s2",
+                "to_concept": "cobbmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "2dd08980-c115-44b4-1e64-cce13cd2db1e",
+                "link_name": "size",
+                "to_concept": "30-50 cm",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "37c87be6-8b2c-436c-8b6a-fc0f42d2db1e",
+                "link_name": "sampled-by",
+                "to_concept": "manipulator",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "77f0d246-c814-4f4e-1768-44d740d2db1e",
+                "link_name": "identity-reference",
+                "to_concept": "self",
+                "link_value": "51",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "7f46cf73-52e9-4899-eb63-78bb3cd2db1e",
+                "link_name": "s2",
+                "to_concept": "boubmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "8e86307e-981b-4762-4063-c1f33ed2db1e",
+                "link_name": "upon",
+                "to_concept": "bedbmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "b364e693-a038-41a3-3a6d-1bb53cd2db1e",
+                "link_name": "s1",
+                "to_concept": "bedbmn",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "c3349bc4-3ff8-45ff-5d69-5ac83cd2db1e",
+                "link_name": "s2",
+                "to_concept": "sed",
+                "link_value": "nil",
+                "mime_type": "text/plain"
+            },
+            {
+                "uuid": "ff4c7d94-dc87-4454-0a62-e90f42d2db1e",
+                "link_name": "sample-reference",
+                "to_concept": "self",
+                "link_value": "NA134-158-B-MCZ",
+                "mime_type": "text/plain"
+            }
+        ],
+        "image_references": [
+            {
+                "uuid": "a6b2a9d5-e305-48f0-9a66-baffd2bcda1e",
+                "description": "imported image",
+                "url": "https://hurlimage.soest.hawaii.edu/SupplementalPhotos/Hphotos/NA134photos/H1895/cam1_20211130145709.png"
+            }
+        ],
+        "ancillary_data": {
+            "depth_meters": 1883.022705078125,
+            "latitude": 23.83036,
+            "longitude": -172.8159502,
+            "oxygen_ml_l": 2.3752732276916504,
+            "salinity": 34.60392379760742,
+            "temperature_celsius": 2.0179998874664307,
+            "uuid": "b26af95a-7dac-42a9-8e62-e0adba9adc1e"
         }
     }
 ]
