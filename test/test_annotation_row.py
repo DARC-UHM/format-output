@@ -378,25 +378,78 @@ class TestAnnotationRow:
         assert test_row.columns['UponIsCreature'] is False
         assert test_row.columns['Substrate'] == NULL_VAL_STRING
 
-
-"""
     def test_set_id_ref(self):
+        test_row = AnnotationRow(annotations[9])
+        test_row.set_id_ref()
+        assert test_row.columns['IdentityReference'] == 51
+
+    def test_set_id_ref_none(self):
         test_row = AnnotationRow(annotations[1])
-        assert 1 == 0
+        test_row.set_id_ref()
+        assert test_row.columns['IdentityReference'] == -1
 
     def test_set_temperature(self):
+        warnings = []
         test_row = AnnotationRow(annotations[1])
-        assert 1 == 0
+        test_row.set_temperature(warnings)
+        assert test_row.columns['Temperature'] == 5.126
+        assert warnings == []
+
+    def test_set_temperature_none(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[4])
+        test_row.set_temperature(warnings)
+        assert test_row.columns['Temperature'] == NULL_VAL_INT
+        assert len(warnings) == 1
 
     def test_set_salinity(self):
+        warnings = []
         test_row = AnnotationRow(annotations[1])
-        assert 1 == 0
+        test_row.set_salinity(warnings)
+        assert test_row.columns['Salinity'] == 35.8649
+        assert warnings == []
+
+    def test_set_salinity_none(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[4])
+        test_row.set_salinity(warnings)
+        assert test_row.columns['Salinity'] == NULL_VAL_INT
+        assert len(warnings) == 1
 
     def test_set_oxygen(self):
+        warnings = []
         test_row = AnnotationRow(annotations[1])
-        assert 1 == 0
+        test_row.set_oxygen(warnings)
+        assert test_row.columns['Oxygen'] == 5.1221
+        assert warnings == []
 
-    def test_set_image_paths(self):
-        test_row = AnnotationRow(annotations[1])
-        assert 1 == 0
-"""
+    def test_set_oxygen_none(self):
+        warnings = []
+        test_row = AnnotationRow(annotations[4])
+        test_row.set_oxygen(warnings)
+        assert test_row.columns['Oxygen'] == NULL_VAL_INT
+        assert len(warnings) == 1
+
+    def test_set_image_paths_one_no_hl(self):
+        test_row = AnnotationRow(annotations[7])
+        test_row.set_image_paths()
+        assert test_row.columns['ImageFilePath'] == 'https://hurlimage.soest.hawaii.edu/SupplementalPhotos/Hphotos/NA134photos/H1895/cam1_20211130090725.png'
+        assert test_row.columns['HighlightImageFilePath'] == NULL_VAL_STRING
+
+    def test_set_image_paths_one_hl_best(self):
+        test_row = AnnotationRow(annotations[6])
+        test_row.set_image_paths()
+        assert test_row.columns['ImageFilePath'] == 'https://hurlimage.soest.hawaii.edu/SupplementalPhotos/D2photos/EX1404photos/EX1404L2_DIVE01_20140905/EX1404L2_IMG_20140905T135040Z_ROVHD_NICE_EEL_BOTTOM.png'
+        assert test_row.columns['HighlightImageFilePath'] == 'https://hurlimage.soest.hawaii.edu/SupplementalPhotos/D2photos/EX1404photos/EX1404L2_DIVE01_20140905/EX1404L2_IMG_20140905T135040Z_ROVHD_NICE_EEL_BOTTOM.png'
+
+    def test_set_image_paths_one_hl_dense(self):
+        test_row = AnnotationRow(annotations[8])
+        test_row.set_image_paths()
+        assert test_row.columns['ImageFilePath'] == 'https://hurlimage.soest.hawaii.edu/SupplementalPhotos/Hphotos/NA134photos/H1895/cam1_20211130080700.png'
+        assert test_row.columns['HighlightImageFilePath'] == 'https://hurlimage.soest.hawaii.edu/SupplementalPhotos/Hphotos/NA134photos/H1895/cam1_20211130080700.png'
+
+    def test_set_image_paths_multiple(self):
+        test_row = AnnotationRow(annotations[9])
+        test_row.set_image_paths()
+        assert test_row.columns['ImageFilePath'] == 'https://hurlimage.soest.hawaii.edu/SupplementalPhotos/Hphotos/NA134photos/H1895/cam1_20211130145709.png'
+        assert test_row.columns['HighlightImageFilePath'] == NULL_VAL_STRING

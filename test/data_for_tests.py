@@ -262,9 +262,6 @@ annotations = [
             "depth_meters": 669.0770263671875,
             "latitude": 38.793091602349,
             "longitude": -72.992535573368,
-            "oxygen_ml_l": 7.413400173187256,
-            "salinity": 35.86410140991211,
-            "temperature_celsius": 5.09060001373291,
             "uuid": "173228c6-acad-4bd1-5d62-9d4db9b3d41e"
         }
     },
@@ -351,14 +348,9 @@ annotations = [
         ],
         "image_references": [
             {
-                "uuid": "5387fdb9-08b9-4153-d968-802be5ddd31e",
-                "description": "imported image",
-                "url": "https://hurlimage.soest.hawaii.edu/SupplementalPhotos/D2photos/EX1404photos/EX1404L2_DIVE01_20140905/EX1404L2_IMG_20140905T135040Z_ROVHD_NICE_EEL_BOTTOM.jpg"
-            },
-            {
                 "uuid": "7eaf9918-344f-4be0-486a-cf50ad58ca1e",
                 "description": "imported image",
-                "url": "http://hurlstor.soest.hawaii.edu/imagearchive/SupplementalPhotos/D2photos/EX1404photos/EX1404L2_DIVE01_20140905/EX1404L2_IMG_20140905T135040Z_ROVHD_NICE_EEL_BOTTOM.jpg"
+                "url": "http://hurlstor.soest.hawaii.edu/imagearchive/SupplementalPhotos/D2photos/EX1404photos/EX1404L2_DIVE01_20140905/EX1404L2_IMG_20140905T135040Z_ROVHD_NICE_EEL_BOTTOM.png"
             }
         ],
         "ancillary_data": {
@@ -467,6 +459,13 @@ annotations = [
         "recorded_timestamp": "2021-11-30T08:07:00Z",
         "activity": "stationary",
         "associations": [
+            {
+                "uuid": "24b22532-ed27-463e-966c-cac8c54ddd1e",
+                "link_name": "population-density",
+                "to_concept": "self",
+                "link_value": "dense",
+                "mime_type": "text/plain"
+            },
             {
                 "uuid": "2d51a65b-3fe0-46f1-586b-e3cb6b3adb1e",
                 "link_name": "s2",
@@ -620,6 +619,11 @@ annotations = [
                 "uuid": "a6b2a9d5-e305-48f0-9a66-baffd2bcda1e",
                 "description": "imported image",
                 "url": "https://hurlimage.soest.hawaii.edu/SupplementalPhotos/Hphotos/NA134photos/H1895/cam1_20211130145709.png"
+            },
+            {
+                "uuid": "a6b2a9d5-e305-48f0-9a66-baffd2bcda1e",
+                "description": "imported image",
+                "url": "https://hurlimage.soest.hawaii.edu/SupplementalPhotos/Hphotos/NA134photos/H1895/cam1_20211130145709.jpg"
             }
         ],
         "ancillary_data": {
