@@ -27,38 +27,17 @@ class ConceptHandler:
 
     def fetch_worms(self):
         """
-        Easily call both WoRMS queries.
+        To easily call both WoRMS queries.
         """
         self.fetch_worms_aphia_record()
         self.fetch_worms_taxon_tree()
 
     def fetch_vars(self):
         """
-        Easily call both VARS kb queries.
+        To easily call both VARS kb queries.
         """
         self.fetch_vernaculars()
         self.fetch_vars_synonyms()
-
-    def find_parent(self):
-        """
-        Gets concept's parent from VARS kb:
-        http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/[VARS_CONCEPT_NAME]
-        """
-        parent = NULL_VAL_STRING
-        with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{self.concept.concept_name}') \
-                as vars_tax_res:
-            if vars_tax_res.status_code == 200:
-                # this get us to kingdom
-                vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
-                temp_tree = vars_tree
-                while 'children' in vars_tree.keys():
-                    # get down to the bottom
-                    temp_tree = vars_tree
-                    vars_tree = vars_tree['children'][0]
-                parent = temp_tree['name']
-            else:
-                print(f'Unable to find record for {self.concept.concept_name}')
-        self.concept.concept_words = [parent]
 
     def fetch_worms_aphia_record(self):
         """
@@ -115,6 +94,27 @@ class ConceptHandler:
                 for word in self.concept.concept_add_words:
                     if word not in self.concept.scientific_name and word not in self.unaccepted_names:
                         self.concept.descriptors.append(word)
+
+    def find_parent(self):
+        """
+        Gets concept's parent from VARS kb:
+        http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/[VARS_CONCEPT_NAME]
+        """
+        parent = NULL_VAL_STRING
+        with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{self.concept.concept_name}') \
+                as vars_tax_res:
+            if vars_tax_res.status_code == 200:
+                # this get us to kingdom
+                vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
+                temp_tree = vars_tree
+                while 'children' in vars_tree.keys():
+                    # get down to the bottom
+                    temp_tree = vars_tree
+                    vars_tree = vars_tree['children'][0]
+                parent = temp_tree['name']
+            else:
+                print(f'Unable to find record for {self.concept.concept_name}')
+        self.concept.concept_words = [parent]
 
     def find_accepted_record(self, json_records: list, concept_words: list):
         """
