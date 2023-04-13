@@ -1,3 +1,5 @@
+import pytest
+
 from util.functions import *
 from util.constants import ROOTS
 from test.data_for_tests import *
@@ -53,6 +55,10 @@ class TestFunctions:
     def test_parse_datetime_no_micro(self):
         date_time = parse_datetime('2014-09-05T14:08:41Z')
         assert date_time == datetime(2014, 9, 5, 14, 8, 41)
+
+    def test_parse_datetime_fail(self):
+        with pytest.raises(Exception):
+            parse_datetime('fail')
 
     def test_extract_time_no_micro(self):
         date_time = extract_time(annotations[0])

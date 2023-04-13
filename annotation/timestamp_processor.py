@@ -16,8 +16,9 @@ class TimestampProcessor:
         self.timestamp = parse_datetime(timestamp=timestamp)
         if self.timestamp.microsecond >= 500000:
             self.timestamp = self.timestamp + timedelta(seconds=1)
+        self.timestamp = self.timestamp.replace(microsecond=0)
 
-    def get_formatted_timestamp(self):
+    def get_formatted_timestamp(self) -> str:
         """
         Returns timestamp in format 00:00:00.
 
