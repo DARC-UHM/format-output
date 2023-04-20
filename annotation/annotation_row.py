@@ -65,9 +65,13 @@ class AnnotationRow:
         if 'latitude' in self.annotation['ancillary_data'] and 'longitude' in self.annotation['ancillary_data']:
             self.columns['Latitude'] = round(self.annotation['ancillary_data']['latitude'], 8)
             self.columns['Longitude'] = round(self.annotation['ancillary_data']['longitude'], 8)
+            self.columns['VerbatimLatitude'] = self.annotation['ancillary_data']['latitude']
+            self.columns['VerbatimLongitude'] = self.annotation['ancillary_data']['longitude']
         else:
             self.columns['Latitude'] = NULL_VAL_INT
             self.columns['Longitude'] = NULL_VAL_INT
+            self.columns['VerbatimLatitude'] = NULL_VAL_INT
+            self.columns['VerbatimLongitude'] = NULL_VAL_INT
             # flag warning
             warning_messages.append([
                 self.columns['SampleID'],
@@ -75,11 +79,17 @@ class AnnotationRow:
                 self.annotation["observation_uuid"],
                 f'{Color.RED}No location data found for this record{Color.END}'
             ])
-        self.columns['VerbatimLatitude'] = self.annotation['ancillary_data']['latitude']
-        self.columns['VerbatimLongitude'] = self.annotation['ancillary_data']['longitude']
 
-        self.columns['DepthInMeters'] = round(self.annotation['ancillary_data']['depth_meters'], 3) \
-            if 'depth_meters' in self.annotation['ancillary_data'] else NULL_VAL_INT
+        if 'depth_meters' in self.annotation['ancillary_data']:
+            self.columns['DepthInMeters'] = round(self.annotation['ancillary_data']['depth_meters'], 3)
+        else:
+            self.columns['DepthInMeters'] = NULL_VAL_INT
+            warning_messages.append([
+                self.columns['SampleID'],
+                self.annotation["concept"],
+                self.annotation["observation_uuid"],
+                f'{Color.YELLOW}No depth data found for this record{Color.END}'
+            ])
         self.columns['MinimumDepthInMeters'] = self.columns['DepthInMeters']
         self.columns['MaximumDepthInMeters'] = self.columns['DepthInMeters']
 

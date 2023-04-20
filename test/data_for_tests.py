@@ -29,7 +29,16 @@ annotations = [
                 "link_value": "nil",
                 "mime_type": "text/plain"
             }
-        ]
+        ],
+        "ancillary_data": {
+            "altitude": 1.899999976158142,
+            "depth_meters": 668.458984375,
+            "latitude": 38.793148973388,
+            "oxygen_ml_l": 7.3196001052856445,
+            "salinity": 35.864898681640625,
+            "temperature_celsius": 5.125999927520752,
+            "uuid": "b5bdfa60-9b20-40c4-6462-9d4db9b3d41e"
+        }
     },
     # annotations[1]
     {
@@ -158,7 +167,6 @@ annotations = [
         "image_references": [],
         "ancillary_data": {
             "altitude": 2.299999952316284,
-            "depth_meters": 1651.760009765625,
             "latitude": 39.023365743777,
             "longitude": -72.448741878402,
             "oxygen_ml_l": 8.13640022277832,
