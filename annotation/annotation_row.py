@@ -37,17 +37,9 @@ class AnnotationRow:
         self.columns['IdentifiedBy'] = convert_username_to_name(self.annotation['observer'])
         self.columns['IdentificationDate'] = self.observation_time.timestamp.strftime('%Y-%m-%d')
         self.columns['IdentificationVerificationStatus'] = 1
-        self.columns['Latitude'] = round(self.annotation['ancillary_data']['latitude'], 8)
-        self.columns['Longitude'] = round(self.annotation['ancillary_data']['longitude'], 8)
-        self.columns['DepthInMeters'] = round(self.annotation['ancillary_data']['depth_meters'], 3) \
-            if 'depth_meters' in self.annotation['ancillary_data'] else NULL_VAL_INT
-        self.columns['MinimumDepthInMeters'] = self.columns['DepthInMeters']
-        self.columns['MaximumDepthInMeters'] = self.columns['DepthInMeters']
         self.columns['DepthMethod'] = 'reported'
         self.columns['ObservationDate'] = self.recorded_time.timestamp.strftime('%Y-%m-%d')
         self.columns['ObservationTime'] = self.recorded_time.timestamp.strftime('%H:%M:%S')
-        self.columns['VerbatimLatitude'] = self.annotation['ancillary_data']['latitude']
-        self.columns['VerbatimLongitude'] = self.annotation['ancillary_data']['longitude']
         self.columns['OtherData'] = 'CTD'
         self.columns['Modified'] = datetime.now(timezone.utc).strftime('%Y-%m-%d')
         self.columns['Reporter'] = REPORTER  # defined at top of file
@@ -63,6 +55,34 @@ class AnnotationRow:
         self.columns['SampleAreaInSquareMeters'] = NULL_VAL_INT
         self.columns['Density'] = NULL_VAL_INT
         self.columns['WeightInKg'] = NULL_VAL_INT
+
+    # todo update tests
+    def set_ancillary_date(self, warning_messages: list):
+        """
+        Sets ancillary based on data from annotation object. Adds a warning message if lat/long data is missing.
+
+        :param list warning_messages: The list of warning messages to display at the end of the script.
+        """
+        if 'Latitude' in self.annotation['ancillary_data'] and 'Longitude' in self.annotation['ancillary_data']:
+            self.columns['Latitude'] = round(self.annotation['ancillary_data']['latitude'], 8)
+            self.columns['Longitude'] = round(self.annotation['ancillary_data']['longitude'], 8)
+        else:
+            self.columns['Latitude'] = NULL_VAL_INT
+            self.columns['Longitude'] = NULL_VAL_INT
+            # flag warning
+            warning_messages.append([
+                self.columns['SampleID'],
+                self.annotation["concept"],
+                self.annotation["observation_uuid"],
+                f'{Color.RED}No location data found for this record{Color.END}'
+            ])
+        self.columns['VerbatimLatitude'] = self.annotation['ancillary_data']['latitude']
+        self.columns['VerbatimLongitude'] = self.annotation['ancillary_data']['longitude']
+
+        self.columns['DepthInMeters'] = round(self.annotation['ancillary_data']['depth_meters'], 3) \
+            if 'depth_meters' in self.annotation['ancillary_data'] else NULL_VAL_INT
+        self.columns['MinimumDepthInMeters'] = self.columns['DepthInMeters']
+        self.columns['MaximumDepthInMeters'] = self.columns['DepthInMeters']
 
     def set_sample_id(self, dive_name: str):
         """
