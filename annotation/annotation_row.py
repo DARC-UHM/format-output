@@ -56,14 +56,13 @@ class AnnotationRow:
         self.columns['Density'] = NULL_VAL_INT
         self.columns['WeightInKg'] = NULL_VAL_INT
 
-    # todo update tests
-    def set_ancillary_date(self, warning_messages: list):
+    def set_ancillary_data(self, warning_messages: list):
         """
-        Sets ancillary based on data from annotation object. Adds a warning message if lat/long data is missing.
+        Sets ancillary data from annotation object. Adds a warning message if lat/long data is missing.
 
         :param list warning_messages: The list of warning messages to display at the end of the script.
         """
-        if 'Latitude' in self.annotation['ancillary_data'] and 'Longitude' in self.annotation['ancillary_data']:
+        if 'latitude' in self.annotation['ancillary_data'] and 'longitude' in self.annotation['ancillary_data']:
             self.columns['Latitude'] = round(self.annotation['ancillary_data']['latitude'], 8)
             self.columns['Longitude'] = round(self.annotation['ancillary_data']['longitude'], 8)
         else:

@@ -55,16 +55,9 @@ class TestAnnotationRow:
         assert test_row.columns['IdentifiedBy'] == 'Putts, Meagan'
         assert test_row.columns['IdentificationDate'] == test_row.observation_time.timestamp.strftime('%Y-%m-%d')
         assert test_row.columns['IdentificationVerificationStatus'] == 1
-        assert test_row.columns['Latitude'] == round(38.793148973388, 8)
-        assert test_row.columns['Longitude'] == round(-72.992393976812, 8)
-        assert test_row.columns['DepthInMeters'] == round(668.458984375, 3)
-        assert test_row.columns['MinimumDepthInMeters'] == round(668.458984375, 3)
-        assert test_row.columns['MaximumDepthInMeters'] == round(668.458984375, 3)
         assert test_row.columns['DepthMethod'] == 'reported'
         assert test_row.columns['ObservationDate'] == test_row.recorded_time.timestamp.strftime('%Y-%m-%d')
         assert test_row.columns['ObservationTime'] == test_row.recorded_time.timestamp.strftime('%H:%M:%S')
-        assert test_row.columns['VerbatimLatitude'] == 38.793148973388
-        assert test_row.columns['VerbatimLongitude'] == -72.992393976812
         assert test_row.columns['OtherData'] == 'CTD'
         # skip checking 'Modified' column (initialized to current time)
         assert test_row.columns['Reporter'] == 'Bingo, Sarah'
@@ -77,6 +70,19 @@ class TestAnnotationRow:
         assert test_row.columns['SampleAreaInSquareMeters'] == NULL_VAL_INT
         assert test_row.columns['Density'] == NULL_VAL_INT
         assert test_row.columns['WeightInKg'] == NULL_VAL_INT
+
+    def test_set_ancillary_data(self):
+        test_row = AnnotationRow(annotations[1])
+        warnings = []
+        test_row.set_ancillary_data(warnings)
+        assert test_row.columns['Latitude'] == round(38.793148973388, 8)
+        assert test_row.columns['Longitude'] == round(-72.992393976812, 8)
+        assert test_row.columns['VerbatimLatitude'] == 38.793148973388
+        assert test_row.columns['VerbatimLongitude'] == -72.992393976812
+        assert test_row.columns['DepthInMeters'] == round(668.458984375, 3)
+        assert test_row.columns['MinimumDepthInMeters'] == round(668.458984375, 3)
+        assert test_row.columns['MaximumDepthInMeters'] == round(668.458984375, 3)
+
 
     def test_set_sample_id(self):
         test_row = AnnotationRow(annotations[1])

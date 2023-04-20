@@ -187,6 +187,7 @@ for dive_name in sequence_names:
         # populate simple data from annotation & Dives.csv
         annotation_row.set_simple_static_data()
         annotation_row.set_ancillary_date(warning_messages=warning_messages)
+        annotation_row.set_ancillary_data(warning_messages=warning_messages)
         annotation_row.set_dive_info(dive_info=dive_dict)
         annotation_row.set_sample_id(dive_name=dive_name)
 
