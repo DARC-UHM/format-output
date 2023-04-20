@@ -88,9 +88,6 @@ class TestAnnotationRow:
         assert test_row.columns['Longitude'] == round(-72.992393976812, 8)
         assert test_row.columns['VerbatimLatitude'] == 38.793148973388
         assert test_row.columns['VerbatimLongitude'] == -72.992393976812
-        assert test_row.columns['DepthInMeters'] == round(668.458984375, 3)
-        assert test_row.columns['MinimumDepthInMeters'] == round(668.458984375, 3)
-        assert test_row.columns['MaximumDepthInMeters'] == round(668.458984375, 3)
         assert warnings == []
 
     def test_set_ancillary_data_missing_location(self):
@@ -101,22 +98,12 @@ class TestAnnotationRow:
         assert test_row.columns['Longitude'] == NULL_VAL_INT
         assert test_row.columns['VerbatimLatitude'] == NULL_VAL_INT
         assert test_row.columns['VerbatimLongitude'] == NULL_VAL_INT
-        assert test_row.columns['DepthInMeters'] == round(668.458984375, 3)
-        assert test_row.columns['MinimumDepthInMeters'] == round(668.458984375, 3)
-        assert test_row.columns['MaximumDepthInMeters'] == round(668.458984375, 3)
         assert len(warnings) == 1
 
-    def test_set_ancillary_data_missing_depth(self):
-        test_row = AnnotationRow(annotations[2])
+    def test_set_ancillary_data_missing_data(self):
+        test_row = AnnotationRow(annotations[5])
         warnings = []
         test_row.set_ancillary_data(warnings)
-        assert test_row.columns['Latitude'] == round(39.023365743777, 8)
-        assert test_row.columns['Longitude'] == round(-72.448741878402, 8)
-        assert test_row.columns['VerbatimLatitude'] == 39.023365743777
-        assert test_row.columns['VerbatimLongitude'] == -72.448741878402
-        assert test_row.columns['DepthInMeters'] == NULL_VAL_INT
-        assert test_row.columns['MinimumDepthInMeters'] == NULL_VAL_INT
-        assert test_row.columns['MaximumDepthInMeters'] == NULL_VAL_INT
         assert len(warnings) == 1
 
     def test_set_sample_id(self):
@@ -428,6 +415,24 @@ class TestAnnotationRow:
         test_row = AnnotationRow(annotations[1])
         test_row.set_id_ref()
         assert test_row.columns['IdentityReference'] == -1
+
+    def test_set_depth(self):
+        test_row = AnnotationRow(annotations[0])
+        warnings = []
+        test_row.set_depth(warnings)
+        assert test_row.columns['DepthInMeters'] == round(668.458984375, 4)
+        assert test_row.columns['MinimumDepthInMeters'] == 668.459
+        assert test_row.columns['MaximumDepthInMeters'] == 668.459
+        assert warnings == []
+
+    def test_set_depth_missing(self):
+        test_row = AnnotationRow(annotations[2])
+        warnings = []
+        test_row.set_depth(warnings)
+        assert test_row.columns['DepthInMeters'] == NULL_VAL_INT
+        assert test_row.columns['MinimumDepthInMeters'] == NULL_VAL_INT
+        assert test_row.columns['MaximumDepthInMeters'] == NULL_VAL_INT
+        assert len(warnings) == 1
 
     def test_set_temperature(self):
         warnings = []

@@ -58,10 +58,18 @@ class AnnotationRow:
 
     def set_ancillary_data(self, warning_messages: list):
         """
-        Sets ancillary data from annotation object. Adds a warning message if lat/long data is missing.
+        Sets ancillary data from annotation object. Adds a warning message if ancillary data or lat/long data is missing.
 
         :param list warning_messages: The list of warning messages to display at the end of the script.
         """
+        if 'ancillary_data' not in self.annotation:
+            warning_messages.append([
+                self.columns['SampleID'],
+                self.annotation["concept"],
+                self.annotation["observation_uuid"],
+                f'{Color.RED}No ancillary data found for this record{Color.END}'
+            ])
+            return
         if 'latitude' in self.annotation['ancillary_data'] and 'longitude' in self.annotation['ancillary_data']:
             self.columns['Latitude'] = round(self.annotation['ancillary_data']['latitude'], 8)
             self.columns['Longitude'] = round(self.annotation['ancillary_data']['longitude'], 8)
@@ -79,19 +87,10 @@ class AnnotationRow:
                 self.annotation["observation_uuid"],
                 f'{Color.RED}No location data found for this record{Color.END}'
             ])
-
-        if 'depth_meters' in self.annotation['ancillary_data']:
-            self.columns['DepthInMeters'] = round(self.annotation['ancillary_data']['depth_meters'], 3)
-        else:
-            self.columns['DepthInMeters'] = NULL_VAL_INT
-            warning_messages.append([
-                self.columns['SampleID'],
-                self.annotation["concept"],
-                self.annotation["observation_uuid"],
-                f'{Color.YELLOW}No depth data found for this record{Color.END}'
-            ])
-        self.columns['MinimumDepthInMeters'] = self.columns['DepthInMeters']
-        self.columns['MaximumDepthInMeters'] = self.columns['DepthInMeters']
+        self.set_depth(warning_messages=warning_messages)
+        self.set_temperature(warning_messages=warning_messages)
+        self.set_salinity(warning_messages=warning_messages)
+        self.set_oxygen(warning_messages=warning_messages)
 
     def set_sample_id(self, dive_name: str):
         """
@@ -394,6 +393,25 @@ class AnnotationRow:
             self.columns['IdentityReference'] = int(identity_reference['link_value'])
         else:
             self.columns['IdentityReference'] = -1
+
+    def set_depth(self, warning_messages: list):
+        """
+        Sets depth based on data from annotation object. Adds a warning message if depth is missing.
+
+        :param list warning_messages: The list of warning messages to display at the end of the script.
+        """
+        if 'depth_meters' in self.annotation['ancillary_data']:
+            self.columns['DepthInMeters'] = round(self.annotation['ancillary_data']['depth_meters'], 3)
+        else:
+            self.columns['DepthInMeters'] = NULL_VAL_INT
+            warning_messages.append([
+                self.columns['SampleID'],
+                self.annotation["concept"],
+                self.annotation["observation_uuid"],
+                f'{Color.YELLOW}No depth data found for this record{Color.END}'
+            ])
+        self.columns['MinimumDepthInMeters'] = self.columns['DepthInMeters']
+        self.columns['MaximumDepthInMeters'] = self.columns['DepthInMeters']
 
     def set_temperature(self, warning_messages: list):
         """
