@@ -21,7 +21,6 @@ class Concept:
         self.taxon_rank = NULL_VAL_STRING       # to fetch from WoRMS
         self.taxon_ranks = {}                   # the phylogeny/taxon tree (kingdom, phylum, class, etc)
         self.descriptors = []                   # extra words from the annotation record that aren't the scientific name
-        self.concept_name_flag = False          # True if no concept matching given concept name found in WoRMS
         self.concept_words = []                 # for cleaning concept name
         self.concept_add_words = []             # for cleaning concept name
         self.cf_flag = []                       # (cf = compare with) if record includes cf, should be manually reviewed

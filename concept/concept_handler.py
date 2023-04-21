@@ -80,9 +80,6 @@ class ConceptHandler:
                             print(f'{Color.YELLOW}{"No match" : <15}{Color.END}', end='')
                             self.concept.descriptors.append(word)
                             self.concept.concept_add_words.remove(word)
-                if len(self.concept.concept_add_words) == 0:
-                    # flag error
-                    self.concept.concept_name_flag = True
 
             if self.concept.concept_add_words:
                 for word in self.concept.concept_add_words:
@@ -166,7 +163,6 @@ class ConceptHandler:
                     self.check_status(record_list[0])
                 else:
                     print(f'{Color.RED}{"No match" : <15}{Color.END}')
-                    self.concept.concept_name_flag = True
 
     def check_status(self, json_record: Dict):
         """

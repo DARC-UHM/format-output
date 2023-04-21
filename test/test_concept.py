@@ -16,7 +16,6 @@ class TestConcept:
         assert test_concept.taxon_rank == NULL_VAL_STRING
         assert test_concept.taxon_ranks == {}
         assert test_concept.descriptors == []
-        assert test_concept.concept_name_flag is False
         assert test_concept.concept_words == ['test_name']
         assert test_concept.concept_add_words == []
         assert test_concept.cf_flag == []
