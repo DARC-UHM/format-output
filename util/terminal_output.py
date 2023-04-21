@@ -33,7 +33,7 @@ class Messages:
     DIVE_HEADER = f"\n{Color.BOLD}%-35s%-30s%-30s%-s" % ('Dive Name', 'Annotations Found', 'Duplicates Removed', 'Status') + \
         f'\n========================================================================================================={Color.END}'
 
-    WORMS_HEADER = f'\n\n{Color.BOLD}WoRMS check:\n%-40s %-35s%-15s%-15s%-15s%-15s' % \
+    WORMS_HEADER = f'\n\n{Color.BOLD}WoRMS check:\n\n%-40s %-35s%-15s%-15s%-15s%-15s' % \
                    ('VARS Concept Name', 'WoRMS Query', 'Taxon Record', 'Taxon Tree', 'Vernaculars', 'Synonyms (VARS)') + \
                     '\n============================================================================================' + \
                     f'============================================{Color.END}'

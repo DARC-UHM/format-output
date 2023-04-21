@@ -231,10 +231,14 @@ class ConceptHandler:
 
         self.concept.vernacular_names = vern_names
 
-    def fetch_vars_synonyms(self):
+    def fetch_vars_synonyms(self, warning_messages: list):
         """
-        Fetches synonym info from VARS kb:
+        Fetches concept info from VARS kb:
         http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/[VARS_CONCEPT_NAME]
+
+        Gets synonyms and checks if concept name is an alternate (old) name. If it is, query WoRMS again.
+
+        :param list warning_messages: The list of warning messages to display at the end of the script.
         """
         if self.concept.concept_name == 'eggs' or self.concept.concept_name == 'eggcase':
             return
@@ -246,6 +250,35 @@ class ConceptHandler:
         with requests.get(url) as r:
             json_obj = r.json()
             if r.status_code == 200:
+                if self.concept.concept_name in json_obj['alternateNames']:
+                    # the concept name we've been using is in fact an alternate name
+                    if self.concept.scientific_name == json_obj['name']:
+                        # the WoRMS query already returned the corrected name
+                        pass
+                    else:
+                        print(f'{Color.YELLOW}Alternate name{Color.END}')
+                        # we need to query worms for the correct concept name
+                        updated_concept = Concept(concept_name=json_obj['name'])
+                        cons_handler = ConceptHandler(concept=updated_concept)
+                        cons_handler.fetch_worms()
+                        cons_handler.fetch_vars_synonyms()
+
+                        self.concept.scientific_name = updated_concept.scientific_name
+                        self.concept.aphia_id = updated_concept.aphia_id
+                        self.concept.authorship = updated_concept.authorship
+                        self.concept.synonyms = updated_concept.synonyms
+                        self.concept.taxon_rank = updated_concept.taxon_rank
+                        self.concept.taxon_ranks = updated_concept.taxon_ranks
+                        self.concept.descriptors = updated_concept.descriptors
+                        self.concept.vernacular_names = updated_concept.vernacular_names
+                        warning_messages.append([
+                            '',
+                            self.concept.concept_name,
+                            '',
+                            f'Alternate concept name found - used {json_obj["name"]} instead.'
+                        ])
+                        return
+
                 for syn in json_obj['alternateNames']:
                     # names starting with a lowercase letter are common names, not of interest
                     if syn[0].isupper():
