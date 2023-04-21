@@ -27,17 +27,11 @@ class ConceptHandler:
 
     def fetch_worms(self):
         """
-        To easily call both WoRMS queries.
+        To easily call all WoRMS queries.
         """
         self.fetch_worms_aphia_record()
         self.fetch_worms_taxon_tree()
-
-    def fetch_vars(self):
-        """
-        To easily call both VARS kb queries.
-        """
         self.fetch_vernaculars()
-        self.fetch_vars_synonyms()
 
     def fetch_worms_aphia_record(self):
         """
@@ -101,7 +95,10 @@ class ConceptHandler:
         http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/[VARS_CONCEPT_NAME]
         """
         parent = NULL_VAL_STRING
-        with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{self.concept.concept_name}') \
+        temp_name = self.concept.concept_name
+        if '/' in temp_name:  # account for concepts with slashes in name, e.g. "Ptilella/Pennatula"
+            temp_name = temp_name.split('/')[0]
+        with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{temp_name}') \
                 as vars_tax_res:
             if vars_tax_res.status_code == 200:
                 # this get us to kingdom
@@ -245,7 +242,10 @@ class ConceptHandler:
         """
         if self.concept.concept_name == 'eggs' or self.concept.concept_name == 'eggcase':
             return
-        url = f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/{self.concept.concept_name.replace(" ", "%20")}'
+        temp_name = self.concept.concept_name
+        if '/' in temp_name:
+            temp_name = ' '.join(self.concept.concept_words)  # use the parent we got earlier
+        url = f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/{temp_name.replace(" ", "%20")}'
         nicknames = []
         with requests.get(url) as r:
             json_obj = r.json()

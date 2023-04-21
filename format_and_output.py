@@ -198,7 +198,7 @@ for dive_name in sequence_names:
                 concept = Concept(concept_name=concept_name)
                 cons_handler = ConceptHandler(concept=concept)
                 cons_handler.fetch_worms()
-                cons_handler.fetch_vars()
+                cons_handler.fetch_vars_synonyms()
                 concepts[concept_name] = {
                     'scientific_name': concept.scientific_name,
                     'aphia_id': concept.aphia_id,

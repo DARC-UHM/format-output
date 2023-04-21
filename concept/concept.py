@@ -75,7 +75,7 @@ class Concept:
 
     def analyze_concept_name(self):
         """
-        Analyzes 'extra bits' (eg 'cf', 'sp') off the VARS concept name:
+        Analyzes 'extra bits' (eg 'cf', 'sp', '/') off the VARS concept name:
 
         EXAMPLE 1:
             VARS concept name = '[genus] [species] cf'
@@ -95,6 +95,11 @@ class Concept:
             parent info)
             The final scientific name reported to DSCRTP is: 'cf. [genus]'
         """
+
+        if '/' in self.concept_name:  # account for concepts with slashes in name, e.g. "Ptilella/Pennatula"
+            self.descriptors = self.concept_name
+            self.concept_words = ['NEED_PARENT']
+            return
 
         self.concept_words = self.concept_name.split(' ')  # create an array of the VARS concept name
         if 'unidentified' in self.concept_words:
