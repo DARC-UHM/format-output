@@ -171,6 +171,9 @@ class AnnotationRow:
         self.columns['Synonyms'] = ' | '.join(concepts[concept_name]['synonyms']) \
             if concepts[concept_name]['synonyms'] else NULL_VAL_STRING
 
+        if '/' in concept_name:
+            self.columns['IdentificationComments'] = concept_name.replace('/', ' or ')
+
     def set_media_type(self, media_type: str):
         """
         Populates the 'RecordType' column with the passed media type if it is an annotation of an organism.

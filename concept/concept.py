@@ -96,7 +96,6 @@ class Concept:
         """
 
         if '/' in self.concept_name:  # account for concepts with slashes in name, e.g. "Ptilella/Pennatula"
-            self.descriptors = self.concept_name
             self.concept_words = ['NEED_PARENT']
             return
 
