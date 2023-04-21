@@ -261,7 +261,7 @@ class ConceptHandler:
                         updated_concept = Concept(concept_name=json_obj['name'])
                         cons_handler = ConceptHandler(concept=updated_concept)
                         cons_handler.fetch_worms()
-                        cons_handler.fetch_vars_synonyms()
+                        cons_handler.fetch_vars_synonyms(warning_messages=[])
 
                         self.concept.scientific_name = updated_concept.scientific_name
                         self.concept.aphia_id = updated_concept.aphia_id
@@ -275,7 +275,7 @@ class ConceptHandler:
                             '',
                             self.concept.concept_name,
                             '',
-                            f'Alternate concept name found - used {json_obj["name"]} instead.'
+                            f'Alternate concept name found - used "{json_obj["name"]}" instead'
                         ])
                         return
 
