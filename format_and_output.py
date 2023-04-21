@@ -185,9 +185,10 @@ for dive_name in sequence_names:
         annotation_row = AnnotationRow(annotation)  # object to store all annotation information
 
         # populate simple data from annotation & Dives.csv
-        annotation_row.set_simple_static_data()
-        annotation_row.set_dive_info(dive_info=dive_dict)
         annotation_row.set_sample_id(dive_name=dive_name)
+        annotation_row.set_simple_static_data()
+        annotation_row.set_ancillary_data(warning_messages=warning_messages)
+        annotation_row.set_dive_info(dive_info=dive_dict)
 
         # get concept info: check WoRMS if specified by user OR if concept info missing from save file
         if concept_name != 'none':
@@ -235,9 +236,6 @@ for dive_name in sequence_names:
         annotation_row.set_habitat(warning_messages=warning_messages)
         annotation_row.set_upon()
         annotation_row.set_id_ref()
-        annotation_row.set_temperature(warning_messages=warning_messages)
-        annotation_row.set_salinity(warning_messages=warning_messages)
-        annotation_row.set_oxygen(warning_messages=warning_messages)
         annotation_row.set_image_paths()
 
         record = [annotation_row.columns[x] for x in HEADERS]  # convert to list
@@ -298,4 +296,4 @@ if len(warning_messages) > 0:
             if len(message[1]) > 22:
                 message[1] = f'{message[1][:22]}...'
             message[2] = message[2][:37]
-            print("%-30s%-25s%-40s%-s" % (message[0], message[1], message[2], message[3]))
+            print("%-37s%-25s%-40s%-s" % (message[0], message[1], message[2], message[3]))
