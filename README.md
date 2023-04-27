@@ -1,4 +1,4 @@
-[![Build Status][https://github.com/DARC-UHM/Format-Output/actions/workflows/python-app.yml/badge.svg]][https://github.com/DARC-UHM/Format-Output/actions/workflows/python-app.yml]
+[![Build Status](https://github.com/DARC-UHM/Format-Output/actions/workflows/python-app.yml/badge.svg)](https://github.com/DARC-UHM/Format-Output/actions/workflows/python-app.yml)
 
 ### Overview
 
