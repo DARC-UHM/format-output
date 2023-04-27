@@ -1,3 +1,5 @@
+[![Build Status][https://github.com/DARC-UHM/Format-Output/actions/workflows/python-app.yml/badge.svg]][https://github.com/DARC-UHM/Format-Output/actions/workflows/python-app.yml]
+
 ### Overview
 
 This program compiles annotation data for a specified list of dives and outputs a .tsv file with formatted data for insertion into the DSCRTP database. An example of the expected output can be found in this directory (Expected Output.txt). This is a tsv file with a .txt extension.
@@ -16,7 +18,7 @@ The program gathers data from four sources:
 
 1. Clone this repository.
 2. Install Python 3.
-3. Run `pip3 install requests`.
+3. Run `pip3 install -r requ`.
 4. From the base directory run `python3 format_and_worms.py` Note: the script must be run from the same directory that contains `references/Dives.csv`.
 5. The script will prompt `Should the program load previously encountered concept names from a saved file for a faster runtime?
 (Y: Use the file; N: Use WoRMS and overwrite the file)`. If this is your first time running the script, no matter what you enter here, the script will use WoRMS to download current taxa information. This will take about 20 minutes. If you have run the script before, you can enter `y` to skip this process.
@@ -26,5 +28,5 @@ The program gathers data from four sources:
 9. The script will run and output two files: the formatted data, and a list of messages with records that should be reviewed.
 
 Notes: 
-- Currently does not support the Linux file structure.
+- Does not support the Linux file structure.
 - CTD and Nav data must be merged and linked before this script is run. This must be done locally at DARC by running a script called `darc_merge_nav_ctd`
