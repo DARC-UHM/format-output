@@ -44,13 +44,13 @@ class TestConceptHandler:
     def test_fetch_vernaculars_egg(self):
         test_concept = Concept('eggcase')
         test_handler = ConceptHandler(test_concept)
-        test_handler.fetch_vars_synonyms()
+        test_handler.fetch_vars_synonyms(warning_messages=[])
         assert test_concept.vernacular_names == NULL_VAL_STRING
 
     def test_fetch_vars_synonyms_egg(self):
         test_concept = Concept('eggcase')
         test_handler = ConceptHandler(test_concept)
-        test_handler.fetch_vars_synonyms()
+        test_handler.fetch_vars_synonyms(warning_messages=[])
         assert test_concept.synonyms == []
 
 
@@ -63,7 +63,7 @@ class TestConceptHandler:
 
         test_concept = Concept('Poliopogon spA')
         test_handler = ConceptHandler(test_concept)
-        test_handler.fetch_vars_synonyms()
+        test_handler.fetch_vars_synonyms(warning_messages=[])
         print(test_concept.scientific_name)
         assert 1 == 0
 """
