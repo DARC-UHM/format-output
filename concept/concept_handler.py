@@ -93,22 +93,62 @@ class ConceptHandler:
         """
         parent = NULL_VAL_STRING
         temp_name = self.concept.concept_name
-        if '/' in temp_name:  # account for concepts with slashes in name, e.g. "Ptilella/Pennatula"
-            temp_name = temp_name.split('/')[0]
-        with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{temp_name}') \
-                as vars_tax_res:
-            if vars_tax_res.status_code == 200:
-                # this get us to kingdom
-                vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
-                temp_tree = vars_tree
-                while 'children' in vars_tree.keys():
-                    # get down to the bottom
+        if '/' in temp_name:
+            # account for concepts with slashes in name, e.g. "Ptilella/Pennatula"
+            # we'll find the lowest common parent and use that as the concept to get info for from WoRMS
+            concept1_flat_tree = {}
+            concept2_flat_tree = {}
+
+            # the first concept (eg Ptilella)
+            with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{temp_name.split("/")[0]}') \
+                    as vars_tax_res:
+                if vars_tax_res.status_code == 200:
+                    # this get us to kingdom
+                    vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
+                    while 'children' in vars_tree.keys():
+                        # get to the bottom, filling flattened tree
+                        concept1_flat_tree[vars_tree['rank']] = vars_tree['name']
+                        vars_tree = vars_tree['children'][0]
+                else:
+                    print(f'Unable to find record for {temp_name.split("/")[0]}')
+
+            # the second concept (eg Pennatula)
+            with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{temp_name.split("/")[1]}') \
+                    as vars_tax_res:
+                if vars_tax_res.status_code == 200:
+                    vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
+                    while 'children' in vars_tree.keys():
+                        # get to the bottom, filling flattened tree
+                        concept2_flat_tree[vars_tree['rank']] = vars_tree['name']
+                        vars_tree = vars_tree['children'][0]
+                else:
+                    print(f'Unable to find record for {temp_name.split("/")[1]}')
+
+            match = False
+            for key in ['subspecies', 'species', 'subgenus', 'genus', 'subfamily', 'family', 'suborder',
+                        'order', 'subclass', 'class', 'phylum', 'kingdom']:
+                if key in concept1_flat_tree.keys() and key in concept2_flat_tree.keys():
+                    self.concept.concept_words = [concept1_flat_tree[key]]
+                    match = True
+                    break
+            if not match:
+                print(f'Unable to find common parent for {self.concept.concept_name}')
+
+        else:
+            with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{temp_name}') \
+                    as vars_tax_res:
+                if vars_tax_res.status_code == 200:
+                    # this get us to kingdom
+                    vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
                     temp_tree = vars_tree
-                    vars_tree = vars_tree['children'][0]
-                parent = temp_tree['name']
-            else:
-                print(f'Unable to find record for {self.concept.concept_name}')
-        self.concept.concept_words = [parent]
+                    while 'children' in vars_tree.keys():
+                        # get down to the bottom
+                        temp_tree = vars_tree
+                        vars_tree = vars_tree['children'][0]
+                    parent = temp_tree['name']
+                else:
+                    print(f'Unable to find record for {self.concept.concept_name}')
+            self.concept.concept_words = [parent]
 
     def find_accepted_record(self, json_records: list, concept_words: list):
         """
