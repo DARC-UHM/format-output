@@ -18,14 +18,14 @@ The program gathers data from four sources:
 
 1. Clone this repository.
 2. Install Python 3.
-3. Run `pip3 install -r requ`.
+3. Run `pip3 install -r requirements.txt`.
 4. From the base directory run `python3 format_and_worms.py` Note: the script must be run from the same directory that contains `references/Dives.csv`.
 5. The script will prompt `Should the program load previously encountered concept names from a saved file for a faster runtime?
 (Y: Use the file; N: Use WoRMS and overwrite the file)`. If this is your first time running the script, no matter what you enter here, the script will use WoRMS to download current taxa information. This will take about 20 minutes. If you have run the script before, you can enter `y` to skip this process.
 6. The script will then prompt `Name of output file (without the .tsv file extension):`. Enter any name.
 7. The next prompt is `Path to folder of output files:`. Enter the path you want the formatted output files to be saved. Note: Using `~/` does not work on MacOS, use `/Users/[username]/` instead.
 8. The final prompt is `Path to a list of sequence names:`. Enter the path to the list of dive sequences you want to process. You can use the example file in this repository `references/test_sequences.csv` or use your own list of sequence names.
-9. The script will run and output two files: the formatted data, and a list of messages with records that should be reviewed.
+9. The script will run and output the formatted data as a tsv file.
 
 Notes: 
 - Does not support the Linux file structure.
