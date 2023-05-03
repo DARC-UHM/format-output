@@ -44,6 +44,14 @@ class TestConcept:
         assert test_concept.aff_flag == []
         assert test_concept.sp_flag is False
 
+    def test_analyze_concept_name_slash(self):
+        test_concept = Concept('Ptilella/Pennatula')
+        assert test_concept.concept_words == ['NEED_PARENT']
+        assert test_concept.cf_flag == []
+        assert test_concept.nr_flag == []
+        assert test_concept.aff_flag == []
+        assert test_concept.sp_flag is False
+
     def test_analyze_concept_name_cf_mid(self):
         test_concept = Concept('Iridogorgia splendens cf')
         assert test_concept.concept_words == ['Iridogorgia']
