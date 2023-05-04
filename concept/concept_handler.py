@@ -1,7 +1,7 @@
 import sys
-from typing import Dict
-
 import requests
+
+from typing import Dict
 
 from util.constants import NULL_VAL_STRING
 from concept.concept import Concept
@@ -285,43 +285,44 @@ class ConceptHandler:
         temp_name = self.concept.concept_name
         if '/' in temp_name:
             temp_name = ' '.join(self.concept.concept_words)  # use the parent we got earlier
-        url = f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/{temp_name.replace(" ", "%20")}'
         nicknames = []
-        with requests.get(url) as r:
-            json_obj = r.json()
-            if r.status_code == 200:
-                if self.concept.concept_name in json_obj['alternateNames']:
-                    # the concept name we've been using is in fact an alternate name
-                    if self.concept.scientific_name == json_obj['name']:
-                        # the WoRMS query already returned the corrected name
-                        pass
-                    else:
-                        print(f'{Color.YELLOW}Alternate name{Color.END}')
-                        # we need to query worms for the correct concept name
-                        updated_concept = Concept(concept_name=json_obj['name'])
-                        cons_handler = ConceptHandler(concept=updated_concept)
-                        cons_handler.fetch_worms()
-                        cons_handler.fetch_vars_synonyms(warning_messages=[])
+        req = requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/{temp_name.replace(" ", "%20")}')
+        if req.status_code == 200:
+            json_obj = req.json()
+            if self.concept.concept_name in json_obj['alternateNames']:
+                # the concept name we've been using is, in fact, an alternate name
+                if self.concept.scientific_name == json_obj['name']:
+                    # the WoRMS query already returned the corrected name
+                    pass
+                else:
+                    print(f'{Color.YELLOW}Alternate name{Color.END}')
+                    # we need to query worms for the correct concept name
+                    updated_concept = Concept(concept_name=json_obj['name'])
+                    cons_handler = ConceptHandler(concept=updated_concept)
+                    cons_handler.fetch_worms()
+                    cons_handler.fetch_vars_synonyms(warning_messages=[])
 
-                        self.concept.scientific_name = updated_concept.scientific_name
-                        self.concept.aphia_id = updated_concept.aphia_id
-                        self.concept.authorship = updated_concept.authorship
-                        self.concept.synonyms = updated_concept.synonyms
-                        self.concept.taxon_rank = updated_concept.taxon_rank
-                        self.concept.taxon_ranks = updated_concept.taxon_ranks
-                        self.concept.descriptors = updated_concept.descriptors
-                        self.concept.vernacular_names = updated_concept.vernacular_names
-                        warning_messages.append([
-                            '',
-                            self.concept.concept_name,
-                            '',
-                            f'Alternate concept name found - used "{json_obj["name"]}" instead'
-                        ])
-                        return
+                    self.concept.scientific_name = updated_concept.scientific_name
+                    self.concept.aphia_id = updated_concept.aphia_id
+                    self.concept.authorship = updated_concept.authorship
+                    self.concept.synonyms = updated_concept.synonyms
+                    self.concept.taxon_rank = updated_concept.taxon_rank
+                    self.concept.taxon_ranks = updated_concept.taxon_ranks
+                    self.concept.descriptors = updated_concept.descriptors
+                    self.concept.vernacular_names = updated_concept.vernacular_names
+                    warning_messages.append([
+                        '',
+                        self.concept.concept_name,
+                        '',
+                        f'Alternate concept name found - used "{json_obj["name"]}" instead'
+                    ])
+                    return
 
-                for syn in json_obj['alternateNames']:
-                    # names starting with a lowercase letter are common names, not of interest
-                    if syn[0].isupper():
-                        nicknames.append(syn)
-                print(f'{Color.GREEN} ✓{Color.END}') if nicknames else print('None found')
-                self.concept.synonyms = nicknames
+            for syn in json_obj['alternateNames']:
+                # names starting with a lowercase letter are common names, not of interest
+                if syn[0].isupper():
+                    nicknames.append(syn)
+            print(f'{Color.GREEN} ✓{Color.END}') if nicknames else print('None found')
+            self.concept.synonyms = nicknames
+        else:
+            print('No match found')

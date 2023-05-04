@@ -1508,3 +1508,44 @@ concepts = {
         "vernacular_name": "demosponges | horny sponges"
     }
 }
+
+# json responses for request tests
+
+vars_concept_base_url = 'http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/'
+
+vars_responses = {
+    "Pennatulacea": {
+        "name": "Pennatuloidea",
+        "alternateNames": [
+            "Pennatulacea",
+            "pennatulacean",
+            "sea-pen"
+        ],
+        "rank": "superfamily",
+        "media": [],
+        "descriptors": [],
+        "author": "verrill, 1865"
+    },
+    "Demospongiae": {
+        "name": "Demospongiae",
+        "alternateNames": [],
+        "rank": "class",
+        "media": [],
+        "descriptors": [],
+        "author": "unknown"
+    },
+    "Actinopterygii": {
+      "name": "Actinopterygii",
+      "alternateNames": [
+        "Actinopteri",
+        "fish"
+      ],
+      "rank": "class",
+      "media": [],
+      "descriptors": [],
+      "author": "unknown"
+    }
+}
+
+
+

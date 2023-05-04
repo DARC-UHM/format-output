@@ -1,19 +1,47 @@
+from unittest.mock import patch
+
 from concept.concept import Concept
 from concept.concept_handler import ConceptHandler
-import pytest
-import requests
-
 from util.constants import NULL_VAL_STRING
+from test.data_for_tests import vars_responses, vars_concept_base_url
 
 
 class MockResponse:
+    def __init__(self, req_url, status_code):
+        self.req_url = req_url
+        self.status_code = status_code
 
-    @staticmethod
-    def json():
-        return {'test': ':)'}
+    def json(self):
+        if self.req_url == 'http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/Pennatulacea':
+            return vars_responses['Pennatulacea']
+        if self.req_url == 'http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/Demospongiae':
+            return vars_responses['Demospongiae']
+        if self.req_url == 'http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/Actinopterygii':
+            return vars_responses['Actinopterygii']
+
+
+def mocked_requests_get(*args, **kwargs):
+    if args[0] is None:
+        return MockResponse(None, 404)
+    return MockResponse(args[0], 200)
 
 
 class TestConceptHandler:
+    """
+    def test_worms_endpoints(self):
+        res1 = requests.get('https://www.marinespecies.org/rest/AphiaRecordsByName/Demospongiae?like=true&marine_only=true&offset=1')
+        res2 = requests.get('https://www.marinespecies.org/rest/AphiaClassificationByAphiaID/164811')
+        res3 = requests.get('https://www.marinespecies.org/rest/AphiaVernacularsByAphiaID/164811')
+        assert res1.ok
+        assert res2.ok
+        assert res3.ok
+
+    def test_vars_endpoints(self):
+        res1 = requests.get('http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/Demospongiae')
+        res2 = requests.get('http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/Demospongiae')
+        assert res1.ok
+        assert res2.ok
+    """
 
     def test_init(self):
         test_concept = Concept('test concept')
@@ -53,17 +81,22 @@ class TestConceptHandler:
         test_handler.fetch_vars_synonyms(warning_messages=[])
         assert test_concept.synonyms == []
 
-
-"""
-    def test_fetch_vars_synonyms(self, monkeypatch):
-        def mock_get(*args, **kwargs):
-            return MockResponse()
-
-        monkeypatch.setattr(requests, "get", mock_get)
-
-        test_concept = Concept('Poliopogon spA')
+    @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
+    def test_fetch_vars_synonyms_simple(self, mock_get):
+        test_concept = Concept('Actinopterygii')
         test_handler = ConceptHandler(test_concept)
         test_handler.fetch_vars_synonyms(warning_messages=[])
-        print(test_concept.scientific_name)
-        assert 1 == 0
-"""
+        assert test_concept.synonyms == ['Actinopteri']
+
+    @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
+    def test_fetch_vars_synonyms_complex(self, mock_get):
+        # need to fetch info in alternate name
+        # TODO
+        pass
+
+    @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
+    def test_fetch_vars_synonyms_none(self, mock_get):
+        test_concept = Concept('Demospongiae')
+        test_handler = ConceptHandler(test_concept)
+        test_handler.fetch_vars_synonyms(warning_messages=[])
+        assert test_concept.synonyms == []
