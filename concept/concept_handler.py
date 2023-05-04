@@ -50,41 +50,41 @@ class ConceptHandler:
               (self.concept.concept_name, " ".join(self.concept.concept_words)), end='')
         sys.stdout.flush()
 
-        with requests.get('https://www.marinespecies.org/rest/AphiaRecordsByName/' +
-                          '%20'.join(self.concept.concept_words) + '?like=false&marine_only=true&offset=1') as r:
-            if r.status_code == 200:
-                json_records = r.json()
-                self.find_accepted_record(json_records, self.concept.concept_words)
-            else:
-                print(f'{Color.YELLOW}{"No match" : <15}{Color.END}', end='')
-                # Check for extra bits
-                for i in range(len(self.concept.concept_words)):
-                    if self.concept.concept_words[i] == 'shrimp':
-                        self.concept.concept_words[i] = 'Decapoda'
-                        self.concept.descriptors.append('shrimp')
-                # Then try search WoRMS for each word individually
-                for word in self.concept.concept_words:
-                    self.concept.concept_add_words.append(word)
-                    # skip this query if the name is exactly the same as the first name we used
-                    if self.concept.concept_name == ' '.join(self.concept.concept_add_words):
-                        break
-                    print(f"\n{Color.BOLD}%-40s %-35s{Color.END}" %
-                          ('', " ".join(self.concept.concept_add_words)), end='')
-                    sys.stdout.flush()
-                    with requests.get('https://www.marinespecies.org/rest/AphiaRecordsByName/' + '%20'.join(
-                            self.concept.concept_add_words) + '?like=false&marine_only=true&offset=1') as r2:
-                        if r2.status_code == 200:
-                            json_records = r2.json()
-                            self.find_accepted_record(json_records, self.concept.concept_words)
-                        else:
-                            print(f'{Color.YELLOW}{"No match" : <15}{Color.END}', end='')
-                            self.concept.descriptors.append(word)
-                            self.concept.concept_add_words.remove(word)
+        req = requests.get('https://www.marinespecies.org/rest/AphiaRecordsByName/' +
+                           '%20'.join(self.concept.concept_words) + '?like=false&marine_only=true&offset=1')
+        if req.status_code == 200:
+            json_records = req.json()
+            self.find_accepted_record(json_records, self.concept.concept_words)
+        else:
+            print(f'{Color.YELLOW}{"No match" : <15}{Color.END}', end='')
+            # Check for extra bits
+            for i in range(len(self.concept.concept_words)):
+                if self.concept.concept_words[i] == 'shrimp':
+                    self.concept.concept_words[i] = 'Decapoda'
+                    self.concept.descriptors.append('shrimp')
+            # Then try search WoRMS for each word individually
+            for word in self.concept.concept_words:
+                self.concept.concept_add_words.append(word)
+                # skip this query if the name is exactly the same as the first name we used
+                if self.concept.concept_name == ' '.join(self.concept.concept_add_words):
+                    break
+                print(f"\n{Color.BOLD}%-40s %-35s{Color.END}" %
+                      ('', " ".join(self.concept.concept_add_words)), end='')
+                sys.stdout.flush()
+                req = requests.get('https://www.marinespecies.org/rest/AphiaRecordsByName/' + '%20'.join(
+                        self.concept.concept_add_words) + '?like=false&marine_only=true&offset=1')
+                if req.status_code == 200:
+                    json_records = req.json()
+                    self.find_accepted_record(json_records, self.concept.concept_words)
+                else:
+                    print(f'{Color.YELLOW}{"No match" : <15}{Color.END}', end='')
+                    self.concept.descriptors.append(word)
+                    self.concept.concept_add_words.remove(word)
 
-            if self.concept.concept_add_words:
-                for word in self.concept.concept_add_words:
-                    if word not in self.concept.scientific_name and word not in self.unaccepted_names:
-                        self.concept.descriptors.append(word)
+        if self.concept.concept_add_words:
+            for word in self.concept.concept_add_words:
+                if word not in self.concept.scientific_name and word not in self.unaccepted_names:
+                    self.concept.descriptors.append(word)
 
     def find_parent(self):
         """
@@ -167,7 +167,6 @@ class ConceptHandler:
         Solution: If there is more than one object in the response body, get the concept's phylum by doing a VARS API
         query with the concept name. Use the object in the response whose phylum matches the VARS phylum. If there
         is more than one match, go with the match that is accepted.
-
         """
         if len(json_records) == 1:
             # there is only one record, use it

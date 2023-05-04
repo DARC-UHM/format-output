@@ -1547,5 +1547,34 @@ vars_responses = {
     }
 }
 
-
+worms_responses = {
+    "Antipatharia": [
+        {"AphiaID": 22549,
+         "url":"https:\/\/www.marinespecies.org\/aphia.php?p=taxdetails&id=22549",
+         "scientificname": "Antipatharia",
+         "authority": None,
+         "status": "accepted",
+         "unacceptreason": None,
+         "taxonRankID": 100,
+         "rank": "Order",
+         "valid_AphiaID": 22549,
+         "valid_name": "Antipatharia",
+         "valid_authority": None,
+         "parentNameUsageID":1340,
+         "kingdom": "Animalia",
+         "phylum": "Cnidaria",
+         "class": "Anthozoa",
+         "order": "Antipatharia",
+         "family": None,
+         "genus": None,
+         "citation": "Molodtsova, T.; Opresko, D. (2023). World List of Antipatharia. Antipatharia. Accessed through: World Register of Marine Species at: https:\/\/www.marinespecies.org\/aphia.php?p=taxdetails&id=22549 on 2023-05-04",
+         "lsid": "urn:lsid:marinespecies.org:taxname:22549",
+         "isMarine": 1,
+         "isBrackish": 1,
+         "isFreshwater": None,
+         "isTerrestrial": None,
+         "isExtinct": None,
+         "match_type": "exact",
+         "modified": "2008-09-09T22:16:15.703Z"}]
+}
 
