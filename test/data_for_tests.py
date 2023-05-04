@@ -1535,22 +1535,330 @@ vars_responses = {
         "author": "unknown"
     },
     "Actinopterygii": {
-      "name": "Actinopterygii",
-      "alternateNames": [
-        "Actinopteri",
-        "fish"
-      ],
-      "rank": "class",
-      "media": [],
-      "descriptors": [],
-      "author": "unknown"
+        "name": "Actinopterygii",
+        "alternateNames": [
+            "Actinopteri",
+            "fish"
+        ],
+        "rank": "class",
+        "media": [],
+        "descriptors": [],
+        "author": "unknown"
+    },
+    "Demospongiae phylogeny": {
+        "name": "object",
+        "alternativeNames": [
+            "root"
+        ],
+        "children": [
+            {
+                "name": "physical-object",
+                "alternativeNames": [
+                    "physical object"
+                ],
+                "children": [
+                    {
+                        "name": "Biological",
+                        "children": [
+                            {
+                                "name": "Organism",
+                                "children": [
+                                    {
+                                        "name": "Animalia",
+                                        "rank": "kingdom",
+                                        "children": [
+                                            {
+                                                "name": "Porifera",
+                                                "alternativeNames": [
+                                                    "sponge"
+                                                ],
+                                                "rank": "phylum",
+                                                "children": [
+                                                    {
+                                                        "name": "Demospongiae",
+                                                        "rank": "class"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Ptilella phylogeny": {
+        "name": "object",
+        "alternativeNames": [
+            "root"
+        ],
+        "children": [
+            {
+                "name": "physical-object",
+                "alternativeNames": [
+                    "physical object"
+                ],
+                "children": [
+                    {
+                        "name": "Biological",
+                        "children": [
+                            {
+                                "name": "Organism",
+                                "children": [
+                                    {
+                                        "name": "Animalia",
+                                        "rank": "kingdom",
+                                        "children": [
+                                            {
+                                                "name": "Cnidaria",
+                                                "alternativeNames": [
+                                                    "coelenterate",
+                                                    "cnidarian"
+                                                ],
+                                                "rank": "phylum",
+                                                "children": [
+                                                    {
+                                                        "name": "Anthozoa",
+                                                        "alternativeNames": [
+                                                            "coral"
+                                                        ],
+                                                        "rank": "class",
+                                                        "children": [
+                                                            {
+                                                                "name": "Octocorallia",
+                                                                "alternativeNames": [
+                                                                    "Alcyonaria"
+                                                                ],
+                                                                "rank": "subclass",
+                                                                "children": [
+                                                                    {
+                                                                        "name": "Scleralcyonacea",
+                                                                        "rank": "order",
+                                                                        "children": [
+                                                                            {
+                                                                                "name": "Pennatuloidea",
+                                                                                "alternativeNames": [
+                                                                                    "sea-pen",
+                                                                                    "pennatulacean",
+                                                                                    "Pennatulacea"
+                                                                                ],
+                                                                                "rank": "superfamily",
+                                                                                "children": [
+                                                                                    {
+                                                                                        "name": "Subselliflorae",
+                                                                                        "alternativeNames": [
+                                                                                            "Subsessiliflorae"
+                                                                                        ],
+                                                                                        "rank": "suborder",
+                                                                                        "children": [
+                                                                                            {
+                                                                                                "name": "Pennatulidae",
+                                                                                                "rank": "family",
+                                                                                                "children": [
+                                                                                                    {
+                                                                                                        "name": "Ptilella",
+                                                                                                        "rank": "genus"
+                                                                                                    }
+                                                                                                ]
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Pennatula phylogeny": {
+        "name": "object",
+        "alternativeNames": [
+            "root"
+        ],
+        "children": [
+            {
+                "name": "physical-object",
+                "alternativeNames": [
+                    "physical object"
+                ],
+                "children": [
+                    {
+                        "name": "Biological",
+                        "children": [
+                            {
+                                "name": "Organism",
+                                "children": [
+                                    {
+                                        "name": "Animalia",
+                                        "rank": "kingdom",
+                                        "children": [
+                                            {
+                                                "name": "Cnidaria",
+                                                "alternativeNames": [
+                                                    "coelenterate",
+                                                    "cnidarian"
+                                                ],
+                                                "rank": "phylum",
+                                                "children": [
+                                                    {
+                                                        "name": "Anthozoa",
+                                                        "alternativeNames": [
+                                                            "coral"
+                                                        ],
+                                                        "rank": "class",
+                                                        "children": [
+                                                            {
+                                                                "name": "Octocorallia",
+                                                                "alternativeNames": [
+                                                                    "Alcyonaria"
+                                                                ],
+                                                                "rank": "subclass",
+                                                                "children": [
+                                                                    {
+                                                                        "name": "Scleralcyonacea",
+                                                                        "rank": "order",
+                                                                        "children": [
+                                                                            {
+                                                                                "name": "Pennatuloidea",
+                                                                                "alternativeNames": [
+                                                                                    "sea-pen",
+                                                                                    "pennatulacean",
+                                                                                    "Pennatulacea"
+                                                                                ],
+                                                                                "rank": "superfamily",
+                                                                                "children": [
+                                                                                    {
+                                                                                        "name": "Subselliflorae",
+                                                                                        "alternativeNames": [
+                                                                                            "Subsessiliflorae"
+                                                                                        ],
+                                                                                        "rank": "suborder",
+                                                                                        "children": [
+                                                                                            {
+                                                                                                "name": "Pennatulidae",
+                                                                                                "rank": "family",
+                                                                                                "children": [
+                                                                                                    {
+                                                                                                        "name": "Pennatula",
+                                                                                                        "rank": "genus"
+                                                                                                    }
+                                                                                                ]
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Stolonifera phylogeny": {
+        "name": "object",
+        "alternativeNames": [
+            "root"
+        ],
+        "children": [
+            {
+                "name": "physical-object",
+                "alternativeNames": [
+                    "physical object"
+                ],
+                "children": [
+                    {
+                        "name": "Biological",
+                        "children": [
+                            {
+                                "name": "Organism",
+                                "children": [
+                                    {
+                                        "name": "Animalia",
+                                        "rank": "kingdom",
+                                        "children": [
+                                            {
+                                                "name": "Cnidaria",
+                                                "alternativeNames": [
+                                                    "coelenterate",
+                                                    "cnidarian"
+                                                ],
+                                                "rank": "phylum",
+                                                "children": [
+                                                    {
+                                                        "name": "Anthozoa",
+                                                        "alternativeNames": [
+                                                            "coral"
+                                                        ],
+                                                        "rank": "class",
+                                                        "children": [
+                                                            {
+                                                                "name": "Octocorallia",
+                                                                "alternativeNames": [
+                                                                    "Alcyonaria"
+                                                                ],
+                                                                "rank": "subclass",
+                                                                "children": [
+                                                                    {
+                                                                        "name": "Malacalcyonacea",
+                                                                        "rank": "order",
+                                                                        "children": [
+                                                                            {
+                                                                                "name": "Stolonifera",
+                                                                                "rank": "suborder"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     }
+
 }
 
 worms_responses = {
     "Antipatharia": [
         {"AphiaID": 22549,
-         "url":"https:\/\/www.marinespecies.org\/aphia.php?p=taxdetails&id=22549",
+         "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=22549",
          "scientificname": "Antipatharia",
          "authority": None,
          "status": "accepted",
@@ -1560,14 +1868,14 @@ worms_responses = {
          "valid_AphiaID": 22549,
          "valid_name": "Antipatharia",
          "valid_authority": None,
-         "parentNameUsageID":1340,
+         "parentNameUsageID": 1340,
          "kingdom": "Animalia",
          "phylum": "Cnidaria",
          "class": "Anthozoa",
          "order": "Antipatharia",
          "family": None,
          "genus": None,
-         "citation": "Molodtsova, T.; Opresko, D. (2023). World List of Antipatharia. Antipatharia. Accessed through: World Register of Marine Species at: https:\/\/www.marinespecies.org\/aphia.php?p=taxdetails&id=22549 on 2023-05-04",
+         "citation": "Molodtsova, T.; Opresko, D. (2023). World List of Antipatharia. Antipatharia. Accessed through: World Register of Marine Species at: https://www.marinespecies.org/aphia.php?p=taxdetails&id=22549 on 2023-05-04",
          "lsid": "urn:lsid:marinespecies.org:taxname:22549",
          "isMarine": 1,
          "isBrackish": 1,
@@ -1575,6 +1883,129 @@ worms_responses = {
          "isTerrestrial": None,
          "isExtinct": None,
          "match_type": "exact",
-         "modified": "2008-09-09T22:16:15.703Z"}]
+         "modified": "2008-09-09T22:16:15.703Z"
+         }
+    ],
+    "Demospongiae": [
+        {
+            "AphiaID": 164811,
+            "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=164811",
+            "scientificname": "Demospongiae",
+            "authority": "Sollas, 1885",
+            "status": "accepted",
+            "unacceptreason": None,
+            "taxonRankID": 60,
+            "rank": "Class",
+            "valid_AphiaID": 164811,
+            "valid_name": "Demospongiae",
+            "valid_authority": "Sollas, 1885",
+            "parentNameUsageID": 558,
+            "kingdom": "Animalia",
+            "phylum": "Porifera",
+            "class": "Demospongiae",
+            "order": None,
+            "family": None,
+            "genus": None,
+            "citation": "WoRMS (2023). Demospongiae. Accessed at: https://www.marinespecies.org/aphia.php?p=taxdetails&id=164811 on 2023-05-04",
+            "lsid": "urn:lsid:marinespecies.org:taxname:164811",
+            "isMarine": 1,
+            "isBrackish": 1,
+            "isFreshwater": 1,
+            "isTerrestrial": 0,
+            "isExtinct": 0,
+            "match_type": "exact",
+            "modified": "2020-10-22T11:37:08.657Z"
+        }
+    ],
+    "Stolonifera": [
+        {
+            "AphiaID": 153683,
+            "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=153683",
+            "scientificname": "Stolonifera",
+            "authority": None,
+            "status": "accepted",
+            "unacceptreason": None,
+            "taxonRankID": 110,
+            "rank": "Suborder",
+            "valid_AphiaID": 153683,
+            "valid_name": "Stolonifera",
+            "valid_authority": None,
+            "parentNameUsageID": 110723,
+            "kingdom": "Animalia",
+            "phylum": "Bryozoa",
+            "class": "Gymnolaemata",
+            "order": "Ctenostomatida",
+            "family": None,
+            "genus": None,
+            "citation": "Bock, P. (2023). World List of Bryozoa. Stolonifera. Accessed through: World Register of Marine Species at: https://www.marinespecies.org/aphia.php?p=taxdetails&id=153683 on 2023-05-04",
+            "lsid": "urn:lsid:marinespecies.org:taxname:153683",
+            "isMarine": 1,
+            "isBrackish": None,
+            "isFreshwater": None,
+            "isTerrestrial": None,
+            "isExtinct": None,
+            "match_type": "exact",
+            "modified": "2005-04-15T10:25:19.903Z"
+        },
+        {
+            "AphiaID": 1368,
+            "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=1368",
+            "scientificname": "Stolonifera",
+            "authority": "Thomson & Simpson, 1909",
+            "status": "unaccepted",
+            "unacceptreason": None,
+            "taxonRankID": 110,
+            "rank": "Suborder",
+            "valid_AphiaID": 1609357,
+            "valid_name": "Malacalcyonacea",
+            "valid_authority": "McFadden, van Ofwegen & Quattrini, 2022",
+            "parentNameUsageID": 1609357,
+            "kingdom": "Animalia",
+            "phylum": "Cnidaria",
+            "class": "Anthozoa",
+            "order": "Malacalcyonacea",
+            "family": None,
+            "genus": None,
+            "citation": "McFadden, C.S.; Cordeiro, R.; Williams, G.; van Ofwegen, L. (2023). World List of Octocorallia. Stolonifera. Accessed through: World Register of Marine Species at: https://www.marinespecies.org/aphia.php?p=taxdetails&id=1368 on 2023-05-04",
+            "lsid": "urn:lsid:marinespecies.org:taxname:1368",
+            "isMarine": 1,
+            "isBrackish": 1,
+            "isFreshwater": 0,
+            "isTerrestrial": 0,
+            "isExtinct": None,
+            "match_type": "exact",
+            "modified": "2022-11-06T20:41:46.647Z"
+        }
+    ],
+    "Malacalcyonacea": [
+        {
+            "AphiaID": 1609357,
+            "url": "https:\\/\\/www.marinespecies.org\\/aphia.php?p=taxdetails&id=1609357",
+            "scientificname": "Malacalcyonacea",
+            "authority": "McFadden, van Ofwegen & Quattrini, 2022",
+            "status": "accepted",
+            "unacceptreason": None,
+            "taxonRankID": 100,
+            "rank": "Order",
+            "valid_AphiaID": 1609357,
+            "valid_name": "Malacalcyonacea",
+            "valid_authority": "McFadden, van Ofwegen & Quattrini, 2022",
+            "parentNameUsageID": 1341,
+            "kingdom": "Animalia",
+            "phylum": "Cnidaria",
+            "class": "Anthozoa",
+            "order": "Malacalcyonacea",
+            "family": None,
+            "genus": None,
+            "citation": "WoRMS (2023). Malacalcyonacea. Accessed at: https:\\/\\/www.marinespecies.org\\/aphia.php?p=taxdetails&id=1609357 on 2023-05-04",
+            "lsid": "urn:lsid:marinespecies.org:taxname:1609357",
+            "isMarine": 1,
+            "isBrackish": None,
+            "isFreshwater": 0,
+            "isTerrestrial": 0,
+            "isExtinct": None,
+            "match_type": "exact",
+            "modified": "2022-11-02T02:55:04.660Z"
+        }
+    ]
 }
-

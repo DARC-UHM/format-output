@@ -100,29 +100,27 @@ class ConceptHandler:
             concept2_flat_tree = {}
 
             # the first concept (eg Ptilella)
-            with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{temp_name.split("/")[0]}') \
-                    as vars_tax_res:
-                if vars_tax_res.status_code == 200:
-                    # this get us to kingdom
-                    vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
-                    while 'children' in vars_tree.keys():
-                        # get to the bottom, filling flattened tree
-                        concept1_flat_tree[vars_tree['rank']] = vars_tree['name']
-                        vars_tree = vars_tree['children'][0]
-                else:
-                    print(f'Unable to find record for {temp_name.split("/")[0]}')
+            vars_tax_res = requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{temp_name.split("/")[0]}')
+            if vars_tax_res.status_code == 200:
+                # this get us to kingdom
+                vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
+                while 'children' in vars_tree.keys():
+                    # get to the bottom, filling flattened tree
+                    concept1_flat_tree[vars_tree['rank']] = vars_tree['name']
+                    vars_tree = vars_tree['children'][0]
+            else:
+                print(f'Unable to find record for {temp_name.split("/")[0]}')
 
             # the second concept (eg Pennatula)
-            with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{temp_name.split("/")[1]}') \
-                    as vars_tax_res:
-                if vars_tax_res.status_code == 200:
-                    vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
-                    while 'children' in vars_tree.keys():
-                        # get to the bottom, filling flattened tree
-                        concept2_flat_tree[vars_tree['rank']] = vars_tree['name']
-                        vars_tree = vars_tree['children'][0]
-                else:
-                    print(f'Unable to find record for {temp_name.split("/")[1]}')
+            vars_tax_res = requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{temp_name.split("/")[1]}')
+            if vars_tax_res.status_code == 200:
+                vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
+                while 'children' in vars_tree.keys():
+                    # get to the bottom, filling flattened tree
+                    concept2_flat_tree[vars_tree['rank']] = vars_tree['name']
+                    vars_tree = vars_tree['children'][0]
+            else:
+                print(f'Unable to find record for {temp_name.split("/")[1]}')
 
             match = False
             for key in ['subspecies', 'species', 'subgenus', 'genus', 'subfamily', 'family', 'suborder',
@@ -135,19 +133,19 @@ class ConceptHandler:
                 print(f'Unable to find common parent for {self.concept.concept_name}')
 
         else:
-            with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{temp_name}') \
-                    as vars_tax_res:
-                if vars_tax_res.status_code == 200:
-                    # this get us to kingdom
-                    vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
+            vars_tax_res = requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{temp_name}')
+            if vars_tax_res.status_code == 200:
+                # this get us to kingdom
+                print(vars_tax_res.json())
+                vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
+                temp_tree = vars_tree
+                while 'children' in vars_tree.keys():
+                    # get down to the bottom
                     temp_tree = vars_tree
-                    while 'children' in vars_tree.keys():
-                        # get down to the bottom
-                        temp_tree = vars_tree
-                        vars_tree = vars_tree['children'][0]
-                    parent = temp_tree['name']
-                else:
-                    print(f'Unable to find record for {self.concept.concept_name}')
+                    vars_tree = vars_tree['children'][0]
+                parent = temp_tree['name']
+            else:
+                print(f'Unable to find record for {self.concept.concept_name}')
             self.concept.concept_words = [parent]
 
     def find_accepted_record(self, json_records: list, concept_words: list):
@@ -173,16 +171,15 @@ class ConceptHandler:
             self.check_status(json_records[0])
         else:
             # there are multiple records - we need to ping vars for phylum and find the record that matches
-            with requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{"%20".join(concept_words)}') \
-                    as vars_tax_res:
-                if vars_tax_res.status_code == 200:
-                    # this get us to kingdom
-                    vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
-                    while not self.phylum:
-                        # find the phylum in the response tree
-                        vars_tree = vars_tree['children'][0]
-                        if 'rank' in vars_tree.keys() and vars_tree['rank'] == 'phylum':
-                            self.phylum = vars_tree['name']
+            vars_tax_res = requests.get(f'http://hurlstor.soest.hawaii.edu:8083/kb/v1/phylogeny/up/{"%20".join(concept_words)}')
+            if vars_tax_res.status_code == 200:
+                # this get us to kingdom
+                vars_tree = vars_tax_res.json()['children'][0]['children'][0]['children'][0]['children'][0]
+                while not self.phylum:
+                    # find the phylum in the response tree
+                    vars_tree = vars_tree['children'][0]
+                    if 'rank' in vars_tree.keys() and vars_tree['rank'] == 'phylum':
+                        self.phylum = vars_tree['name']
 
             record_list = []
             for record in json_records:
@@ -220,11 +217,11 @@ class ConceptHandler:
             self.unaccepted_names.append(json_record['scientificname'])
             print(f"{Color.BOLD}%-40s %-35s{Color.END}" % ('', json_record['valid_name']), end='')
             sys.stdout.flush()
-            with requests.get('https://www.marinespecies.org/rest/AphiaRecordsByName/' + json_record['valid_name'] +
-                              '?like=false&marine_only=true&offset=1') as r:
-                if r.status_code == 200:
-                    json_records = r.json()
-                    self.find_accepted_record(json_records, json_record['valid_name'])
+            req = requests.get('https://www.marinespecies.org/rest/AphiaRecordsByName/' + json_record['valid_name'] +
+                              '?like=false&marine_only=true&offset=1')
+            if req.status_code == 200:
+                json_records = req.json()
+                self.find_accepted_record(json_records, json_record['valid_name'])
 
     def fetch_worms_taxon_tree(self):
         """
