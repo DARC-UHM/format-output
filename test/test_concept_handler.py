@@ -9,7 +9,14 @@ from test.data_for_tests import vars_responses, worms_responses
 class MockResponse:
     def __init__(self, req_url):
         self.req_url = req_url
-        self.status_code = 404 if 'NO_MATCH' in req_url or 'encrusting' in req_url else 200
+        self.status_code = 200
+
+        if 'NO_MATCH' in req_url or 'encrusting' in req_url:
+            self.status_code = 204
+        if 'yellow' in req_url and 'marinespecies' in req_url:
+            self.status_code = 204
+        if 'AphiaVernacularsByAphiaID/151540' in req_url:
+            self.status_code = 204
 
     def json(self):
         match self.req_url:
@@ -38,6 +45,21 @@ class MockResponse:
                 return vars_responses['Stolonifera phylogeny']
             case 'https://www.marinespecies.org/rest/AphiaRecordsByName/Malacalcyonacea?like=false&marine_only=true&offset=1':
                 return worms_responses['Malacalcyonacea']
+            case 'https://www.marinespecies.org/rest/AphiaClassificationByAphiaID/164811':
+                return worms_responses['Demospongiae phylogeny']
+            case 'https://www.marinespecies.org/rest/AphiaVernacularsByAphiaID/164811':
+                return worms_responses['Demospongiae vernaculars']
+            case 'https://www.marinespecies.org/rest/AphiaVernacularsByAphiaID/10314':
+                return worms_responses['Ophidiiformes vernaculars']
+            case 'http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/Plexauridae%20yellow' | \
+                 'http://hurlstor.soest.hawaii.edu:8083/kb/v1/concept/Paramuriceidae%20yellow':
+                return vars_responses['Plexauridae yellow']
+            case 'https://www.marinespecies.org/rest/AphiaRecordsByName/Plexauridae?like=false&marine_only=true&offset=1':
+                return worms_responses['Plexauridae']
+            case 'https://www.marinespecies.org/rest/AphiaRecordsByName/Paramuriceidae?like=false&marine_only=true&offset=1':
+                return worms_responses['Paramuriceidae']
+            case 'https://www.marinespecies.org/rest/AphiaClassificationByAphiaID/151540':
+                return worms_responses['Paramuriceidae phylogeny']
         return None
 
 
@@ -154,17 +176,38 @@ class TestConceptHandler:
         assert test_concept.scientific_name == 'Malacalcyonacea'
         assert test_concept.taxon_rank == 'Order'
 
-    @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
-    def test_check_status_accepted(self, mock_get):
-        pass  # todo
+    def test_check_status_accepted(self):
+        test_handler = ConceptHandler(Concept('test'))
+        test_handler.check_status({
+            'status': 'accepted', 'AphiaID': 42, 'scientificname': 'hehe', 'rank': 'sgt', 'authority': None
+        })
+        assert test_handler.found_worms_match is True
+        assert test_handler.concept.aphia_id == 42
+        assert test_handler.concept.scientific_name == 'hehe'
+        assert test_handler.concept.taxon_rank == 'sgt'
 
     @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
     def test_check_status_unaccepted(self, mock_get):
-        pass  # todo
+        test_handler = ConceptHandler(Concept('test'))
+        test_handler.check_status({
+            'status': 'unaccepted', 'scientificname': 'oh no', 'valid_name': 'Demospongiae'
+        })
+        assert test_handler.found_worms_match is True
+        assert test_handler.unaccepted_names == ['oh no']
+        assert test_handler.concept.aphia_id == 164811
+        assert test_handler.concept.scientific_name == 'Demospongiae'
+        assert test_handler.concept.taxon_rank == 'Class'
 
     @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
     def test_fetch_worms_taxon_tree(self, mock_get):
-        pass  # todo
+        test_concept = Concept('Demospongiae')
+        test_handler = ConceptHandler(test_concept)
+        test_concept.scientific_name = 'Demospongiae'
+        test_concept.aphia_id = 164811
+        test_handler.fetch_worms_taxon_tree()
+        assert test_concept.taxon_ranks == {
+            'Superdomain': 'Biota', 'Kingdom': 'Animalia', 'Phylum': 'Porifera', 'Class': 'Demospongiae'
+        }
 
     def test_fetch_worms_taxon_tree_egg(self):
         test_concept = Concept('eggcase')
@@ -174,21 +217,44 @@ class TestConceptHandler:
 
     @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
     def test_fetch_worms_taxon_tree_no_match(self, mock_get):
-        pass  # todo
+        test_concept = Concept('nah')
+        test_handler = ConceptHandler(test_concept)
+        test_concept.scientific_name = 'Demospongiae'
+        test_concept.aphia_id = 164811
+        test_handler.fetch_worms_vernaculars()
+        assert test_concept.taxon_ranks == {}
 
     @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
-    def test_fetch_vernaculars(self, mock_get):
-        pass  # todo
+    def test_fetch_worms_vernaculars(self, mock_get):
+        test_concept = Concept('Demospongiae')
+        test_handler = ConceptHandler(test_concept)
+        test_concept.scientific_name = 'Demospongiae'
+        test_concept.aphia_id = 164811
+        test_handler.fetch_worms_vernaculars()
+        assert test_concept.vernacular_names == 'demosponges | horny sponges'
 
-    def test_fetch_vernaculars_egg(self):
+    def test_fetch_worms_vernaculars_egg(self):
         test_concept = Concept('eggcase')
         test_handler = ConceptHandler(test_concept)
         test_handler.fetch_vars_synonyms(warning_messages=[])
         assert test_concept.vernacular_names == NULL_VAL_STRING
 
     @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
-    def test_fetch_vernaculars_none(self, mock_get):
-        pass  # todo
+    def test_fetch_worms_vernaculars_no_eng(self, mock_get):
+        test_concept = Concept('Ophidiiformes')
+        test_handler = ConceptHandler(test_concept)
+        test_concept.scientific_name = 'Ophidiiformes'
+        test_concept.aphia_id = 10314
+        test_handler.fetch_worms_vernaculars()
+        assert test_concept.vernacular_names == NULL_VAL_STRING
+
+    @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
+    def test_fetch_worms_vernaculars_none(self, mock_get):
+        test_concept = Concept('nope')
+        test_handler = ConceptHandler(test_concept)
+        test_concept.aphia_id = 'NO_MATCH'
+        test_handler.fetch_worms_vernaculars()
+        assert test_concept.vernacular_names == NULL_VAL_STRING
 
     @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
     def test_fetch_vars_synonyms_simple(self, mock_get):
@@ -199,9 +265,13 @@ class TestConceptHandler:
 
     @patch('concept.concept_handler.requests.get', side_effect=mocked_requests_get)
     def test_fetch_vars_synonyms_complex(self, mock_get):
-        # need to fetch info in alternate name
-        # TODO
-        pass  # todo
+        warnings = []
+        test_concept = Concept('Plexauridae yellow')
+        test_handler = ConceptHandler(test_concept)
+        test_handler.fetch_worms_aphia_record()
+        test_handler.fetch_vars_synonyms(warning_messages=warnings)
+        assert test_concept.synonyms == ['Plexauridae yellow']
+        assert len(warnings) == 1
 
     def test_fetch_vars_synonyms_egg(self):
         test_concept = Concept('eggcase')

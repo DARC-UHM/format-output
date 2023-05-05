@@ -31,7 +31,7 @@ class ConceptHandler:
         """
         self.fetch_worms_aphia_record()
         self.fetch_worms_taxon_tree()
-        self.fetch_vernaculars()
+        self.fetch_worms_vernaculars()
 
     def fetch_worms_aphia_record(self):
         """
@@ -233,17 +233,16 @@ class ConceptHandler:
             return
 
         if self.concept.scientific_name != NULL_VAL_STRING:
-            with requests.get(
-                    'https://www.marinespecies.org/rest/AphiaClassificationByAphiaID/' + str(self.concept.aphia_id)) as r:
-                if r.status_code == 200:
-                    taxon_tree = r.json()
-                    self.concept.flatten_taxa_tree(taxon_tree, self.concept.taxon_ranks)
-                    print(f'{Color.GREEN}{" ✓" : <15}{Color.END}', end='')
-                    sys.stdout.flush()
-                else:
-                    print(f'{Color.RED}{"No match" : <15}{Color.END}')
+            req = requests.get(f'https://www.marinespecies.org/rest/AphiaClassificationByAphiaID/{self.concept.aphia_id}')
+            if req.status_code == 200:
+                taxon_tree = req.json()
+                self.concept.flatten_taxa_tree(taxon_tree, self.concept.taxon_ranks)
+                print(f'{Color.GREEN}{" ✓" : <15}{Color.END}', end='')
+                sys.stdout.flush()
+            else:
+                print(f'{Color.RED}{"No match" : <15}{Color.END}')
 
-    def fetch_vernaculars(self):
+    def fetch_worms_vernaculars(self):
         """
         Fetches all english vernacular names for a given aphia ID from WoRMS:
         https://www.marinespecies.org/rest/AphiaVernacularsByAphiaID/[APHIA_ID]
@@ -251,19 +250,18 @@ class ConceptHandler:
         if self.concept.concept_name == 'eggs' or self.concept.concept_name == 'eggcase':
             return
         vern_names = NULL_VAL_STRING
-        with requests.get(
-                'https://www.marinespecies.org/rest/AphiaVernacularsByAphiaID/' + str(self.concept.aphia_id)) as r:
-            if r.status_code == 200:
-                for record in r.json():
-                    if record['language_code'] == 'eng':
-                        if vern_names != NULL_VAL_STRING:
-                            vern_names = f'{vern_names} | {record["vernacular"]}'
-                        else:
-                            vern_names = record["vernacular"]
-                print(f'{Color.GREEN}{" ✓" : <15}{Color.END}', end='')
-                sys.stdout.flush()
-            else:
-                print(f'{"None found" : <15}', end='')
+        req = requests.get(f'https://www.marinespecies.org/rest/AphiaVernacularsByAphiaID/{self.concept.aphia_id}')
+        if req.status_code == 200:
+            for record in req.json():
+                if record['language_code'] == 'eng':
+                    if vern_names != NULL_VAL_STRING:
+                        vern_names = f'{vern_names} | {record["vernacular"]}'
+                    else:
+                        vern_names = record["vernacular"]
+            print(f'{Color.GREEN}{" ✓" : <15}{Color.END}', end='')
+            sys.stdout.flush()
+        else:
+            print(f'{"None found" : <15}', end='')
 
         self.concept.vernacular_names = vern_names
 

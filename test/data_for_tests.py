@@ -1851,8 +1851,16 @@ vars_responses = {
                 ]
             }
         ]
+    },
+    "Plexauridae yellow": {
+        "name": "Paramuriceidae yellow",
+        "alternateNames": [
+            "Plexauridae yellow"
+        ],
+        "media": [],
+        "descriptors": [],
+        "author": ""
     }
-
 }
 
 worms_responses = {
@@ -1980,7 +1988,7 @@ worms_responses = {
     "Malacalcyonacea": [
         {
             "AphiaID": 1609357,
-            "url": "https:\\/\\/www.marinespecies.org\\/aphia.php?p=taxdetails&id=1609357",
+            "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=1609357",
             "scientificname": "Malacalcyonacea",
             "authority": "McFadden, van Ofwegen & Quattrini, 2022",
             "status": "accepted",
@@ -1997,7 +2005,7 @@ worms_responses = {
             "order": "Malacalcyonacea",
             "family": None,
             "genus": None,
-            "citation": "WoRMS (2023). Malacalcyonacea. Accessed at: https:\\/\\/www.marinespecies.org\\/aphia.php?p=taxdetails&id=1609357 on 2023-05-04",
+            "citation": "WoRMS (2023). Malacalcyonacea. Accessed at: https://www.marinespecies.org/aphia.php?p=taxdetails&id=1609357 on 2023-05-04",
             "lsid": "urn:lsid:marinespecies.org:taxname:1609357",
             "isMarine": 1,
             "isBrackish": None,
@@ -2007,5 +2015,153 @@ worms_responses = {
             "match_type": "exact",
             "modified": "2022-11-02T02:55:04.660Z"
         }
-    ]
+    ],
+    "Demospongiae phylogeny": {
+        "AphiaID": 1,
+        "rank": "Superdomain",
+        "scientificname": "Biota",
+        "child": {
+            "AphiaID": 2,
+            "rank": "Kingdom",
+            "scientificname": "Animalia",
+            "child": {
+                "AphiaID": 558,
+                "rank": "Phylum",
+                "scientificname": "Porifera",
+                "child": {
+                    "AphiaID": 164811,
+                    "rank": "Class",
+                    "scientificname": "Demospongiae",
+                    "child": None
+                }
+            }
+        }
+    },
+    "Demospongiae vernaculars": [
+        {
+            "vernacular": "demosponges",
+            "language_code": "eng",
+            "language": "English"
+        },
+        {
+            "vernacular": "gewone sponzen",
+            "language_code": "dut",
+            "language": "Dutch"
+        },
+        {
+            "vernacular": "horn- och kiselsvampar",
+            "language_code": "swe",
+            "language": "Swedish"
+        },
+        {
+            "vernacular": "horny sponges",
+            "language_code": "eng",
+            "language": "English"
+        },
+    ],
+    "Ophidiiformes vernaculars": [
+        {
+            "vernacular": "naaldvisachtigen",
+            "language_code": "dut",
+            "language": "Dutch"
+        }
+    ],
+    "Plexauridae": [
+        {
+            "AphiaID": 125277,
+            "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=125277",
+            "scientificname": "Plexauridae",
+            "authority": "Gray, 1859",
+            "status": "accepted",
+            "unacceptreason": None,
+            "taxonRankID": 140,
+            "rank": "Family",
+            "valid_AphiaID": 125277,
+            "valid_name": "Plexauridae",
+            "valid_authority": "Gray, 1859",
+            "parentNameUsageID": 1609357,
+            "kingdom": "Animalia",
+            "phylum": "Cnidaria",
+            "class": "Anthozoa",
+            "order": "Malacalcyonacea",
+            "family": "Plexauridae",
+            "genus": None,
+            "citation": "McFadden, C.S.; Cordeiro, R.; Williams, G.; van Ofwegen, L. (2023). World List of Octocorallia. Plexauridae Gray, 1859. Accessed through: World Register of Marine Species at: https:\\/\\/www.marinespecies.org\\/aphia.php?p=taxdetails&id=125277 on 2023-05-05",
+            "lsid": "urn:lsid:marinespecies.org:taxname:125277",
+            "isMarine": 1,
+            "isBrackish": None,
+            "isFreshwater": 0,
+            "isTerrestrial": 0,
+            "isExtinct": None,
+            "match_type": "exact",
+            "modified": "2022-11-06T01:15:04.990Z"
+        }
+    ],
+    "Paramuriceidae": [
+        {
+            "AphiaID": 151540,
+            "url": "https://www.marinespecies.org/aphia.php?p=taxdetails&id=151540",
+            "scientificname": "Paramuriceidae",
+            "authority": "Bayer, 1956",
+            "status": "accepted",
+            "unacceptreason": None,
+            "taxonRankID": 140,
+            "rank": "Family",
+            "valid_AphiaID": 151540,
+            "valid_name": "Paramuriceidae",
+            "valid_authority": "Bayer, 1956",
+            "parentNameUsageID": 1609357,
+            "kingdom": "Animalia",
+            "phylum": "Cnidaria",
+            "class": "Anthozoa",
+            "order": "Malacalcyonacea",
+            "family": "Paramuriceidae",
+            "genus": None,
+            "citation": "McFadden, C.S.; Cordeiro, R.; Williams, G.; van Ofwegen, L. (2023). World List of Octocorallia. Paramuriceidae Bayer, 1956. Accessed through: World Register of Marine Species at: https:\\/\\/www.marinespecies.org\\/aphia.php?p=taxdetails&id=151540 on 2023-05-05",
+            "lsid": "urn:lsid:marinespecies.org:taxname:151540",
+            "isMarine": 1,
+            "isBrackish": None,
+            "isFreshwater": 0,
+            "isTerrestrial": 0,
+            "isExtinct": None,
+            "match_type": "exact",
+            "modified": "2022-11-05T21:48:31.350Z"
+        }
+    ],
+    "Paramuriceidae phylogeny": {
+        "AphiaID": 1,
+        "rank": "Superdomain",
+        "scientificname": "Biota",
+        "child": {
+            "AphiaID": 2,
+            "rank": "Kingdom",
+            "scientificname": "Animalia",
+            "child": {
+                "AphiaID": 1267,
+                "rank": "Phylum",
+                "scientificname": "Cnidaria",
+                "child": {
+                    "AphiaID": 1292,
+                    "rank": "Class",
+                    "scientificname": "Anthozoa",
+                    "child": {
+                        "AphiaID": 1341,
+                        "rank": "Subclass",
+                        "scientificname": "Octocorallia",
+                        "child": {
+                            "AphiaID": 1609357,
+                            "rank": "Order",
+                            "scientificname": "Malacalcyonacea",
+                            "child": {
+                                "AphiaID": 151540,
+                                "rank": "Family",
+                                "scientificname": "Paramuriceidae",
+                                "child": None
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
